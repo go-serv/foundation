@@ -6,12 +6,29 @@ import (
 	"google.golang.org/grpc"
 )
 
+type State int
+
+const (
+	StateInit State = iota
+	StateRunning
+	StateStopInProgress
+	StateStopped
+	StateSuspended // service is running but incoming requests are not being processed
+)
+
+const Foo = 1
+
+func (s State) String() string {
+	return [...]string{"StateInit", "Running", "StopInProgress", "Stopped", "Suspended"}[s]
+}
+
 type baseService struct {
 	// Service name in dot notation
-	name      string
-	cfg       ConfigInterface
-	endpoints []EndpointInterface
-	mainJob   job.JobInterface
+	name           string
+	state          State
+	cfg            ConfigInterface
+	endpoints      []EndpointInterface
+	grpcServersJob job.JobInterface
 	mustBeImplemented
 }
 
@@ -27,15 +44,27 @@ func (s *baseService) Service_AddEndpoint(e EndpointInterface) {
 	s.endpoints = append(s.endpoints, e)
 }
 
+func (s *baseService) Service_State() State {
+	return s.state
+}
+
 func (s *baseService) Service_Start() {
 	if len(s.endpoints) == 0 {
 		panic("no service endpoints have been specified")
 	}
 	// Start listening on baseService endpoints
 	for _, e := range s.endpoints {
-		s.mainJob.AddTask(e.ServeTask)
+		s.grpcServersJob.AddTask(e.ServeTask)
 	}
-	<-s.mainJob.Run()
+	<-s.grpcServersJob.Run()
+}
+
+func (s *baseService) Service_Stop() {
+	s.state = StateStopInProgress
+	for _, e := range s.endpoints {
+		e.GrpcServer().GracefulStop()
+	}
+	s.state = StateStopped
 }
 
 //

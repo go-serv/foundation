@@ -4,7 +4,8 @@ import job "github.com/AgentCoop/go-work"
 
 func newBaseService(name string, cfg ConfigInterface) baseService {
 	s := baseService{name: name, cfg: cfg}
-	s.mainJob = job.NewJob(nil)
+	s.state = StateInit
+	s.grpcServersJob = job.NewJob(nil)
 	return s
 }
 
@@ -21,6 +22,11 @@ func NewNetworkService(name string, cfg ConfigInterface) NetworkServiceInterface
 //
 // Endpoints
 //
+
+func NewEndpoint(s BaseServiceInterface) endpoint {
+	e := endpoint{service: s}
+	return e
+}
 
 func NewTcpEndpoint(s BaseServiceInterface, hostname string, port int) tcpEndpoint {
 	return tcpEndpoint{

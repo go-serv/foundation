@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	job "github.com/AgentCoop/go-work"
 )
 
@@ -21,12 +20,10 @@ func (e *unixSocketEndpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, j
 func (e *tcp4Endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.TaskInterface) {
 		err := e.Listen()
-		fmt.Printf("error listen %v\n", err)
 		task.Assert(err)
 	}
 	run := func(task job.TaskInterface) {
 		err := e.tcpServe()
-		fmt.Printf("error %v\n", err)
 		task.Assert(err)
 		task.Done()
 	}

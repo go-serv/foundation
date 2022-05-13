@@ -20,9 +20,8 @@ type endpoint struct {
 	grpcSrvOptions []grpc.ServerOption
 }
 
-func NewEndpoint(s BaseServiceInterface) endpoint {
-	e := endpoint{service: s}
-	return e
+func (e *endpoint) GrpcServer() *grpc.Server {
+	return e.grpcSrv
 }
 
 type tcpEndpoint struct {

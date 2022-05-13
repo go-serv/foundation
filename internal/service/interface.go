@@ -8,6 +8,7 @@ import (
 type EndpointInterface interface {
 	Listen() error
 	ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
+	GrpcServer() *grpc.Server
 }
 
 type ConfigInterface interface {
@@ -20,6 +21,8 @@ type BaseServiceInterface interface {
 	Service_Register(srv *grpc.Server)
 	Service_AddEndpoint(endpoint EndpointInterface)
 	Service_Start()
+	Service_Stop()
+	Service_State() State
 	// Adds a new wrapper to the wrapper chain
 	// AddGrpcMessageWrapper(GrpcMessageWrapperFn)
 }

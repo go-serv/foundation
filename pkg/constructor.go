@@ -2,10 +2,6 @@ package pkg
 
 import "github.com/go-serv/service/internal/service"
 
-type NetworkServiceInterface interface {
-	service.NetworkServiceInterface
-}
-
 func NewNetworkService(name string, cfg ServiceConfig) NetworkServiceInterface {
 	return service.NewNetworkService(name, cfg)
 }
