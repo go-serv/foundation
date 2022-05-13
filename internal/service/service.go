@@ -18,12 +18,6 @@ const (
 	StateSuspended // service is running but incoming requests are not being processed
 )
 
-const Foo = 1
-
-func (s State) String() string {
-	return [...]string{"StateInit", "Running", "StopInProgress", "Stopped", "Suspended"}[s]
-}
-
 type baseService struct {
 	// Service name in dot notation
 	name           string

@@ -10,7 +10,7 @@ import (
 const (
 	tcp4Network = "tcp4"
 	tcp6Network = "tcp6"
-	unixSocket  = "unix"
+	udsNetwork  = "unixpacket"
 )
 
 type endpoint struct {
@@ -71,7 +71,7 @@ func (e *tcpEndpoint) tcpServe() error {
 	return nil
 }
 
-func (e *unixSocketEndpoint) unixServe() error {
+func (e *localEndpoint) unixServe() error {
 	e.serveInit()
 	if err := e.grpcSrv.Serve(e.lis); err != nil {
 		return err
@@ -103,8 +103,13 @@ func (e *tcp6Endpoint) Listen() error {
 }
 
 //
-// Unix domain socket endpoint
+// Local endpoint
 //
-type unixSocketEndpoint struct {
+type localEndpoint struct {
 	endpoint
+	pathname string
+}
+
+func (e *localEndpoint) Address() string {
+	return e.pathname
 }

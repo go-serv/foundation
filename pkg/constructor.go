@@ -13,3 +13,7 @@ func NewTcp4Endpoint(svc NetworkServiceInterface, hostname string, port int) ser
 func NewTcp6Endpoint(svc NetworkServiceInterface, hostname string, port int) service.EndpointInterface {
 	return service.NewTcp6Endpoint(svc, hostname, port)
 }
+
+func NewLocalEndpoint(svc LocalServiceInterface, pathname string) service.EndpointInterface {
+	return service.NewLocalEndpoint(svc, pathname)
+}
