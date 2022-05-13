@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  go-serv_sample:
+    image: utils_protobuf-compiler
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=1000
+      - PROTOBUF_GO_IMPORT_PREFIX=github.com/go-serv/service/internal/autogen/proto
+    volumes:
+      - type: bind
+        source: ./internal/autogen/proto
+        target: /app/proto-compiled # default output directory for protoc
+      - type: bind
+        source: ./api
+        target: /app/api # default directory for proto files
