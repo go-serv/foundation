@@ -40,3 +40,8 @@ func NewTcp4Endpoint(s NetworkServiceInterface, hostname string, port int) *tcp4
 	e := &tcp4Endpoint{NewTcpEndpoint(s, hostname, port)}
 	return e
 }
+
+func NewTcp6Endpoint(s NetworkServiceInterface, hostname string, port int) *tcp6Endpoint {
+	e := &tcp6Endpoint{NewTcpEndpoint(s, hostname, port), nil}
+	return e
+}

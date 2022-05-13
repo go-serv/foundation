@@ -21,9 +21,12 @@ func (s *sampleService) Service_Register(srv *grpc.Server) {
 
 func TestNetworkServiceStart(t *testing.T) {
 	svc := &sampleService{}
+	port := 4411
 	svc.NetworkServiceInterface = pkg.NewNetworkService(serviceName, nil)
-	endpoint := pkg.NewTcp4Endpoint(svc, "localhost", 9090)
-	svc.Service_AddEndpoint(endpoint)
+	e4 := pkg.NewTcp4Endpoint(svc, "localhost", port)
+	e6 := pkg.NewTcp6Endpoint(svc, "[::1]", port)
+	svc.Service_AddEndpoint(e4)
+	svc.Service_AddEndpoint(e6)
 	time.AfterFunc(time.Millisecond*10, func() {
 		svc.Service_Stop()
 	})

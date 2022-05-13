@@ -32,20 +32,20 @@ type tcpEndpoint struct {
 	tlsCfg        *tls.Config
 }
 
-func (e *tcpEndpoint) address() string {
+func (e *tcpEndpoint) Address() string {
 	addr := e.hostname + ":" + strconv.Itoa(e.port)
 	return addr
 }
 
 func (e *tcpEndpoint) listen(network string) error {
 	if !e.httpTransport {
-		lis, err := net.Listen(network, e.address())
+		lis, err := net.Listen(network, e.Address())
 		if err != nil {
 			return err
 		}
 		e.lis = lis
 	} else {
-		lis, err := tls.Listen(network, e.address(), e.tlsCfg)
+		lis, err := tls.Listen(network, e.Address(), e.tlsCfg)
 		if err != nil {
 			return err
 		}

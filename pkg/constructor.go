@@ -9,3 +9,7 @@ func NewNetworkService(name string, cfg ServiceConfig) NetworkServiceInterface {
 func NewTcp4Endpoint(svc NetworkServiceInterface, hostname string, port int) service.EndpointInterface {
 	return service.NewTcp4Endpoint(svc, hostname, port)
 }
+
+func NewTcp6Endpoint(svc NetworkServiceInterface, hostname string, port int) service.EndpointInterface {
+	return service.NewTcp6Endpoint(svc, hostname, port)
+}

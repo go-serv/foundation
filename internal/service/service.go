@@ -3,6 +3,8 @@ package service
 import (
 	"fmt"
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/internal/logger"
+	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 )
 
@@ -44,6 +46,10 @@ func (s *baseService) Service_AddEndpoint(e EndpointInterface) {
 	s.endpoints = append(s.endpoints, e)
 }
 
+func (s *baseService) Service_Name(short bool) string {
+	return s.name
+}
+
 func (s *baseService) Service_State() State {
 	return s.state
 }
@@ -61,7 +67,9 @@ func (s *baseService) Service_Start() {
 
 func (s *baseService) Service_Stop() {
 	s.state = StateStopInProgress
+	info := job.Logger(logger.Info)
 	for _, e := range s.endpoints {
+		info("stopping %s on %s", s.Service_Name(false), e.Address())
 		e.GrpcServer().GracefulStop()
 	}
 	s.state = StateStopped
