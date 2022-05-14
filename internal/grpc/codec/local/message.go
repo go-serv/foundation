@@ -1,4 +1,4 @@
-package shm_ipc
+package local
 
 type message struct {
 }

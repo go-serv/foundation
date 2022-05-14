@@ -1,4 +1,4 @@
-package shm_ipc
+package local
 
 type sharedMemInfo struct {
 	addr uintptr

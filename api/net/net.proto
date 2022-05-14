@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "go_serv.proto";
+import "net/crypto_nonce.proto";
+
+package go_serv.net;
+
+service NetService {
+  // Retrieves a crypto nonce that will be used for encryption in the following session calls.
+  rpc GetCryptoNonce(CryptoNonce.Request) returns (CryptoNonce.Response) {
+    option (.go_serv.new_session) = 60;
+  }
+}
