@@ -3,6 +3,7 @@ package service
 import (
 	"crypto/tls"
 	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
+	"github.com/go-serv/service/internal/grpc/server_md"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"
@@ -15,10 +16,12 @@ const (
 )
 
 type endpoint struct {
-	service        BaseServiceInterface
-	lis            net.Listener
-	grpcSrv        *grpc.Server
-	grpcSrvOptions []grpc.ServerOption
+	service                   BaseServiceInterface
+	lis                       net.Listener
+	grpcSrv                   *grpc.Server
+	grpcSrvOptions            []grpc.ServerOption
+	grpcSrvUnaryInterceptors  []grpc.UnaryServerInterceptor
+	grpcSrvStreamInterceptors []grpc.StreamServerInterceptor
 }
 
 func (e *endpoint) GrpcServer() *grpc.Server {
@@ -56,6 +59,12 @@ func (e *tcpEndpoint) listen(network string) error {
 }
 
 func (e *endpoint) serveInit() {
+	// Build unary interceptors chain
+	e.grpcSrvUnaryInterceptors = append(e.grpcSrvUnaryInterceptors, server_md.PostUnaryInterceptor())
+	e.grpcSrvUnaryInterceptors = append([]grpc.UnaryServerInterceptor{server_md.PreUnaryInterceptor()},
+		e.grpcSrvUnaryInterceptors...)
+
+	e.grpcSrvOptions = append(e.grpcSrvOptions, grpc.ChainUnaryInterceptor(e.grpcSrvUnaryInterceptors...))
 	e.grpcSrv = grpc.NewServer(e.grpcSrvOptions...)
 	e.service.Service_Register(e.grpcSrv)
 }

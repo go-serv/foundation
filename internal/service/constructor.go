@@ -1,6 +1,8 @@
 package service
 
-import job "github.com/AgentCoop/go-work"
+import (
+	job "github.com/AgentCoop/go-work"
+)
 
 func newBaseService(name string, cfg ConfigInterface) baseService {
 	s := baseService{name: name, cfg: cfg}

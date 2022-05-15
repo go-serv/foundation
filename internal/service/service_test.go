@@ -23,11 +23,11 @@ func TestNetworkServiceStart(t *testing.T) {
 	svc.NetworkServiceInterface = pkg.NewNetworkService("foo", nil)
 	port := 4411
 	e4 := pkg.NewTcp4Endpoint(svc, "localhost", port)
-	//e6 := pkg.NewTcp6Endpoint(svc, "[::1]", port)
-	//local := pkg.NewLocalEndpoint(svc, svc.Service_Name(true))
+	e6 := pkg.NewTcp6Endpoint(svc, "[::1]", port)
+	local := pkg.NewLocalEndpoint(svc, svc.Service_Name(true))
 	svc.Service_AddEndpoint(e4)
-	//svc.Service_AddEndpoint(e6)
-	//svc.Service_AddEndpoint(local)
+	svc.Service_AddEndpoint(e6)
+	svc.Service_AddEndpoint(local)
 	time.AfterFunc(time.Millisecond*10, func() {
 		svc.Service_Stop()
 	})
