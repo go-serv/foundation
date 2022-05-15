@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	job "github.com/AgentCoop/go-work"
+	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/internal/logger"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
@@ -32,8 +33,9 @@ type LocalService struct {
 	baseService
 }
 
-type NetworkService struct {
+type networkService struct {
 	baseService
+	net_svc.NetParcelServer
 }
 
 func (s *baseService) Service_AddEndpoint(e EndpointInterface) {
@@ -67,6 +69,10 @@ func (s *baseService) Service_Stop() {
 		e.GrpcServer().GracefulStop()
 	}
 	s.state = StateStopped
+}
+
+func (s *networkService) NetParcel() net_svc.NetParcelServer {
+	return s.NetParcelServer
 }
 
 //

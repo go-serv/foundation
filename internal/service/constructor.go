@@ -15,7 +15,7 @@ func NewLocalService(name string, cfg ConfigInterface) LocalServiceInterface {
 }
 
 func NewNetworkService(name string, cfg ConfigInterface) NetworkServiceInterface {
-	s := &NetworkService{newBaseService(name, cfg)}
+	s := &networkService{newBaseService(name, cfg), new(netParcel)}
 	return s
 }
 

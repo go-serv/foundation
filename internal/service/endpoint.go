@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/tls"
+	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"
@@ -61,6 +62,8 @@ func (e *endpoint) serveInit() {
 
 func (e *tcpEndpoint) tcpServe() error {
 	e.serveInit()
+	// Register go_srv.net.NetService
+	net_svc.RegisterNetParcelServer(e.GrpcServer(), e.service.(NetworkServiceInterface).NetParcel())
 	if !e.httpTransport {
 		if err := e.grpcSrv.Serve(e.lis); err != nil {
 			return err

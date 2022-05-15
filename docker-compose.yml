@@ -13,4 +13,4 @@ services:
         target: /app/proto-compiled # default output directory for protoc
       - type: bind
         source: ./api
-        target: /app/api # default directory for proto files
+        target: /share # default directory for proto files

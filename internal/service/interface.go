@@ -2,6 +2,7 @@ package service
 
 import (
 	job "github.com/AgentCoop/go-work"
+	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
 	"google.golang.org/grpc"
 )
 
@@ -35,4 +36,5 @@ type LocalServiceInterface interface {
 
 type NetworkServiceInterface interface {
 	BaseServiceInterface
+	NetParcel() net_svc.NetParcelServer
 }
