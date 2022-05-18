@@ -10,4 +10,14 @@ service NetParcel {
   rpc GetCryptoNonce(CryptoNonce.Request) returns (CryptoNonce.Response) {
     option (.go_serv.new_session) = 60;
   }
+
+  rpc TestStream(stream CryptoNonce.Request) returns (stream CryptoNonce.Response) {
+    option (.go_serv.new_session) = 60;
+
+  }
+
+  rpc ClientStream(stream CryptoNonce.Request) returns (CryptoNonce.Response) {
+    option (.go_serv.new_session) = 60;
+
+  }
 }
