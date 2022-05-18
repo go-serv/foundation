@@ -10,9 +10,9 @@ func TestStartAndStop(t *testing.T) {
 	srv := pkg.NewNetServer()
 	port := 4411
 	e4 := pkg.NewTcp4Endpoint("localhost", port)
-	//e6 := pkg.NewTcp6Endpoint("[::1]", port)
+	e6 := pkg.NewTcp6Endpoint("[::1]", port)
 	srv.AddEndpoint(e4)
-	//srv.AddEndpoint(e6)
+	srv.AddEndpoint(e6)
 	time.AfterFunc(time.Millisecond*50, func() {
 		srv.Stop()
 	})

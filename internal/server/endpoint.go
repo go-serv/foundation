@@ -3,23 +3,21 @@ package server
 import (
 	"crypto/tls"
 	rt "github.com/go-serv/service/internal/runtime"
-	"github.com/go-serv/service/internal/service"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"
 )
 
 type endpoint struct {
-	Srv                       serverInterface
-	Lis                       net.Listener
+	srv                       serverInterface
+	lis                       net.Listener
 	grpcSrv                   *grpc.Server
-	GrpcSrvOptions            []grpc.ServerOption
 	GrpcSrvUnaryInterceptors  []grpc.UnaryServerInterceptor
 	GrpcSrvStreamInterceptors []grpc.StreamServerInterceptor
 }
 
-func (e *endpoint) WithServer(s serverInterface) {
-	e.Srv = s
+func (e *endpoint) withServer(s serverInterface) {
+	e.srv = s
 }
 
 func (e *endpoint) GrpcServer() *grpc.Server {
@@ -28,7 +26,6 @@ func (e *endpoint) GrpcServer() *grpc.Server {
 
 type tcpEndpoint struct {
 	endpoint
-	srv           service.NetworkServiceInterface
 	hostname      string
 	port          int
 	httpTransport bool
@@ -36,13 +33,9 @@ type tcpEndpoint struct {
 }
 
 func (e *tcpEndpoint) serveInit() {
-	// Build unary interceptors chain
-	//e.GrpcSrvUnaryInterceptors = append(e.GrpcSrvUnaryInterceptors, server_md.PostUnaryInterceptor())
-	//e.GrpcSrvUnaryInterceptors = append([]grpc.UnaryServerInterceptor{server_md.PreUnaryInterceptor()},
-	//	e.GrpcSrvUnaryInterceptors...)
-	//
-	//e.GrpcSrvOptions = append(e.GrpcSrvOptions, grpc.ChainUnaryInterceptor(e.GrpcSrvUnaryInterceptors...))
-	e.grpcSrv = grpc.NewServer(e.GrpcSrvOptions...)
+	// Create a new gRPC server
+	e.grpcSrv = grpc.NewServer(e.srv.GrpcServerOptions()...)
+	// Register all network gRPC services
 	for _, svc := range rt.Runtime().NetworkServices() {
 		svc.Service_Register(e.grpcSrv)
 	}
@@ -60,13 +53,13 @@ func (e *tcpEndpoint) listen(network string) error {
 		if err != nil {
 			return err
 		}
-		e.Lis = lis
+		e.lis = lis
 	} else {
 		lis, err := tls.Listen(network, e.Address(), e.tlsCfg)
 		if err != nil {
 			return err
 		}
-		e.Lis = lis
+		e.lis = lis
 	}
 	return nil
 }
@@ -74,7 +67,7 @@ func (e *tcpEndpoint) listen(network string) error {
 func (e *tcpEndpoint) tcpServe() error {
 	e.serveInit()
 	if !e.httpTransport {
-		if err := e.grpcSrv.Serve(e.Lis); err != nil {
+		if err := e.grpcSrv.Serve(e.lis); err != nil {
 			return err
 		}
 	} else {
@@ -106,17 +99,6 @@ func (e *tcp6Endpoint) Listen() error {
 	return e.listen(Tcp6Network)
 }
 
-func (e *endpoint) serveInit() {
-	// Build unary interceptors chain
-	//e.GrpcSrvUnaryInterceptors = append(e.GrpcSrvUnaryInterceptors, server_md.PostUnaryInterceptor())
-	//e.GrpcSrvUnaryInterceptors = append([]grpc.UnaryServerInterceptor{server_md.PreUnaryInterceptor()},
-	//	e.GrpcSrvUnaryInterceptors...)
-	//
-	//e.GrpcSrvOptions = append(e.GrpcSrvOptions, grpc.ChainUnaryInterceptor(e.GrpcSrvUnaryInterceptors...))
-	//e.grpcSrv = grpc.NewServer(e.GrpcSrvOptions...)
-	//e.service.Service_Register(e.grpcSrv)
-}
-
 //func (e *endpoint) netServeInit() {
 //	for _, svc := range rt.Runtime().NetworkServices() {
 //		svc.Service_Register(e.grpcSrv)
@@ -125,7 +107,7 @@ func (e *endpoint) serveInit() {
 //
 //func (e *localEndpoint) unixServe() error {
 //	e.serveInit()
-//	if err := e.grpcSrv.Serve(e.Lis); err != nil {
+//	if err := e.grpcSrv.Serve(e.lis); err != nil {
 //		return err
 //	}
 //	return nil
@@ -134,11 +116,11 @@ func (e *endpoint) serveInit() {
 //
 // Local endpoint
 //
-//type localEndpoint struct {
-//	endpoint
-//	pathname string
-//}
-//
-//func (e *localEndpoint) Address() string {
-//	return e.pathname
-//}
+type localEndpoint struct {
+	endpoint
+	pathname string
+}
+
+func (e *localEndpoint) Address() string {
+	return e.pathname
+}

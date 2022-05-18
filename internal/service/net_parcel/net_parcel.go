@@ -13,8 +13,8 @@ import (
 var Name = net_svc.NetParcel_ServiceDesc.ServiceName
 
 type netParcel struct {
-	net_svc.NetParcelServer
 	service.NetworkServiceInterface
+	net_svc.NetParcelServer
 }
 
 func (s *netParcel) Service_Register(srv *grpc.Server) {

@@ -5,88 +5,83 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
 	"reflect"
-	"strings"
 )
 
-type methodExtension struct {
-}
+type (
+	protoExtMap map[*protoimpl.ExtensionInfo]*protoExtValue
+	methodMap   map[string][]*methodReflection
+)
 
 type serviceReflection struct {
 	protoreflect.ServiceDescriptor
-	methodOptionsMap methodOptionsMap
-	serviceOptions   serviceOptions
+	protoExts       protoExtMap
+	methodProtoExts protoExtMap
+	methods         methodMap
 }
 
-type optValue struct {
+type methodReflection struct {
+	name      string
+	shortName string
+	protoExts protoExtMap
+}
+
+func (r *serviceReflection) AddServiceProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
+	v := &protoExtValue{}
+	v.setValue(defaultValue)
+	r.protoExts[ext] = v
+}
+
+func (r *serviceReflection) AddMethodProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
+	v := &protoExtValue{}
+	v.setValue(defaultValue)
+	r.methodProtoExts[ext] = v
+}
+
+func retrieveExtValues(m proto.Message, extMap protoExtMap) {
+	for ext, val := range extMap {
+		if !proto.HasExtension(m, ext) {
+			continue
+		}
+		v := proto.GetExtension(m, ext)
+		val.isSet = true
+		val.setValue(v)
+	}
+}
+
+func (r *serviceReflection) Populate() {
+	m := r.ServiceDescriptor.Options()
+	retrieveExtValues(m.(proto.Message), r.protoExts)
+	// Methods
+	// Populate methods map
+	methods := r.ServiceDescriptor.Methods()
+	for i := 0; i < methods.Len(); i++ {
+		descriptor := methods.Get(i)
+		mReflect := NewMethodReflection(descriptor, r.methodProtoExts)
+		retrieveExtValues(descriptor.Options(), mReflect.protoExts)
+	}
+}
+
+type protoExtValue struct {
 	isSet bool
 	val   interface{}
 }
 
-func (o *optValue) setValue(v interface{}) {
-	o.isSet = true
+func (o *protoExtValue) setValue(v interface{}) {
 	reflect.ValueOf(o.val).Elem().Set(reflect.ValueOf(v))
 }
 
-func (o *optValue) WasSet() bool {
+func (o *protoExtValue) WasSet() bool {
 	return o.isSet
 }
 
-func (o *optValue) Value() interface{} {
+func (o *protoExtValue) Value() interface{} {
 	return o.val
 }
 
-type (
-	optionsMap       map[*protoimpl.ExtensionInfo]*optValue
-	serviceOptions   optionsMap
-	methodOptionsMap map[string]optionsMap
-)
-
-func (o optionsMap) OverrideIfNotSet(v interface{}, targetExt *protoimpl.ExtensionInfo) {
+func (o protoExtMap) OverrideIfNotSet(v interface{}, targetExt *protoimpl.ExtensionInfo) {
 	for ext, val := range o {
 		if ext == targetExt && !val.isSet {
 			val.setValue(v)
-		}
-	}
-}
-
-func (m serviceOptions) AddItem(ext *protoimpl.ExtensionInfo, v interface{}) {
-	m[ext] = &optValue{false, v}
-}
-
-func (m methodOptionsMap) AddItem(methodName string, ext *protoimpl.ExtensionInfo, v interface{}) {
-	m[methodName][ext] = &optValue{false, v}
-}
-
-func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts serviceOptions) {
-	m := d.Options()
-	for ext, _ := range svcOpts {
-		opt := svcOpts[ext]
-		if !proto.HasExtension(m.(proto.Message), ext) {
-			continue
-		}
-		v := proto.GetExtension(m.(proto.Message), ext)
-		opt.setValue(v)
-	}
-}
-
-func (d ServiceDescriptor) FetchMethodsCustomOptions(methodOpts methodOptionsMap) {
-	ml := d.Methods().Len()
-	for i := 0; i < ml; i++ {
-		m := d.Methods().Get(i)
-		fullName := string(m.FullName())
-		parts := strings.Split(fullName, ".")
-		shortName := parts[len(parts)-1]
-		desc := m.Options()
-		if _, has := methodOpts[shortName]; !has {
-			continue
-		}
-		for ext, opt := range methodOpts[shortName] {
-			m := desc.(proto.Message)
-			if !proto.HasExtension(m, ext) {
-				continue
-			}
-			v := proto.GetExtension(m, ext)
-			opt.setValue(v)
 		}
 	}
 }

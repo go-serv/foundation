@@ -3,6 +3,7 @@ package server
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/service/internal/logger"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -14,6 +15,7 @@ const (
 type Server struct {
 	endpoints []EndpointInterface
 	grpcJob   job.JobInterface
+	grpcOpts  []grpc.ServerOption
 }
 
 type localServer struct {
@@ -21,8 +23,24 @@ type localServer struct {
 }
 
 func (s *Server) AddEndpoint(e EndpointInterface) {
-	e.WithServer(s)
+	e.withServer(s)
 	s.endpoints = append(s.endpoints, e)
+}
+
+func (s *Server) Endpoints() []EndpointInterface {
+	out := make([]EndpointInterface, 1)
+	for _, e := range s.endpoints {
+		out = append(out, e)
+	}
+	return out
+}
+
+func (s *Server) AddGrpcServerOption(opt grpc.ServerOption) {
+	s.grpcOpts = append(s.grpcOpts, opt)
+}
+
+func (s *Server) GrpcServerOptions() []grpc.ServerOption {
+	return s.grpcOpts
 }
 
 func (s *Server) Start() {

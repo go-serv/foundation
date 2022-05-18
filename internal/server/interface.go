@@ -10,11 +10,14 @@ type EndpointInterface interface {
 	Listen() error
 	ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	GrpcServer() *grpc.Server
-	WithServer(serverInterface)
+	withServer(serverInterface)
 }
 
 type serverInterface interface {
+	AddGrpcServerOption(opt grpc.ServerOption)
+	GrpcServerOptions() []grpc.ServerOption
 	AddEndpoint(endpoint EndpointInterface)
+	Endpoints() []EndpointInterface
 	Start()
 	Stop()
 }

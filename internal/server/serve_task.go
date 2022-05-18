@@ -48,7 +48,7 @@ func (e *tcp6Endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Fin
 		task.Assert(err)
 	}
 	run := func(task job.TaskInterface) {
-		//e.serverStartedInfo(e.Address())
+		serverStartedInfo(e.Address())
 		err := e.tcpServe()
 		task.Assert(err)
 		task.Done()

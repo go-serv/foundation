@@ -19,11 +19,11 @@ const (
 
 type baseService struct {
 	// Service name in dot notation
-	name  string
-	state State
-	cfg   ConfigInterface
-
-	protoExts []*protoExt
+	name             string
+	state            State
+	cfg              ConfigInterface
+	methodProtoExts  []*methodProtoExt
+	serviceProtoExts []*serviceProtoExt
 	mustBeImplemented
 }
 
@@ -51,8 +51,20 @@ type serviceProtoExt struct {
 	protoExt
 }
 
-func (s *baseService) addProtoExtension(info *protoimpl.ExtensionInfo, defaultVal interface{}) {
-	s.protoExts = append(s.protoExts, &protoExt{info, defaultVal})
+func (s *baseService) Service_AddMethodProtoExtension(info *protoimpl.ExtensionInfo, defaultVal interface{}) {
+	s.methodProtoExts = append(s.methodProtoExts, &methodProtoExt{protoExt{info, defaultVal}})
+}
+
+func (s *baseService) Service_AddServiceProtoExtension(info *protoimpl.ExtensionInfo, defaultVal interface{}) {
+	s.serviceProtoExts = append(s.serviceProtoExts, &serviceProtoExt{protoExt{info, defaultVal}})
+}
+
+func (s *baseService) Service_ServiceProtoExtensions() []*serviceProtoExt {
+	return s.serviceProtoExts
+}
+
+func (s *baseService) Service_MethodProtoExtensions() []*methodProtoExt {
+	return s.methodProtoExts
 }
 
 func (s *baseService) Service_Name(short bool) string {
@@ -62,31 +74,6 @@ func (s *baseService) Service_Name(short bool) string {
 func (s *baseService) Service_State() State {
 	return s.state
 }
-
-//func (s *baseService) Service_Start() {
-//	if len(s.endpoints) == 0 {
-//		panic("no service endpoints have been specified")
-//	}
-//	// Start listening on baseService endpoints
-//	for _, e := range s.endpoints {
-//		s.grpcServersJob.AddTask(e.ServeTask)
-//	}
-//	<-s.grpcServersJob.Run()
-//}
-
-//func (s *baseService) Service_Stop() {
-//	s.state = StateStopInProgress
-//	info := job.Logger(logger.Info)
-//	for _, e := range s.endpoints {
-//		info("stopping %s on %s", s.Service_Name(false), e.Address())
-//		e.GrpcServer().GracefulStop()
-//	}
-//	s.state = StateStopped
-//}
-
-//func (s *networkService) NetParcel() net_svc.NetParcelServer {
-//	return s.NetParcelServer
-//}
 
 //
 // Methods to implement
@@ -101,5 +88,3 @@ func (mustBeImplemented) panic(methodName string) {
 func (m mustBeImplemented) Service_Register(srv *grpc.Server) {
 	m.panic("Service_Register")
 }
-
-//
