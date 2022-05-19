@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"github.com/go-serv/service/internal/ancillary"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -24,7 +24,7 @@ type baseService struct {
 	cfg              ConfigInterface
 	methodProtoExts  []*methodProtoExt
 	serviceProtoExts []*serviceProtoExt
-	mustBeImplemented
+	ancillary.MethodMustBeImplemented
 }
 
 type localService struct {
@@ -78,13 +78,7 @@ func (s *baseService) Service_State() State {
 //
 // Methods to implement
 //
-type mustBeImplemented struct {
-}
 
-func (mustBeImplemented) panic(methodName string) {
-	panic(fmt.Sprintf("method service.%s must be implemented", methodName))
-}
-
-func (m mustBeImplemented) Service_Register(srv *grpc.Server) {
-	m.panic("Service_Register")
+func (b *baseService) Service_Register(srv *grpc.Server) {
+	b.MethodMustBeImplemented.Panic()
 }
