@@ -1,7 +1,9 @@
 package request
 
 import (
+	"github.com/go-serv/service/internal/ancillary"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -17,4 +19,9 @@ type unaryRequest struct {
 
 type unaryNetRequest struct {
 	unaryRequest
+}
+
+func (r *request) MethodName() string {
+	name, _ := grpc.Method(r.Context)
+	return ancillary.GrpcDotNotation(name).MethodName()
 }

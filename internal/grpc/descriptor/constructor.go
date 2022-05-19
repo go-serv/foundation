@@ -2,22 +2,26 @@ package descriptor
 
 import (
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"reflect"
 )
 
-func NewMethodReflection(desc protoreflect.MethodDescriptor, protoExts protoExtMap) *methodReflection {
-	r := new(methodReflection)
-	r.name = string(desc.FullName())
-	r.shortName = string(desc.Name())
+func NewMethodDescriptor(desc protoreflect.MethodDescriptor, protoExts protoExtMap) *methodDescriptor {
+	r := new(methodDescriptor)
+	r.MethodDescriptor = desc
+	r.protoExts = protoExts
+	r.protoExts.populate(desc.Options().(proto.Message))
 	return r
 }
 
-func NewServiceReflection(svcName string) *serviceDescriptor {
+func NewServiceDescriptor(svcName string) *serviceDescriptor {
 	r := new(serviceDescriptor)
-	r.methods = make(methodMap)
 	r.ServiceDescriptor = newServiceDescriptor(svcName)
+	r.protoExts = make(protoExtMap)
+	r.methodProtoExts = make(protoExtMap)
+	r.methods = make(methodMap)
 	return r
 }
 
@@ -29,7 +33,7 @@ func newServiceDescriptor(svcFullName string) protoreflect.ServiceDescriptor {
 	}
 	sd, ok := desc.(protoreflect.ServiceDescriptor)
 	if !ok {
-		got, wanted := reflect.TypeOf(sd).String(), "protoreflect.ServiceDescriptor"
+		got, wanted := reflect.TypeOf(sd).String(), "protoreflect.ServiceDescriptorInterface"
 		panic(fmt.Errorf("protobuf: got %s, wanted %s", got, wanted))
 	}
 	return sd

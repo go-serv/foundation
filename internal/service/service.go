@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/autogen/proto/go_serv"
+	"github.com/go-serv/service/internal/grpc/descriptor"
 	"github.com/go-serv/service/internal/grpc/request"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
@@ -20,11 +22,10 @@ const (
 
 type baseService struct {
 	// Service name in dot notation
-	name             string
-	state            State
-	cfg              ConfigInterface
-	methodProtoExts  []*methodProtoExt
-	serviceProtoExts []*serviceProtoExt
+	name  string
+	state State
+	cfg   ConfigInterface
+	sd    descriptor.ServiceDescriptorInterface
 	ancillary.MethodMustBeImplemented
 }
 
@@ -36,36 +37,16 @@ type networkService struct {
 	baseService
 }
 
-//
-// Protobuf extensions
-//
-type protoExt struct {
-	info       *protoimpl.ExtensionInfo
-	defaultVal interface{}
+func (s *baseService) Service_Descriptor() descriptor.ServiceDescriptorInterface {
+	return s.sd
 }
 
-type methodProtoExt struct {
-	protoExt
+func (s *baseService) Service_AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
+	s.sd.AddMethodProtoExt(ext)
 }
 
-type serviceProtoExt struct {
-	protoExt
-}
-
-func (s *baseService) Service_AddMethodProtoExtension(info *protoimpl.ExtensionInfo, defaultVal interface{}) {
-	s.methodProtoExts = append(s.methodProtoExts, &methodProtoExt{protoExt{info, defaultVal}})
-}
-
-func (s *baseService) Service_AddServiceProtoExtension(info *protoimpl.ExtensionInfo, defaultVal interface{}) {
-	s.serviceProtoExts = append(s.serviceProtoExts, &serviceProtoExt{protoExt{info, defaultVal}})
-}
-
-func (s *baseService) Service_ServiceProtoExtensions() []*serviceProtoExt {
-	return s.serviceProtoExts
-}
-
-func (s *baseService) Service_MethodProtoExtensions() []*methodProtoExt {
-	return s.methodProtoExts
+func (s *baseService) Service_AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
+	s.sd.AddServiceProtoExt(ext)
 }
 
 func (s *baseService) Service_Name(short bool) string {
@@ -81,6 +62,20 @@ func (s *baseService) Service_State() State {
 //
 func (b *baseService) Service_Register(srv *grpc.Server) {
 	b.MethodMustBeImplemented.Panic()
+}
+
+func (b *networkService) Service_RequestNewSession(req request.RequestInterface) int32 {
+	mDesc := b.sd.FindMethodDescriptorByName(req.MethodName())
+	if mDesc == nil {
+		return 0
+	} else {
+		v, has := mDesc.Get(go_serv.E_NetNewSession)
+		if !has {
+			return 0
+		} else {
+			return v.(int32)
+		}
+	}
 }
 
 func (b *baseService) Service_OnNewSession(req request.RequestInterface) error {

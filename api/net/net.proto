@@ -8,6 +8,6 @@ package go_serv.net;
 service NetParcel {
   // Retrieves a crypto nonce that will be used for encryption in the following session calls.
   rpc GetCryptoNonce(CryptoNonce.Request) returns (CryptoNonce.Response) {
-    option (.go_serv.new_session) = 60;
+    option (.go_serv.net_new_session) = 60;
   }
 }

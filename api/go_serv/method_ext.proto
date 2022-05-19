@@ -12,13 +12,10 @@ extend google.protobuf.MethodOptions {
   bool streamable = 60102;
 
   // Open a new session with specified session lifetime in seconds
-  uint32 new_session = 60103;
+  int32 net_new_session = 60103;
 
   // Ask server to close an opened session
-  bool close_session = 60104;
-
-  // Stick to the session opened by a preceding call
-  bool session_sticky = 60105;
+  bool net_close_session = 60104;
 
   // Call timeout in milliseconds
   uint32 timeout = 60106;

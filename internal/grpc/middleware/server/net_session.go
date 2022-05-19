@@ -10,7 +10,12 @@ import (
 func NewNetSessionHandler() *mw_group.GroupItem {
 	reqHandler := func(r request.RequestInterface, svc interface{}) error {
 		netSvc := svc.(service.NetworkServiceInterface)
-		return netSvc.Service_OnNewSession(r)
+		timeout := netSvc.Service_RequestNewSession(r)
+		if timeout != 0 { // Create new session
+			netSvc.Service_OnNewSession(r)
+			return nil
+		}
+		return nil
 	}
 	resHandler := func(r response.ResponseInterface, svc interface{}) error {
 		return nil
