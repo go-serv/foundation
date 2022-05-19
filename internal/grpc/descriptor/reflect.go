@@ -1,4 +1,4 @@
-package reflect
+package descriptor
 
 import (
 	"google.golang.org/protobuf/proto"
@@ -12,7 +12,7 @@ type (
 	methodMap   map[string][]*methodReflection
 )
 
-type serviceReflection struct {
+type serviceDescriptor struct {
 	protoreflect.ServiceDescriptor
 	protoExts       protoExtMap
 	methodProtoExts protoExtMap
@@ -25,13 +25,13 @@ type methodReflection struct {
 	protoExts protoExtMap
 }
 
-func (r *serviceReflection) AddServiceProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
+func (r *serviceDescriptor) AddServiceProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
 	v := &protoExtValue{}
 	v.setValue(defaultValue)
 	r.protoExts[ext] = v
 }
 
-func (r *serviceReflection) AddMethodProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
+func (r *serviceDescriptor) AddMethodProtoExt(ext *protoimpl.ExtensionInfo, defaultValue interface{}) {
 	v := &protoExtValue{}
 	v.setValue(defaultValue)
 	r.methodProtoExts[ext] = v
@@ -48,7 +48,7 @@ func retrieveExtValues(m proto.Message, extMap protoExtMap) {
 	}
 }
 
-func (r *serviceReflection) Populate() {
+func (r *serviceDescriptor) Populate() {
 	m := r.ServiceDescriptor.Options()
 	retrieveExtValues(m.(proto.Message), r.protoExts)
 	// Methods

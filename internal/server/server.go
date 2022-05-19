@@ -2,6 +2,7 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
 	"github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 )
@@ -15,6 +16,7 @@ const (
 type Server struct {
 	endpoints []EndpointInterface
 	mainJob   job.JobInterface
+	mwGroup   mw_group.MiddlewareGroupInterface
 	grpcOpts  []grpc.ServerOption
 }
 
@@ -56,6 +58,14 @@ func (s *Server) Start() {
 
 func (s *Server) MainJob() job.JobInterface {
 	return s.mainJob
+}
+
+func (s *Server) MiddlewareGroup() mw_group.MiddlewareGroupInterface {
+	return s.mwGroup
+}
+
+func (s *Server) WithMiddlewareGroup(mw mw_group.MiddlewareGroupInterface) {
+	s.mwGroup = mw
 }
 
 func (s *Server) Stop() {

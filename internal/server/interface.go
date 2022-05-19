@@ -2,6 +2,7 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
 	"google.golang.org/grpc"
 )
 
@@ -21,6 +22,8 @@ type serverInterface interface {
 	Start()
 	Stop()
 	MainJob() job.JobInterface
+	MiddlewareGroup() mw_group.MiddlewareGroupInterface
+	WithMiddlewareGroup(mg mw_group.MiddlewareGroupInterface)
 }
 
 type NetworkServerInterface interface {

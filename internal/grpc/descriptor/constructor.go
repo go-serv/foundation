@@ -1,4 +1,4 @@
-package reflect
+package descriptor
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ func NewMethodReflection(desc protoreflect.MethodDescriptor, protoExts protoExtM
 	return r
 }
 
-func NewServiceReflection(svcName string) *serviceReflection {
-	r := new(serviceReflection)
+func NewServiceReflection(svcName string) *serviceDescriptor {
+	r := new(serviceDescriptor)
 	r.methods = make(methodMap)
 	r.ServiceDescriptor = newServiceDescriptor(svcName)
 	return r

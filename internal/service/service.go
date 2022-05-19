@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/grpc/request"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -78,7 +79,11 @@ func (s *baseService) Service_State() State {
 //
 // Methods to implement
 //
-
 func (b *baseService) Service_Register(srv *grpc.Server) {
 	b.MethodMustBeImplemented.Panic()
+}
+
+func (b *baseService) Service_OnNewSession(req request.RequestInterface) error {
+	b.MethodMustBeImplemented.Panic()
+	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/rand"
 	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
+	"github.com/go-serv/service/internal/grpc/request"
 	"github.com/go-serv/service/internal/service"
 	"google.golang.org/grpc"
 )
@@ -20,6 +21,10 @@ type netParcel struct {
 
 func (s *netParcel) Service_Register(srv *grpc.Server) {
 	net_svc.RegisterNetParcelServer(srv, s)
+}
+
+func (s *netParcel) Service_OnNewSession(req request.RequestInterface) error {
+	return nil
 }
 
 func (s *netParcel) GetCryptoNonce(ctx context.Context, req *net_svc.CryptoNonce_Request) (*net_svc.CryptoNonce_Response, error) {

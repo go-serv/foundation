@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/go-serv/service/internal/grpc/request"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -31,4 +32,5 @@ type LocalServiceInterface interface {
 
 type NetworkServiceInterface interface {
 	baseServiceInterface
+	Service_OnNewSession(req request.RequestInterface) error
 }
