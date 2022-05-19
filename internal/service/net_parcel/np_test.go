@@ -33,6 +33,13 @@ func setup(t *testing.T) *testFixtures {
 	return tf
 }
 
+func (tf *testFixtures) serverStatus() {
+	_, err := tf.srv.MainJob().GetInterruptedBy()
+	if err != nil {
+		tf.t.Fatalf("server failed with %v\n", err)
+	}
+}
+
 func (tf *testFixtures) finalize() {
 	_, err := tf.clientJob.GetInterruptedBy()
 	if err != nil {
@@ -64,6 +71,7 @@ func TestCryptoNonce(t *testing.T) {
 		tf.finalize()
 	}()
 	time.Sleep(time.Millisecond * 10)
+	tf.serverStatus()
 	tf.clientJob.AddTask(getNonceTask)
 	<-tf.clientJob.Run()
 	tf.srv.Stop()

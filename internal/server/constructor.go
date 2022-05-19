@@ -28,7 +28,7 @@ func NewTcp6Endpoint(hostname string, port int) *tcp6Endpoint {
 
 func NewBaseServer() Server {
 	s := Server{}
-	s.grpcJob = job.NewJob(nil)
+	s.mainJob = job.NewJob(nil)
 	return s
 }
 

@@ -20,6 +20,7 @@ type serverInterface interface {
 	Endpoints() []EndpointInterface
 	Start()
 	Stop()
+	MainJob() job.JobInterface
 }
 
 type NetworkServerInterface interface {

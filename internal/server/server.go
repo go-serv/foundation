@@ -14,7 +14,7 @@ const (
 
 type Server struct {
 	endpoints []EndpointInterface
-	grpcJob   job.JobInterface
+	mainJob   job.JobInterface
 	grpcOpts  []grpc.ServerOption
 }
 
@@ -49,9 +49,13 @@ func (s *Server) Start() {
 	}
 	// Start listening on baseService endpoints
 	for _, e := range s.endpoints {
-		s.grpcJob.AddTask(e.ServeTask)
+		s.mainJob.AddTask(e.ServeTask)
 	}
-	<-s.grpcJob.Run()
+	<-s.mainJob.Run()
+}
+
+func (s *Server) MainJob() job.JobInterface {
+	return s.mainJob
 }
 
 func (s *Server) Stop() {
