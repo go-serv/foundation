@@ -1,4 +1,4 @@
-package net_parcel
+package server
 
 import (
 	rt "github.com/go-serv/service/internal/runtime"

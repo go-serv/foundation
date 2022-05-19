@@ -2,32 +2,23 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func (c *client) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
+func (c *client) Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
+	init := func(task job.TaskInterface) {
+		if c.insecure {
+			creds := insecure.NewCredentials()
+			c.dialOpts = append(c.dialOpts, grpc.WithTransportCredentials(creds))
+		}
+	}
 	run := func(task job.TaskInterface) {
-		//var opts = []grpc.DialOption{
-		//	grpc.WithInsecure(),
-		//	grpc.WithChainUnaryInterceptor(c.unaryInterceptors...),
-		//	grpc.WithDefaultCallOptions(grpc.CallContentSubtype(codec.Name)),
-		//}
-		//ctx := context.Background()
-		//if c.timeoutMs > 0 {
-		//	deadline := time.Now().Add(time.Duration(c.timeoutMs) * time.Millisecond)
-		//	ctx, _ = context.WithDeadline(ctx, deadline)
-		//}
-		//target := c.target
-		//switch {
-		//case target[0] == '@':
-		//	target = strings.Replace(target, "@", "unix-abstract:", 1)
-		//case c.port > 0:
-		//	target = target + ":" + strconv.Itoa(int(c.port))
-		//}
-		//conn, err := grpc.Dial(ctx, target, opts...)
-		//task.Assert(err)
-		//c.conn = conn
-		//c.connProvider(conn)
+		v := j.GetValue()
+		conn, err := grpc.Dial(c.Client_Endpoint().Address(), c.dialOpts...)
+		task.Assert(err)
+		v.(NetworkClientInterface).Client_NewClient(conn)
 		task.Done()
 	}
-	return nil, run, nil
+	return init, run, nil
 }

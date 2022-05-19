@@ -3,7 +3,7 @@ package net
 import (
 	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
 	"github.com/go-serv/service/internal/server"
-	_ "github.com/go-serv/service/internal/service/net_parcel" // this will enable the NetParcel service
+	_ "github.com/go-serv/service/internal/service/net_parcel/server" // this will enable the NetParcel service
 )
 
 func NewNetServer() *netServer {
