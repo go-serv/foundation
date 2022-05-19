@@ -4,13 +4,17 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
-	"reflect"
 )
 
 type (
 	protoExtMap map[*protoimpl.ExtensionInfo]*protoExtValue
 	methodMap   map[string][]*methodDescriptor
 )
+
+type protoExtValue struct {
+	isSet bool
+	val   interface{}
+}
 
 func (m protoExtMap) populate(msg proto.Message) {
 	for ext, i := range m {
@@ -44,9 +48,9 @@ func (m *methodDescriptor) ShortName() string {
 }
 
 func (m *methodDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
-	for ext, val := range m.protoExts {
-		if ext == key && val.isSet {
-			return val.Value(), true
+	for k, v := range m.protoExts {
+		if k == key && v.isSet {
+			return v.val, true
 		}
 	}
 	return nil, false
@@ -87,30 +91,5 @@ func (r *serviceDescriptor) Populate() {
 			r.methods[key] = make([]*methodDescriptor, methods.Len())
 		}
 		r.methods[key][i] = mDesc
-	}
-}
-
-type protoExtValue struct {
-	isSet bool
-	val   interface{}
-}
-
-func (o *protoExtValue) setValue(v interface{}) {
-	reflect.ValueOf(o.val).Elem().Set(reflect.ValueOf(v))
-}
-
-func (o *protoExtValue) IsSet() bool {
-	return o.isSet
-}
-
-func (o *protoExtValue) Value() interface{} {
-	return o.val
-}
-
-func (o protoExtMap) OverrideIfNotSet(v interface{}, targetExt *protoimpl.ExtensionInfo) {
-	for ext, val := range o {
-		if ext == targetExt && !val.isSet {
-			val.setValue(v)
-		}
 	}
 }
