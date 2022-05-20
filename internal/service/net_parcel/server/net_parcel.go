@@ -6,29 +6,29 @@ package server
 import (
 	"context"
 	"crypto/rand"
-	net_svc "github.com/go-serv/service/internal/autogen/proto/net"
+	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/internal/grpc/request"
-	"github.com/go-serv/service/internal/service"
+	"github.com/go-serv/service/internal/service/net"
 	"google.golang.org/grpc"
 )
 
-var Name = net_svc.NetParcel_ServiceDesc.ServiceName
+var Name = proto.NetParcel_ServiceDesc.ServiceName
 
 type netParcel struct {
-	service.NetworkServiceInterface
-	net_svc.NetParcelServer
+	net.NetworkServiceInterface
+	proto.NetParcelServer
 }
 
 func (s *netParcel) Service_Register(srv *grpc.Server) {
-	net_svc.RegisterNetParcelServer(srv, s)
+	proto.RegisterNetParcelServer(srv, s)
 }
 
 func (s *netParcel) Service_OnNewSession(req request.RequestInterface) error {
 	return nil
 }
 
-func (s *netParcel) GetCryptoNonce(ctx context.Context, req *net_svc.CryptoNonce_Request) (*net_svc.CryptoNonce_Response, error) {
-	res := &net_svc.CryptoNonce_Response{}
+func (s *netParcel) GetCryptoNonce(ctx context.Context, req *proto.CryptoNonce_Request) (*proto.CryptoNonce_Response, error) {
+	res := &proto.CryptoNonce_Response{}
 	nonce := make([]byte, req.GetLen())
 	rand.Read(nonce)
 	res.Nonce = nonce

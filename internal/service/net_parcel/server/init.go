@@ -2,11 +2,11 @@ package server
 
 import (
 	rt "github.com/go-serv/service/internal/runtime"
-	"github.com/go-serv/service/internal/service"
+	"github.com/go-serv/service/internal/service/net"
 )
 
 func init() {
 	svc := new(netParcel)
-	svc.NetworkServiceInterface = service.NewNetworkService(Name)
+	svc.NetworkServiceInterface = net.NewNetworkService(Name)
 	rt.Runtime().RegisterNetworkService(Name, svc)
 }

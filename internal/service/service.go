@@ -2,9 +2,7 @@ package service
 
 import (
 	"github.com/go-serv/service/internal/ancillary"
-	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 	"github.com/go-serv/service/internal/grpc/descriptor"
-	"github.com/go-serv/service/internal/grpc/request"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -20,65 +18,35 @@ const (
 	StateSuspended // service is running but incoming requests are not being processed
 )
 
-type baseService struct {
-	// Service name in dot notation
-	name  string
-	state State
-	cfg   ConfigInterface
-	sd    descriptor.ServiceDescriptorInterface
+type BaseService struct {
+	// Service Name in the dot notation
+	Name  string
+	State State
+	Cfg   ConfigInterface
+	Sd    descriptor.ServiceDescriptorInterface
 	ancillary.MethodMustBeImplemented
 }
 
-type localService struct {
-	baseService
+func (s BaseService) Service_Descriptor() descriptor.ServiceDescriptorInterface {
+	return s.Sd
 }
 
-type networkService struct {
-	baseService
+func (s BaseService) Service_AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
+	s.Sd.AddMethodProtoExt(ext)
 }
 
-func (s *baseService) Service_Descriptor() descriptor.ServiceDescriptorInterface {
-	return s.sd
+func (s BaseService) Service_AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
+	s.Sd.AddServiceProtoExt(ext)
 }
 
-func (s *baseService) Service_AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
-	s.sd.AddMethodProtoExt(ext)
+func (s BaseService) Service_Name(short bool) string {
+	return s.Name
 }
 
-func (s *baseService) Service_AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
-	s.sd.AddServiceProtoExt(ext)
+func (s BaseService) Service_State() State {
+	return s.State
 }
 
-func (s *baseService) Service_Name(short bool) string {
-	return s.name
-}
-
-func (s *baseService) Service_State() State {
-	return s.state
-}
-
-//
-// Methods to implement
-//
-func (b *baseService) Service_Register(srv *grpc.Server) {
+func (b BaseService) Service_Register(srv *grpc.Server) {
 	b.MethodMustBeImplemented.Panic()
-}
-
-func (b *networkService) Service_RequestNewSession(req request.RequestInterface) int32 {
-	mDesc := b.sd.FindMethodDescriptorByName(req.MethodName())
-	if mDesc == nil {
-		return 0
-	} else {
-		v, has := mDesc.Get(go_serv.E_NetNewSession)
-		if !has {
-			return 0
-		} else {
-			return v.(int32)
-		}
-	}
-}
-
-func (b *baseService) Service_OnNewSession(req request.RequestInterface) error {
-	b.MethodMustBeImplemented.Panic()
-	return nil
 }
