@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/tls"
+	i "github.com/go-serv/service/internal"
 	rt "github.com/go-serv/service/internal/runtime"
 	"google.golang.org/grpc"
 	"net"
@@ -9,14 +10,14 @@ import (
 )
 
 type endpoint struct {
-	srv                       serverInterface
+	srv                       i.ServerInterface
 	lis                       net.Listener
 	grpcSrv                   *grpc.Server
 	GrpcSrvUnaryInterceptors  []grpc.UnaryServerInterceptor
 	GrpcSrvStreamInterceptors []grpc.StreamServerInterceptor
 }
 
-func (e *endpoint) withServer(s serverInterface) {
+func (e *endpoint) WithServer(s i.ServerInterface) {
 	e.srv = s
 }
 
@@ -33,7 +34,7 @@ type tcpEndpoint struct {
 }
 
 func (e *tcpEndpoint) serveInit() {
-	interceptors := grpc.ChainUnaryInterceptor(e.srv.MiddlewareGroup().NetUnaryInterceptor())
+	interceptors := grpc.ChainUnaryInterceptor(e.srv.MiddlewareGroup().UnaryServerInterceptor())
 	e.srv.AddGrpcServerOption(interceptors)
 	// Create a new gRPC server
 	e.grpcSrv = grpc.NewServer(e.srv.GrpcServerOptions()...)

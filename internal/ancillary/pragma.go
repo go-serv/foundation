@@ -6,8 +6,7 @@ import (
 	"runtime"
 )
 
-type MethodMustBeImplemented struct {
-}
+type MethodMustBeImplemented struct{}
 
 func (m MethodMustBeImplemented) Panic() {
 	pc := make([]uintptr, 1)

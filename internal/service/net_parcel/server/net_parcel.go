@@ -6,16 +6,15 @@ package server
 import (
 	"context"
 	"crypto/rand"
+	i "github.com/go-serv/service/internal"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"github.com/go-serv/service/internal/grpc/request"
-	"github.com/go-serv/service/internal/service/net"
 	"google.golang.org/grpc"
 )
 
 var Name = proto.NetParcel_ServiceDesc.ServiceName
 
 type netParcel struct {
-	net.NetworkServiceInterface
+	i.NetworkServiceInterface
 	proto.NetParcelServer
 }
 
@@ -23,7 +22,7 @@ func (s *netParcel) Service_Register(srv *grpc.Server) {
 	proto.RegisterNetParcelServer(srv, s)
 }
 
-func (s *netParcel) Service_OnNewSession(req request.RequestInterface) error {
+func (s *netParcel) Service_OnNewSession(req i.RequestInterface) error {
 	return nil
 }
 

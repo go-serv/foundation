@@ -1,7 +1,9 @@
 package runtime
 
-import "github.com/go-serv/service/internal/service/net"
+import (
+	i "github.com/go-serv/service/internal"
+)
 
 type RuntimeInterface interface {
-	NetworkServices() []net.NetworkServiceInterface
+	NetworkServices() []i.NetworkServiceInterface
 }

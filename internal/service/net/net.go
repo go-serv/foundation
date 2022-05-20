@@ -1,8 +1,8 @@
 package net
 
 import (
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/autogen/proto/go_serv"
-	"github.com/go-serv/service/internal/grpc/request"
 	"github.com/go-serv/service/internal/service"
 )
 
@@ -10,7 +10,7 @@ type networkService struct {
 	service.BaseService
 }
 
-func (b *networkService) Service_OnNewSession(req request.RequestInterface) error {
+func (b *networkService) Service_OnNewSession(req i.RequestInterface) error {
 	b.MethodMustBeImplemented.Panic()
 	return nil
 }

@@ -2,17 +2,17 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
+	i "github.com/go-serv/service/internal"
 	cc "github.com/go-serv/service/internal/client"
-	"github.com/go-serv/service/internal/server"
 )
 
-func NewClient(e server.EndpointInterface) *client {
+func NewClient(e i.EndpointInterface) *client {
 	c := new(client)
-	c.NetworkClientInterface = cc.NewNetClient(e)
+	c.NetworkClientInterface = cc.NewNetClient(serviceName, e)
 	return c
 }
 
-func NewClientJob(e server.EndpointInterface) job.JobInterface {
+func NewClientJob(e i.EndpointInterface) job.JobInterface {
 	c := NewClient(e)
 	cj := job.NewJob(c)
 	cj.AddOneshotTask(c.Client_ConnectTask)

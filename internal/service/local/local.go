@@ -1,7 +1,7 @@
 package local
 
-import "github.com/go-serv/service/internal/service"
+import i "github.com/go-serv/service/internal"
 
 type localService struct {
-	service.BaseServiceInterface
+	i.BaseServiceInterface
 }

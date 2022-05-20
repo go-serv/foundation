@@ -2,6 +2,7 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
+	i "github.com/go-serv/service/internal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -17,7 +18,7 @@ func (c *client) Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.
 		v := j.GetValue()
 		conn, err := grpc.Dial(c.Client_Endpoint().Address(), c.dialOpts...)
 		task.Assert(err)
-		v.(NetworkClientInterface).Client_NewClient(conn)
+		v.(i.NetworkClientInterface).Client_NewClient(conn)
 		task.Done()
 	}
 	return init, run, nil

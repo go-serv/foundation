@@ -3,6 +3,7 @@ package server_test
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/autogen/proto/net"
 	srv "github.com/go-serv/service/internal/server"
 	net_srv "github.com/go-serv/service/internal/server/net"
@@ -18,8 +19,8 @@ const (
 
 type testFixtures struct {
 	t         *testing.T
-	endpoint  srv.EndpointInterface
-	srv       srv.NetworkServerInterface
+	endpoint  i.EndpointInterface
+	srv       i.NetworkServerInterface
 	clientJob job.JobInterface
 }
 
@@ -55,6 +56,7 @@ func TestCryptoNonce(t *testing.T) {
 			cc := j.GetValue().(net.NetParcelClient)
 			req := &net.CryptoNonce_Request{}
 			req.Len = nonceLen
+			req.Msg = "Hello, World!"
 			res, err := cc.GetCryptoNonce(context.Background(), req)
 			task.Assert(err)
 			if len(res.GetNonce()) != nonceLen {

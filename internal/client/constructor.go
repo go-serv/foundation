@@ -1,27 +1,42 @@
 package client
 
 import (
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/grpc/codec/net"
-	"github.com/go-serv/service/internal/server"
+	md_cipher "github.com/go-serv/service/internal/grpc/middleware/cipher_msg"
+	mw_net "github.com/go-serv/service/internal/grpc/middleware/mw_group/net"
+	net_service "github.com/go-serv/service/internal/service/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 )
 
-func newClient(e server.EndpointInterface) client {
+func newClient(e i.EndpointInterface) client {
 	c := client{}
 	c.endpoint = e
 	c.insecure = true
 	return c
 }
 
-func NewLocalClient(e server.EndpointInterface) *localClient {
+func NewLocalClient(e i.EndpointInterface) *localClient {
 	c := &localClient{newClient(e)}
 	return c
 }
 
-func NewNetClient(e server.EndpointInterface) *netClient {
-	c := &netClient{newClient(e)}
+func NewNetClient(svcName string, e i.EndpointInterface) *netClient {
+	c := &netClient{}
+	c.client = newClient(e)
+	c.svc = net_service.NewNetworkService(svcName)
 	netCodec := encoding.GetCodec(codec.Name)
-	c.dialOpts = append(c.dialOpts, grpc.WithDefaultCallOptions(grpc.ForceCodec(netCodec)))
+	c.mwGroup = c.defaultMiddlewareGroup()
+	c.dialOpts = append(c.dialOpts,
+		grpc.WithDefaultCallOptions(grpc.ForceCodec(netCodec)),
+		grpc.WithChainUnaryInterceptor(c.mwGroup.UnaryClientInterceptor()),
+	)
 	return c
+}
+
+func (c *netClient) defaultMiddlewareGroup() i.MiddlewareGroupInterface {
+	g := mw_net.NewMiddlewareGroup(c)
+	g.AddItem(md_cipher.NewNetCipherClientHandler())
+	return g
 }

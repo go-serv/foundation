@@ -2,18 +2,18 @@ package runtime
 
 import (
 	"fmt"
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/service/local"
-	"github.com/go-serv/service/internal/service/net"
 )
 
-type netServiceRegistry map[string]net.NetworkServiceInterface
+type netServiceRegistry map[string]i.NetworkServiceInterface
 
 type runtime struct {
 	registeredLocalService local.LocalServiceInterface
 	registeredNetServices  netServiceRegistry
 }
 
-func (r *runtime) RegisterNetworkService(svcName string, svc net.NetworkServiceInterface) {
+func (r *runtime) RegisterNetworkService(svcName string, svc i.NetworkServiceInterface) {
 	if _, ok := r.registeredNetServices[svcName]; ok {
 		panic(fmt.Sprintf("network service '%s' already registered", svcName))
 	}
@@ -28,8 +28,8 @@ func (r *runtime) RegisterLocalService(svcName string, svc local.LocalServiceInt
 	r.registeredLocalService = svc
 }
 
-func (r *runtime) NetworkServices() []net.NetworkServiceInterface {
-	var out []net.NetworkServiceInterface
+func (r *runtime) NetworkServices() []i.NetworkServiceInterface {
+	var out []i.NetworkServiceInterface
 	for _, svc := range r.registeredNetServices {
 		out = append(out, svc)
 	}
