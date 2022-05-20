@@ -8,8 +8,8 @@ extend google.protobuf.ServiceOptions {
   // Network service default port.
   uint32 net_default_port = 60000;
 
-  // Enforce using end-to-end encryption for all service calls.
-  bool net_enforce_enc = 60001;
+  // If true enables gRPC messages encryption
+  bool net_msg_enc = 60001;
 
   // A pathname for unix domain socket. If not specified defaults to the service name.
   // On Linux an abstract unix domain socket will be used with a pathname automatically prepended with '@'.

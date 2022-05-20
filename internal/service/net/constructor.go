@@ -7,7 +7,9 @@ import (
 
 func NewNetworkService(name string) NetworkServiceInterface {
 	s := &networkService{service.NewBaseService(name)}
+	s.Sd.AddServiceProtoExt(go_serv.E_NetMsgEnc)
 	s.Sd.AddMethodProtoExt(go_serv.E_NetNewSession)
+	s.Sd.AddMethodProtoExt(go_serv.E_MNetMsgEnc)
 	s.Sd.Populate()
 	return s
 }

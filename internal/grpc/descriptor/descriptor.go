@@ -27,6 +27,15 @@ func (m protoExtMap) populate(msg proto.Message) {
 	}
 }
 
+func (m protoExtMap) get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
+	for k, v := range m {
+		if k == key && v.isSet {
+			return v.val, true
+		}
+	}
+	return nil, false
+}
+
 type serviceDescriptor struct {
 	protoreflect.ServiceDescriptor
 	protoExts       protoExtMap
@@ -48,12 +57,11 @@ func (m *methodDescriptor) ShortName() string {
 }
 
 func (m *methodDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
-	for k, v := range m.protoExts {
-		if k == key && v.isSet {
-			return v.val, true
-		}
-	}
-	return nil, false
+	return m.protoExts.get(key)
+}
+
+func (s *serviceDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
+	return s.protoExts.get(key)
 }
 
 func (r *serviceDescriptor) AddServiceProtoExt(ext *protoimpl.ExtensionInfo) {

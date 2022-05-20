@@ -5,8 +5,8 @@ import "google/protobuf/descriptor.proto";
 package go_serv;
 
 extend google.protobuf.MethodOptions {
-  // Toggle on/off end-to-end encryption on method level
-  bool m_net_enforce_enc = 60100;
+  // If true enables gRPC messages encryption
+  bool m_net_msg_enc = 60001;
 
   // Specifies whether a call can be invoked multiple times during a session
   bool streamable = 60102;

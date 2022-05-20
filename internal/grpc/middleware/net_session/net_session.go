@@ -1,4 +1,4 @@
-package server
+package net_session
 
 import (
 	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
@@ -10,7 +10,7 @@ import (
 func NewNetSessionHandler() *mw_group.GroupItem {
 	reqHandler := func(r request.RequestInterface, svc interface{}) error {
 		netSvc := svc.(net.NetworkServiceInterface)
-		timeout := netSvc.Service_RequestNewSession(r)
+		timeout := netSvc.Service_InfoNewSession(r.MethodName())
 		if timeout != 0 { // Create new session
 			netSvc.Service_OnNewSession(r)
 			return nil
