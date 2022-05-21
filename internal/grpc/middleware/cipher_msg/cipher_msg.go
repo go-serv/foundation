@@ -37,8 +37,11 @@ func NewNetCipherClientHandler() *mw_group.GroupItem {
 		netSvc := svc.(i.NetworkServiceInterface)
 		encrypted := netSvc.Service_InfoMsgEncryption(r.MethodName())
 		if encrypted {
-			msg := 1
-			_ = msg
+			msg := &encryptedMessage{}
+			msg.Message = r.Data().(proto.Message)
+			msg.nonce = []byte{1}
+			msg.key = []byte{1}
+			r.WithData(msg)
 		}
 		return nil
 	}

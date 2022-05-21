@@ -12,7 +12,7 @@ func FromServerContext(ctx context.Context, data interface{}) *netRequest {
 	name, _ := grpc.Method(r.Context)
 	r.Method = ancillary.GrpcDotNotation(name).MethodName()
 	//r.Meta = md
-	r.Idata = data
+	r.WithData(data)
 	return r
 }
 
@@ -23,6 +23,6 @@ func FromClientContext(ctx context.Context, data interface{}, methodName string)
 	r := &netRequest{}
 	r.Context = ctx
 	r.Method = ancillary.GrpcDotNotation(methodName).MethodName()
-	r.Idata = data
+	r.WithData(data)
 	return r
 }

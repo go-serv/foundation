@@ -9,7 +9,7 @@ type Request struct {
 	context.Context
 	Method string
 	Meta   i.MetaInterface
-	Idata  interface{}
+	data   interface{}
 }
 
 func (r *Request) MethodName() string {
@@ -17,9 +17,9 @@ func (r *Request) MethodName() string {
 }
 
 func (r *Request) Data() interface{} {
-	return r.Idata
+	return r.data
 }
 
 func (r *Request) WithData(data interface{}) {
-	//r.data = data
+	r.data = data
 }

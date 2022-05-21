@@ -69,8 +69,9 @@ type MetaInterface interface {
 
 type RequestInterface interface {
 	MethodName() string
-	WithData(data interface{})
 	Data() interface{}
+	WithData(data interface{})
 }
+
 type ResponseInterface interface {
 }

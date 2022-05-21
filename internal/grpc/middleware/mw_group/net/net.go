@@ -7,6 +7,7 @@ import (
 	req_net "github.com/go-serv/service/internal/grpc/request/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/protobuf/proto"
 )
 
 type netMwGroup struct {
@@ -63,7 +64,9 @@ func (mw *netMwGroup) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 			}
 		}
 		// Handle request
-		err := invoker(ctx, method, req, reply, cc, opts...)
+		msg := r.Data().(proto.Message)
+		_ = msg
+		err := invoker(ctx, method, msg, reply, cc, opts...)
 		if err != nil {
 			return err
 		}
