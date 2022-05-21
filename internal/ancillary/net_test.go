@@ -7,9 +7,24 @@ import (
 	"testing"
 )
 
+var (
+	utf8Str = "Привет, Мир!"
+)
+
 func TestNetReader(t *testing.T) {
+	var err error
+	strLen := []byte{0x0, 0x0, 0x0, byte(len(utf8Str))}
+	testData := append(strLen, []byte(utf8Str)...)
+	testData = append(testData, []byte{0x11, 0x22, 0x33, 0x44, 0x3, 0x0}...)
+	reader := ancillary.NewNetReader(testData)
+	strGot, err := reader.ReadString()
+	if err != nil {
+		t.Fatalf("NetReader: %v", err)
+	}
+	if strGot != utf8Str {
+		t.Fatalf("NetReader: expected %s, got %s", utf8Str, strGot)
+	}
 	var expected int32 = 0x11223344
-	reader := ancillary.NewNetReader([]byte{0x11, 0x22, 0x33, 0x44, 0x3, 0x0})
 	got, _ := ancillary.NetReader[int32](reader)
 	if got != expected {
 		t.Fatalf("NetReader: expected %x, got %x", expected, got)
@@ -33,12 +48,15 @@ func TestNetReader(t *testing.T) {
 
 func TestNetWriter(t *testing.T) {
 	w := ancillary.NewNetWriter()
+	w.WriteString(utf8Str)
+	w.Write([]byte{0x55})
 	ancillary.NetWriter[bool](w, false)
 	ancillary.NetWriter[uint32](w, 255<<24)
 	ancillary.NetWriter[bool](w, true)
-	expected := []byte{0x0, 0xff, 0x0, 0x0, 0x0, 0x1}
+	expectedData := append([]byte{0x0, 0x0, 0x0, byte(len(utf8Str))}, []byte(utf8Str)...)
+	expectedData = append(expectedData, []byte{0x55, 0x0, 0xff, 0x0, 0x0, 0x0, 0x1}...)
 	got := w.Bytes()
-	if bytes.Compare(expected, got) != 0 {
-		t.Fatalf("NetWriter: expected %v, got %v", expected, got)
+	if bytes.Compare(expectedData, got) != 0 {
+		t.Fatalf("NetWriter: expected %v, got %v", expectedData, got)
 	}
 }

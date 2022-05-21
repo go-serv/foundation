@@ -8,31 +8,49 @@ import (
 )
 
 type net_IO_Types interface {
-	int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | uintptr | bool | float32 | float64
+	int | int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | uintptr | bool | float32 | float64
 }
 
 type netReader struct {
 	buf []byte
 }
 
+// reads a length-prefixed string
+func (r *netReader) ReadString() (string, error) {
+	var sl uint32
+	var err error
+	sl, err = NetReader[uint32](r)
+	if err != nil {
+		return "", err
+	}
+	if sl > uint32(len(r.buf)) {
+		return "", Error_IO_OutOfRange
+	} else {
+		s := make([]byte, sl)
+		copy(s, r.buf[0:sl])
+		r.buf = r.buf[sl:]
+		return string(s), nil
+	}
+}
+
 type netWriter struct {
 	buf *bytes.Buffer
 }
 
-func NewNetReader(data []byte) *netReader {
-	r := new(netReader)
-	r.buf = data
-	return r
-}
-
-func NewNetWriter() *netWriter {
-	w := new(netWriter)
-	w.buf = new(bytes.Buffer)
-	return w
-}
-
 func (w *netWriter) Bytes() []byte {
 	return w.buf.Bytes()
+}
+
+func (w *netWriter) Write(data []byte) (int, error) {
+	return w.buf.Write(data)
+}
+
+func (w *netWriter) WriteString(s string) error {
+	if err := NetWriter[uint32](w, uint32(len(s))); err != nil {
+		return err
+	}
+	_, err := w.Write([]byte(s))
+	return err
 }
 
 func NetReader[T net_IO_Types](r *netReader) (T, error) {
