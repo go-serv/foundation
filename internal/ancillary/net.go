@@ -11,9 +11,6 @@ type net_IO_Types interface {
 	int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | uintptr | bool | float32 | float64
 }
 
-type Net_IO interface {
-}
-
 type netReader struct {
 	buf []byte
 }

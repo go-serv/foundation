@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestNetReaderWriter(t *testing.T) {
+func TestNetReader(t *testing.T) {
 	var expected int32 = 0x11223344
 	reader := ancillary.NewNetReader([]byte{0x11, 0x22, 0x33, 0x44, 0x3, 0x0})
 	got, _ := ancillary.NetReader[int32](reader)
@@ -34,7 +34,7 @@ func TestNetReaderWriter(t *testing.T) {
 func TestNetWriter(t *testing.T) {
 	w := ancillary.NewNetWriter()
 	ancillary.NetWriter[bool](w, false)
-	ancillary.NetWriter[uint32](w, (255 << 24))
+	ancillary.NetWriter[uint32](w, 255<<24)
 	ancillary.NetWriter[bool](w, true)
 	expected := []byte{0x0, 0xff, 0x0, 0x0, 0x0, 0x1}
 	got := w.Bytes()
