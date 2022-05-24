@@ -19,30 +19,30 @@ func TestNetReader(t *testing.T) {
 	reader := ancillary.NewNetReader(testData)
 	strGot, err := reader.ReadString()
 	if err != nil {
-		t.Fatalf("NetReader: %v", err)
+		t.Fatalf("GenericNetReader: %v", err)
 	}
 	if strGot != utf8Str {
-		t.Fatalf("NetReader: expected %s, got %s", utf8Str, strGot)
+		t.Fatalf("GenericNetReader: expected %s, got %s", utf8Str, strGot)
 	}
 	var expected int32 = 0x11223344
-	got, _ := ancillary.NetReader[int32](reader)
+	got, _ := ancillary.GenericNetReader[int32](reader)
 	if got != expected {
-		t.Fatalf("NetReader: expected %x, got %x", expected, got)
+		t.Fatalf("GenericNetReader: expected %x, got %x", expected, got)
 	}
 	// Boolean
 	var gotBool bool
-	gotBool, _ = ancillary.NetReader[bool](reader)
+	gotBool, _ = ancillary.GenericNetReader[bool](reader)
 	if gotBool != true {
-		t.Fatalf("NetReader: expected %t, got %t", true, gotBool)
+		t.Fatalf("GenericNetReader: expected %t, got %t", true, gotBool)
 	}
-	gotBool, _ = ancillary.NetReader[bool](reader)
+	gotBool, _ = ancillary.GenericNetReader[bool](reader)
 	if gotBool != false {
-		t.Fatalf("NetReader: expected %t, got %t", false, gotBool)
+		t.Fatalf("GenericNetReader: expected %t, got %t", false, gotBool)
 	}
 	// End of input data
-	_, eof := ancillary.NetReader[int64](reader)
+	_, eof := ancillary.GenericNetReader[int64](reader)
 	if eof != io.EOF {
-		t.Fatalf("NetReader: expected end of input data")
+		t.Fatalf("GenericNetReader: expected end of input data")
 	}
 }
 
@@ -50,13 +50,13 @@ func TestNetWriter(t *testing.T) {
 	w := ancillary.NewNetWriter()
 	w.WriteString(utf8Str)
 	w.Write([]byte{0x55})
-	ancillary.NetWriter[bool](w, false)
-	ancillary.NetWriter[uint32](w, 255<<24)
-	ancillary.NetWriter[bool](w, true)
+	ancillary.GenericNetWriter[bool](w, false)
+	ancillary.GenericNetWriter[uint32](w, 255<<24)
+	ancillary.GenericNetWriter[bool](w, true)
 	expectedData := append([]byte{0x0, 0x0, 0x0, byte(len(utf8Str))}, []byte(utf8Str)...)
 	expectedData = append(expectedData, []byte{0x55, 0x0, 0xff, 0x0, 0x0, 0x0, 0x1}...)
 	got := w.Bytes()
 	if bytes.Compare(expectedData, got) != 0 {
-		t.Fatalf("NetWriter: expected %v, got %v", expectedData, got)
+		t.Fatalf("GenericNetWriter: expected %v, got %v", expectedData, got)
 	}
 }

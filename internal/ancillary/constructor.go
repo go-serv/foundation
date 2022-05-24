@@ -2,14 +2,14 @@ package ancillary
 
 import "bytes"
 
-func NewNetReader(data []byte) *netReader {
-	r := new(netReader)
+func NewNetReader(data []byte) *NetReader {
+	r := new(NetReader)
 	r.buf = data
 	return r
 }
 
-func NewNetWriter() *netWriter {
-	w := new(netWriter)
+func NewNetWriter() *NetWriter {
+	w := new(NetWriter)
 	w.buf = new(bytes.Buffer)
 	return w
 }

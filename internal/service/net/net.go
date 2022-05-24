@@ -8,11 +8,21 @@ import (
 
 type networkService struct {
 	service.BaseService
+	encKey []byte
 }
 
 func (b *networkService) Service_OnNewSession(req i.RequestInterface) error {
 	b.MethodMustBeImplemented.Panic()
 	return nil
+}
+
+func (b *networkService) Service_EncriptionKey() []byte {
+	//TODO implement me
+	return []byte("secret")
+}
+
+func (b *networkService) Service_WithEncriptionKey(key []byte) {
+	b.encKey = key
 }
 
 func (b *networkService) Service_InfoNewSession(methodName string) int32 {

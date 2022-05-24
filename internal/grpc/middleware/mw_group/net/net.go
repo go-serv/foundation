@@ -3,11 +3,11 @@ package net
 import (
 	"context"
 	i "github.com/go-serv/service/internal"
+	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
 	req_net "github.com/go-serv/service/internal/grpc/request/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
-	"google.golang.org/protobuf/proto"
 )
 
 type netMwGroup struct {
@@ -57,22 +57,23 @@ func (mw *netMwGroup) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		r := req_net.FromClientContext(ctx, req, method)
 		svc := mw.Target.(i.NetworkClientInterface).Client_NetService()
+		marshaler := net_cc.NewMarshaler(req)
+		r.WithData(marshaler)
+		// Invoke middleware request handlers
 		for _, item := range mw.Items {
 			err := item.ReqHandler(r, svc)
 			if err != nil {
 				return nil
 			}
 		}
-		// Handle request
-		msg := r.Data().(proto.Message)
-		_ = msg
-		err := invoker(ctx, method, msg, reply, cc, opts...)
+		// Invoke gRPC method
+		err := invoker(ctx, method, req, reply, cc, opts...)
 		if err != nil {
 			return err
 		}
-		// Iterate over the response middleware handlers in reverse order
+		// Invoke middleware response handlers in reverse order
 		for i := len(mw.Items) - 1; i >= 0; i-- {
-			err := mw.Items[i].ResHandler(reply, nil)
+			err := mw.Items[i].ResHandler(reply, svc)
 			if err != nil {
 				return nil
 			}

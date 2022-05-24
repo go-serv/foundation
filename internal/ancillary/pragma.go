@@ -8,6 +8,17 @@ import (
 
 type MethodMustBeImplemented struct{}
 
+// methodName returns the name of the calling method,
+// assumed to be two stack frames above.
+func methodName() string {
+	pc, _, _, _ := runtime.Caller(2)
+	f := runtime.FuncForPC(pc)
+	if f == nil {
+		return "unknown method"
+	}
+	return f.Name()
+}
+
 func (m MethodMustBeImplemented) Panic() {
 	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)

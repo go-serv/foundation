@@ -11,15 +11,24 @@ type net_IO_Types interface {
 	int | int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64 | uintptr | bool | float32 | float64
 }
 
-type netReader struct {
+type net_rw_info struct {
+	offset int
+}
+
+func (o net_rw_info) Offset() int {
+	return o.offset
+}
+
+type NetReader struct {
+	net_rw_info
 	buf []byte
 }
 
-// reads a length-prefixed string
-func (r *netReader) ReadString() (string, error) {
+// ReadString reads a length-prefixed string
+func (r *NetReader) ReadString() (string, error) {
 	var sl uint32
 	var err error
-	sl, err = NetReader[uint32](r)
+	sl, err = GenericNetReader[uint32](r)
 	if err != nil {
 		return "", err
 	}
@@ -27,33 +36,57 @@ func (r *netReader) ReadString() (string, error) {
 		return "", Error_IO_OutOfRange
 	} else {
 		s := make([]byte, sl)
+		r.offset += int(sl)
 		copy(s, r.buf[0:sl])
 		r.buf = r.buf[sl:]
 		return string(s), nil
 	}
 }
 
-type netWriter struct {
+func (r *NetReader) ReadBytes(n int) ([]byte, error) {
+	if n > len(r.buf) {
+		return nil, Error_IO_OutOfRange
+	} else {
+		out := r.buf[0:n]
+		r.buf = r.buf[n:]
+		r.offset += n
+		return out, nil
+	}
+}
+
+func (r *NetReader) Flush() []byte {
+	out := r.buf
+	r.buf = r.buf[:0]
+	return out
+}
+
+type NetWriter struct {
+	net_rw_info
 	buf *bytes.Buffer
 }
 
-func (w *netWriter) Bytes() []byte {
+func (w *NetWriter) Bytes() []byte {
 	return w.buf.Bytes()
 }
 
-func (w *netWriter) Write(data []byte) (int, error) {
-	return w.buf.Write(data)
+func (w *NetWriter) Write(data []byte) (int, error) {
+	n, err := w.buf.Write(data)
+	if err != nil {
+		return n, err
+	}
+	w.offset += n
+	return n, nil
 }
 
-func (w *netWriter) WriteString(s string) error {
-	if err := NetWriter[uint32](w, uint32(len(s))); err != nil {
+func (w *NetWriter) WriteString(s string) error {
+	if err := GenericNetWriter[uint32](w, uint32(len(s))); err != nil {
 		return err
 	}
 	_, err := w.Write([]byte(s))
 	return err
 }
 
-func NetReader[T net_IO_Types](r *netReader) (T, error) {
+func GenericNetReader[T net_IO_Types](r *NetReader) (T, error) {
 	var out T
 	n := reflect.TypeOf(out).Size()
 	if len(r.buf) < int(n) {
@@ -64,14 +97,17 @@ func NetReader[T net_IO_Types](r *netReader) (T, error) {
 		return out, err
 	}
 	r.buf = r.buf[n:]
+	r.offset += int(n)
 	return out, nil
 }
 
-func NetWriter[T net_IO_Types](w *netWriter, t T) error {
+func GenericNetWriter[T net_IO_Types](w *NetWriter, t T) error {
 	err := binary.Write(w.buf, binary.BigEndian, t)
 	if err != nil {
 		return err
 	} else {
+		n := reflect.TypeOf(t).Size()
+		w.offset += int(n)
 		return nil
 	}
 }
