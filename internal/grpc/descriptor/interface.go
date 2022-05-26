@@ -13,3 +13,7 @@ type ServiceDescriptorInterface interface {
 type MethodDescriptorInterface interface {
 	Get(key *protoimpl.ExtensionInfo) (interface{}, bool)
 }
+
+type MessageDescriptorInterface interface {
+	MethodName() string
+}

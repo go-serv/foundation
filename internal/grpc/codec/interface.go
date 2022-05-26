@@ -1,27 +1,28 @@
 package codec
 
+import (
+	"google.golang.org/grpc/encoding"
+	"google.golang.org/protobuf/proto"
+)
+
 type DataFrameInterface interface {
+	Parse([]byte) error
+	ParseHook() error
 	HeaderFlags() HeaderFlags32Type
 	WithHeaderFlag(HeaderFlags32Type)
-	Compose() []byte
+	Compose() ([]byte, error)
 	Payload() []byte
-	AttachData(b []byte) error
+	AttachData(b []byte)
 }
 
 type CodecInterface interface {
-	ChainInterceptorHandler(CodecInterceptorHandler)
+	encoding.Codec
+	Processor() MessageProcessorInterface
+	NewDataFrame() DataFrameInterface
 }
 
-type MarshalerInterface interface {
-	DataFrame() DataFrameInterface
-	CodecInterface
-	Run() ([]byte, error)
-}
-type DoNotImplement interface{ ProtoInternal(DoNotImplement) }
-
-type UnmarshalerInterface interface {
-	DataFrame() DataFrameInterface
-	CodecInterface
-	Run() error
-	DoNotImplement
+type MessageProcessorInterface interface {
+	AddHandlers(pre TaskHandler, post TaskHandler)
+	NewPreTask(wire []byte, msg proto.Message) (*msgprocPreTask, error)
+	NewPostTask(wire []byte, msg proto.Message) (*msgprocPostTask, error)
 }

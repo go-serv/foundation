@@ -4,40 +4,18 @@ import (
 	cc "github.com/go-serv/service/internal/grpc/codec"
 )
 
-// Payload flags
-type PacketFlags uint32
+type headerFlags cc.HeaderFlags32Type
 
 const (
-	Encryption PacketFlags = 1 << iota
+	Encryption headerFlags = 1 << iota
 )
 
 const Name = "net-service"
 
 type codec struct {
+	cc.CodecInterface
 }
 
-type marshaler struct {
-	cc.MarshalerInterface
-}
-
-func (codec) Marshal(v interface{}) ([]byte, error) {
-	m, ok := v.(cc.MarshalerInterface)
-	if !ok {
-		return nil, nil
-	} else {
-		return m.Run()
-	}
-}
-
-func (c codec) Unmarshal(data []byte, v interface{}) error {
-	u, err := NewUnmarshaler(data, v)
-	if err != nil {
-		return err
-	} else {
-		return u.Run()
-	}
-}
-
-func (codec) Name() string {
-	return Name
-}
+//func (c *codec) DataFrameBuilderHook(b []byte) (cc.DataFrameInterface, error) {
+//	//return cc.DataFrameBuilder(b)
+//}

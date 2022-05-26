@@ -78,6 +78,10 @@ func (w *NetWriter) Write(data []byte) (int, error) {
 	return n, nil
 }
 
+func (w *NetWriter) Close() error {
+	return nil
+}
+
 func (w *NetWriter) WriteString(s string) error {
 	if err := GenericNetWriter[uint32](w, uint32(len(s))); err != nil {
 		return err

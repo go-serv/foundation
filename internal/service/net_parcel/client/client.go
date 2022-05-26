@@ -12,13 +12,13 @@ var serviceName = proto.NetParcel_ServiceDesc.ServiceName
 
 type client struct {
 	i.NetworkClientInterface
-	net.NetParcelClient
+	stubs net.NetParcelClient
 }
 
-func (c *client) Client_NewClient(cc grpc.ClientConnInterface) {
-	c.NetParcelClient = net.NewNetParcelClient(cc)
+func (c *client) NewClient(cc grpc.ClientConnInterface) {
+	c.stubs = net.NewNetParcelClient(cc)
 }
 
 func (c *client) GetCryptoNonce(ctx context.Context, in *proto.CryptoNonce_Request, opts ...grpc.CallOption) (*proto.CryptoNonce_Response, error) {
-	return c.NetParcelClient.GetCryptoNonce(ctx, in)
+	return c.stubs.GetCryptoNonce(ctx, in)
 }

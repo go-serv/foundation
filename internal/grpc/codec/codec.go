@@ -1,59 +1,61 @@
 package codec
 
 import (
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"sync"
-	"unsafe"
+	"google.golang.org/protobuf/proto"
 )
 
-type CodecInterceptorHandler func(b []byte) ([]byte, error)
-
-// maps a proto message to its unmarshaler
-type msgUnmarshalerMap map[uintptr]UnmarshalerInterface
-
-type ifaceHeader struct {
-	typ   unsafe.Pointer
-	pdata unsafe.Pointer
-}
-
-type pointer struct {
-	p unsafe.Pointer
-}
-
-func (p pointer) pointerOfEmptyIface(v any) {
-	p.p = (*ifaceHeader)(unsafe.Pointer(&v)).pdata
-}
+var (
+	MarshalOptions   = proto.MarshalOptions{}
+	UnmarshalOptions = proto.UnmarshalOptions{}
+)
 
 type codec struct {
-	df                *DataFrame
-	interceptorsChain []CodecInterceptorHandler
-	msgUnmarshaler    msgUnmarshalerMap
-	unMu              sync.Mutex
+	name string
+	proc MessageProcessorInterface
 }
 
-func (c *codec) mapProtoMessage(protoMsg interface{}, un UnmarshalerInterface) {
-	c.unMu.Lock()
-	defer c.unMu.Unlock()
-	ptr := pointer{}
-	ptr.pointerOfEmptyIface(protoMsg)
-	key := uintptr(ptr.p)
-	c.msgUnmarshaler[key] = un
-}
-
-func (c *codec) GetUnmarshalerByProtoMessage(protoMsg interface{}) (UnmarshalerInterface, error) {
-	c.unMu.Lock()
-	defer c.unMu.Unlock()
-	ptr := pointer{}
-	ptr.pointerOfEmptyIface(protoMsg)
-	key := uintptr(ptr.p)
-	v, ok := c.msgUnmarshaler[key]
+func (c *codec) Marshal(v interface{}) ([]byte, error) {
+	m, ok := v.(proto.Message)
 	if !ok {
-		return nil, status.Error(codes.Internal, "failed to retrieve unmarshaler for the provided proto message")
+		return nil, nil
 	}
-	return v, nil
+	//
+	data, err := MarshalOptions.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	//
+	task, err2 := c.proc.NewPostTask(data, m)
+	if err2 != nil {
+		return nil, err2
+	}
+	return task.Execute()
 }
 
-func (c *codec) ChainInterceptorHandler(h CodecInterceptorHandler) {
-	c.interceptorsChain = append(c.interceptorsChain, h)
+func (c *codec) Unmarshal(data []byte, v interface{}) error {
+	m, ok := v.(proto.Message)
+	if !ok {
+		return nil
+	}
+	task, err := c.proc.NewPreTask(data, m)
+	if err != nil {
+		return err
+	}
+	data, err = task.Execute()
+	if err != nil {
+		return err
+	}
+	return UnmarshalOptions.Unmarshal(data, m)
+}
+
+func (c *codec) Name() string {
+	return c.name
+}
+
+func (c *codec) NewDataFrame() DataFrameInterface {
+	return NewDataFrame()
+}
+
+func (c *codec) Processor() MessageProcessorInterface {
+	return c.proc
 }

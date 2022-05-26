@@ -1,7 +1,9 @@
 package codec
 
-import "google.golang.org/grpc/encoding"
+import (
+	"google.golang.org/grpc/encoding"
+)
 
 func init() {
-	encoding.RegisterCodec(codec{})
+	encoding.RegisterCodec(newCodec())
 }

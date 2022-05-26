@@ -43,6 +43,14 @@ type serviceDescriptor struct {
 	methods         methodMap
 }
 
+type messageDescriptor struct {
+	proto.Message
+}
+
+func (m *messageDescriptor) MethodName() string {
+	return ""
+}
+
 type methodDescriptor struct {
 	protoreflect.MethodDescriptor
 	protoExts protoExtMap

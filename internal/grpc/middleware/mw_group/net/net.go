@@ -3,7 +3,6 @@ package net
 import (
 	"context"
 	i "github.com/go-serv/service/internal"
-	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
 	req_net "github.com/go-serv/service/internal/grpc/request/net"
 	"google.golang.org/grpc"
@@ -56,9 +55,7 @@ func (mw *netMwGroup) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 func (mw *netMwGroup) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		r := req_net.FromClientContext(ctx, req, method)
-		svc := mw.Target.(i.NetworkClientInterface).Client_NetService()
-		marshaler := net_cc.NewMarshaler(req)
-		r.WithData(marshaler)
+		svc := mw.Target.(i.NetworkClientInterface).NetService()
 		// Invoke middleware request handlers
 		for _, item := range mw.Items {
 			err := item.ReqHandler(r, svc)

@@ -3,6 +3,7 @@ package client
 import (
 	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -12,6 +13,7 @@ type client struct {
 	conn     net.Conn
 	dialOpts []grpc.DialOption
 	mwGroup  i.MiddlewareGroupInterface
+	msgProc  codec.MessageProcessorInterface
 	insecure bool
 	ancillary.MethodMustBeImplemented
 }
@@ -25,14 +27,18 @@ type netClient struct {
 	svc i.NetworkServiceInterface
 }
 
-func (c *client) Client_Endpoint() i.EndpointInterface {
+func (c *client) MessageProcessor() codec.MessageProcessorInterface {
+	return c.msgProc
+}
+
+func (c *client) Endpoint() i.EndpointInterface {
 	return c.endpoint
 }
 
-func (c *client) Client_NewClient(cc grpc.ClientConnInterface) {
+func (c *client) NewClient(cc grpc.ClientConnInterface) {
 	c.MethodMustBeImplemented.Panic()
 }
 
-func (c *netClient) Client_NetService() i.NetworkServiceInterface {
+func (c *netClient) NetService() i.NetworkServiceInterface {
 	return c.svc
 }

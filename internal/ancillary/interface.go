@@ -13,7 +13,7 @@ type NetReaderInterface interface {
 
 type NetWriterInterface interface {
 	Net_RW_Info
-	io.Writer
+	io.WriteCloser
 	WriteString(string) error
 	Bytes() []byte
 }

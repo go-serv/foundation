@@ -8,6 +8,12 @@ import (
 	"reflect"
 )
 
+func NewMessageDescriptor(msg proto.Message) *messageDescriptor {
+	d := new(messageDescriptor)
+	d.Message = msg
+	return d
+}
+
 func NewMethodDescriptor(desc protoreflect.MethodDescriptor, protoExts protoExtMap) *methodDescriptor {
 	r := new(methodDescriptor)
 	r.MethodDescriptor = desc

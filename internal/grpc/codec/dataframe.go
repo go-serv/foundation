@@ -5,7 +5,6 @@ import (
 	"github.com/go-serv/service/internal/ancillary"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 const magicWordLen = 8
@@ -22,24 +21,23 @@ var (
 	errorHeaderParserFailed = status.Error(codes.Internal, "failed to parse data frame header")
 )
 
-type DataFrame struct {
+type dataFrame struct {
 	hdrFlags HeaderFlags32Type
 	payload  []byte
-	msg      proto.Message
 	netw     *ancillary.NetWriter
 	netr     *ancillary.NetReader
 }
 
-func DataFrameBuilder(b []byte) (*DataFrame, error) {
-	df := new(DataFrame)
-	if err := df.ParseHeader(b); err != nil {
-		return nil, err
-	} else {
-		return df, nil
-	}
+func (df *dataFrame) Write(p []byte) (n int, err error) {
+	return 0, nil
 }
 
-func (df *DataFrame) ParseHeader(b []byte) error {
+func (df *dataFrame) ParseHook() error {
+	return nil
+}
+
+func (df *dataFrame) Parse(b []byte) error {
+	// Check for header magic word
 	{
 		df.netr = ancillary.NewNetReader(b)
 		hdr, err := df.netr.ReadBytes(magicWordLen)
@@ -50,43 +48,55 @@ func (df *DataFrame) ParseHeader(b []byte) error {
 			return errorHeaderParserFailed
 		}
 	}
-	flags, err := ancillary.GenericNetReader[uint32](df.netr)
-	if err != nil {
-		return errorHeaderParserFailed
+	// Store 32-bit header flags
+	{
+		flags, err := ancillary.GenericNetReader[uint32](df.netr)
+		if err != nil {
+			return errorHeaderParserFailed
+		}
+		df.hdrFlags = HeaderFlags32Type(flags)
 	}
-	df.hdrFlags = HeaderFlags32Type(flags)
+	// Call parser hook
+	if err := df.ParseHook(); err != nil {
+		return err
+	}
+	df.payload = df.netr.Flush()
 	return nil
 }
 
-func (df *DataFrame) HeaderFlags() HeaderFlags32Type {
+func (df *dataFrame) HeaderFlags() HeaderFlags32Type {
 	return df.hdrFlags
 }
 
-func (df *DataFrame) WithHeaderFlag(f HeaderFlags32Type) {
+func (df *dataFrame) WithHeaderFlag(f HeaderFlags32Type) {
 	df.hdrFlags |= f
 }
 
-func (df *DataFrame) AttachData(b []byte) error {
+// AttachData attaches data to the data frame payload.
+func (df *dataFrame) AttachData(in []byte) {
+	l1 := len(df.payload)
+	l2 := len(in)
+	buf := make([]byte, l1+l2)
+	_ = copy(buf, df.payload)
+	_ = copy(buf[l1:], in)
+	df.payload = buf
+}
+
+func (df *dataFrame) Compose() ([]byte, error) {
 	var err error
-	if df.netw.Offset() == 0 {
-		if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
-			return err
-		}
-		if err = ancillary.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
-			return err
-		}
+	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
+		return nil, err
 	}
-	if _, err := df.netw.Write(b); err != nil {
-		return err
+	if err = ancillary.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
+		return nil, err
 	}
-	return nil
+	if _, err = df.netw.Write(df.payload); err != nil {
+		return nil, err
+	}
+	return df.netw.Bytes(), nil
 }
 
-func (df *DataFrame) Compose() []byte {
-	return df.netw.Bytes()
-}
-
-func (df *DataFrame) Payload() []byte {
+func (df *dataFrame) Payload() []byte {
 	if df.netr == nil {
 		panic("trying to get payload from an uninitialized data frame")
 	} else {

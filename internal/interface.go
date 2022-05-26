@@ -2,6 +2,7 @@ package internal
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/internal/grpc/codec"
 	"github.com/go-serv/service/internal/grpc/descriptor"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -37,16 +38,15 @@ type NetworkServerInterface interface {
 }
 
 type clientInterface interface {
-	Client_Endpoint() EndpointInterface
-	Client_NewClient(cc grpc.ClientConnInterface)
-	Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
+	Endpoint() EndpointInterface
+	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
+	NewClient(cc grpc.ClientConnInterface)
+	MessageProcessor() codec.MessageProcessorInterface
 }
 
 type NetworkClientInterface interface {
-	Client_Endpoint() EndpointInterface
-	Client_NewClient(cc grpc.ClientConnInterface)
-	Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
-	Client_NetService() NetworkServiceInterface
+	clientInterface
+	NetService() NetworkServiceInterface
 }
 
 type BaseServiceInterface interface {

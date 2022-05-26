@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func (c *client) Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
+func (c *client) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.TaskInterface) {
 		if c.insecure {
 			creds := insecure.NewCredentials()
@@ -16,9 +16,9 @@ func (c *client) Client_ConnectTask(j job.JobInterface) (job.Init, job.Run, job.
 	}
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()
-		conn, err := grpc.Dial(c.Client_Endpoint().Address(), c.dialOpts...)
+		conn, err := grpc.Dial(c.Endpoint().Address(), c.dialOpts...)
 		task.Assert(err)
-		v.(i.NetworkClientInterface).Client_NewClient(conn)
+		v.(i.NetworkClientInterface).NewClient(conn)
 		task.Done()
 	}
 	return init, run, nil
