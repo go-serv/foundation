@@ -1,8 +1,8 @@
 package service
 
 import (
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
-	"github.com/go-serv/service/internal/grpc/descriptor"
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -23,11 +23,11 @@ type BaseService struct {
 	Name  string
 	State State
 	Cfg   ConfigInterface
-	Sd    descriptor.ServiceDescriptorInterface
+	Sd    i.ServiceDescriptorInterface
 	ancillary.MethodMustBeImplemented
 }
 
-func (s BaseService) Service_Descriptor() descriptor.ServiceDescriptorInterface {
+func (s BaseService) Service_Descriptor() i.ServiceDescriptorInterface {
 	return s.Sd
 }
 

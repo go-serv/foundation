@@ -1,7 +1,8 @@
 package codec
 
 import (
-	"github.com/go-serv/service/internal/grpc/descriptor"
+	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/internal/runtime"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -10,19 +11,17 @@ import (
 // Pre-processor: wire data -> t1 -> t2 -> unmarshaler -> message
 // Post-processor: message -> marshaler -> t2 -> t1 -> wire data
 
-type TaskHandler func(next TaskHandler, in []byte, msg descriptor.MessageDescriptorInterface, df DataFrameInterface) ([]byte, error)
-
 type msgproc struct {
-	codec     CodecInterface
-	preChain  []TaskHandler
-	postChain []TaskHandler
+	codec     i.CodecInterface
+	preChain  []i.MsgProcTaskHandler
+	postChain []i.MsgProcTaskHandler
 }
 
 type msgprocTask struct {
-	proc *msgproc
-	df   DataFrameInterface
-	msg  descriptor.MessageDescriptorInterface
-	data []byte
+	proc       *msgproc
+	df         i.DataFrameInterface
+	methodDesc i.MethodDescriptorInterface
+	data       []byte
 }
 
 type msgprocPreTask struct {
@@ -33,7 +32,7 @@ type msgprocPostTask struct {
 	msgprocTask
 }
 
-func (m *msgproc) NewPreTask(wire []byte, msg proto.Message) (*msgprocPreTask, error) {
+func (m *msgproc) NewPreTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
 	t := &msgprocPreTask{}
 	t.proc = m
 	// Parse incoming data frame
@@ -41,58 +40,76 @@ func (m *msgproc) NewPreTask(wire []byte, msg proto.Message) (*msgprocPreTask, e
 	if err := t.df.Parse(wire); err != nil {
 		return nil, err
 	}
+	//
+	md, err := runtime.Runtime().MethodDescriptorByMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+	t.methodDesc = md
+	//
 	t.data = t.df.Payload()
-	t.msg = descriptor.NewMessageDescriptor(msg)
 	return t, nil
 }
 
-func (m *msgproc) NewPostTask(wire []byte, msg proto.Message) (*msgprocPostTask, error) {
+func (m *msgproc) NewPostTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
 	t := &msgprocPostTask{}
 	t.proc = m
 	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
-	t.df.AttachData(wire)
-	t.msg = descriptor.NewMessageDescriptor(msg)
+	//
+	md, err := runtime.Runtime().MethodDescriptorByMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+	t.methodDesc = md
+	//
+	t.data = wire
 	return t, nil
 }
 
-func (m *msgproc) AddHandlers(pre TaskHandler, post TaskHandler) {
+func (m *msgproc) AddHandlers(pre i.MsgProcTaskHandler, post i.MsgProcTaskHandler) {
 	m.preChain = append(m.preChain, pre)
 	m.postChain = append(m.postChain, post)
 }
 
 func (t *msgprocPreTask) Execute() ([]byte, error) {
-	var outer, inner, curr TaskHandler
-	tailCall := func(next TaskHandler, in []byte, msg descriptor.MessageDescriptorInterface, df DataFrameInterface) ([]byte, error) {
+	var outer, inner, curr i.MsgProcTaskHandler
+	tailCall := func(next i.MsgProcTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
 		return nil, nil
 	}
 	ch := append(t.proc.preChain, tailCall)
 	l1 := len(ch)
 	curr = t.proc.preChain[l1-1]
 	//
-	for i := l1 - 2; i >= 0; i-- {
-		outer, inner = t.proc.preChain[i], curr
-		curr = func(next TaskHandler, in []byte, msg descriptor.MessageDescriptorInterface, df DataFrameInterface) ([]byte, error) {
-			return outer(inner, in, msg, df)
+	for ii := l1 - 2; ii >= 0; ii-- {
+		outer, inner = ch[ii], curr
+		curr = func(next i.MsgProcTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+			return outer(inner, in, md, df)
 		}
 	}
-	return curr(inner, t.data, t.msg, t.df)
+	return curr(inner, t.data, t.methodDesc, t.df)
 }
 
-func (t *msgprocPostTask) Execute() ([]byte, error) {
-	var outer, inner, curr TaskHandler
-	tailCall := func(next TaskHandler, out []byte, msg descriptor.MessageDescriptorInterface, df DataFrameInterface) ([]byte, error) {
+func (t *msgprocPostTask) Execute() (out []byte, err error) {
+	var outer, inner, curr i.MsgProcTaskHandler
+	tailCall := func(next i.MsgProcTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
 		return nil, nil
 	}
 	// Iterate over the post-processor tasks in reverse order
-	ch := append([]TaskHandler{tailCall}, t.proc.postChain...)
+	ch := append([]i.MsgProcTaskHandler{tailCall}, t.proc.postChain...)
 	l1 := len(ch)
-	curr = t.proc.preChain[0]
-	for i := 1; i < l1; i++ {
-		outer, inner = t.proc.preChain[i], curr
-		curr = func(next TaskHandler, out []byte, msg descriptor.MessageDescriptorInterface, df DataFrameInterface) ([]byte, error) {
-			return outer(inner, out, msg, df)
+	curr = t.proc.postChain[0]
+	for ii := 1; ii < l1; ii++ {
+		outer, inner = ch[ii], curr
+		curr = func(next i.MsgProcTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+			return outer(inner, out, md, df)
 		}
 	}
-	return curr(inner, t.data, t.msg, t.df)
+	out, err = curr(inner, t.data, t.methodDesc, t.df)
+	if err != nil {
+		return nil, err
+	}
+	//
+	t.df.WithPayload(out)
+	return t.df.Compose()
 }

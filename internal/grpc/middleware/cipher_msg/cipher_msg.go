@@ -2,17 +2,8 @@ package cipher_msg
 
 import (
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/grpc/codec"
-	"github.com/go-serv/service/internal/grpc/descriptor"
 	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
-	"google.golang.org/protobuf/proto"
 )
-
-type encryptedMessage struct {
-	proto.Message
-	nonce []byte
-	key   []byte
-}
 
 func NewNetCipherServerHandler() *mw_group.GroupItem {
 	reqHandler := func(r i.RequestInterface, svc interface{}) error {
@@ -41,16 +32,24 @@ func NewNetCipherServerHandler() *mw_group.GroupItem {
 
 func NewNetCipherClientHandler(cc i.NetworkClientInterface) *mw_group.GroupItem {
 	netSvc := cc.NetService()
-	pre := func(next codec.TaskHandler, in []byte, msg descriptor.MessageDescriptorInterface, df codec.DataFrameInterface) (out []byte, err error) {
+	pre := func(next i.MsgProcTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) (out []byte, err error) {
 		out = in
-		encrypted := netSvc.Service_InfoMsgEncryption(msg.MethodName())
+		var encrypted bool
+		var name string
+
+		encrypted = netSvc.Service_InfoMsgEncryption(name)
 		if encrypted {
 
 		}
 		return
 	}
-	post := func(next codec.TaskHandler, in []byte, msg descriptor.MessageDescriptorInterface, df codec.DataFrameInterface) (out []byte, err error) {
-		encrypted := netSvc.Service_InfoMsgEncryption(msg.MethodName())
+	post := func(next i.MsgProcTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) (out []byte, err error) {
+		var name string
+		//name, err = msg.MethodName()
+		if err != nil {
+			return nil, err
+		}
+		encrypted := netSvc.Service_InfoMsgEncryption(name)
 		//if encrypted && !df.HeaderFlags().Has(cc.HeaderFlags32Type(net_cc.Encryption)) {
 		//	return nil, status.Error(codes.InvalidArgument, "message must be encrypted")
 		//}
@@ -60,7 +59,7 @@ func NewNetCipherClientHandler(cc i.NetworkClientInterface) *mw_group.GroupItem 
 		return
 	}
 	//
-	cc.MessageProcessor().AddHandlers(pre, post)
+	cc.Codec().Processor().AddHandlers(pre, post)
 	//
 	reqHandler := func(r i.RequestInterface, svc interface{}) error {
 		return nil

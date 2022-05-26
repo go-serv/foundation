@@ -1,6 +1,7 @@
 package codec
 
 import (
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
 )
 
@@ -13,10 +14,11 @@ func NewDataFrame() *dataFrame {
 func NewCodec(name string) *codec {
 	c := &codec{}
 	c.name = name
+	c.proc = newProcessor(c)
 	return c
 }
 
-func NewProcessor(c CodecInterface) *msgproc {
+func newProcessor(c i.CodecInterface) *msgproc {
 	p := &msgproc{}
 	p.codec = c
 	return p

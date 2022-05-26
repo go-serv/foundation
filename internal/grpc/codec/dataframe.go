@@ -2,18 +2,13 @@ package codec
 
 import (
 	"bytes"
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 const magicWordLen = 8
-
-type HeaderFlags32Type uint32
-
-func (f HeaderFlags32Type) Has(chkFlag HeaderFlags32Type) bool {
-	return f&chkFlag != 0
-}
 
 var (
 	// head -c 8 /dev/urandom | hexdump -C
@@ -22,7 +17,7 @@ var (
 )
 
 type dataFrame struct {
-	hdrFlags HeaderFlags32Type
+	hdrFlags i.HeaderFlags32Type
 	payload  []byte
 	netw     *ancillary.NetWriter
 	netr     *ancillary.NetReader
@@ -54,7 +49,7 @@ func (df *dataFrame) Parse(b []byte) error {
 		if err != nil {
 			return errorHeaderParserFailed
 		}
-		df.hdrFlags = HeaderFlags32Type(flags)
+		df.hdrFlags = i.HeaderFlags32Type(flags)
 	}
 	// Call parser hook
 	if err := df.ParseHook(); err != nil {
@@ -64,11 +59,11 @@ func (df *dataFrame) Parse(b []byte) error {
 	return nil
 }
 
-func (df *dataFrame) HeaderFlags() HeaderFlags32Type {
+func (df *dataFrame) HeaderFlags() i.HeaderFlags32Type {
 	return df.hdrFlags
 }
 
-func (df *dataFrame) WithHeaderFlag(f HeaderFlags32Type) {
+func (df *dataFrame) WithHeaderFlag(f i.HeaderFlags32Type) {
 	df.hdrFlags |= f
 }
 
@@ -102,4 +97,8 @@ func (df *dataFrame) Payload() []byte {
 	} else {
 		return df.netr.Flush()
 	}
+}
+
+func (df *dataFrame) WithPayload(b []byte) {
+	df.payload = b
 }

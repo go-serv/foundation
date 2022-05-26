@@ -2,8 +2,7 @@ package client
 
 import (
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/grpc/codec"
-	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
+	net_cc "github.com/go-serv/service/internal/grpc/codec/net/client"
 	md_cipher "github.com/go-serv/service/internal/grpc/middleware/cipher_msg"
 	mw_net "github.com/go-serv/service/internal/grpc/middleware/mw_group/net"
 	net_service "github.com/go-serv/service/internal/service/net"
@@ -27,13 +26,13 @@ func NewNetClient(svcName string, e i.EndpointInterface) *netClient {
 	c := &netClient{}
 	c.client = newClient(e)
 	c.svc = net_service.NewNetworkService(svcName)
-	// Create message post- and pre-processor
-	netCodec := encoding.GetCodec(net_cc.Name).(codec.CodecInterface)
-	c.msgProc = codec.NewProcessor(netCodec)
+	// Set client codec
+	cc := encoding.GetCodec(net_cc.Name).(i.CodecInterface)
+	c.WithCodec(cc)
 	// Create default group of the client middlewares
 	c.mwGroup = c.defaultMiddlewareGroup()
 	c.dialOpts = append(c.dialOpts,
-		grpc.WithDefaultCallOptions(grpc.ForceCodec(netCodec)),
+		grpc.WithDefaultCallOptions(grpc.ForceCodec(cc)),
 		grpc.WithChainUnaryInterceptor(c.mwGroup.UnaryClientInterceptor()),
 	)
 	return c

@@ -1,6 +1,7 @@
 package descriptor
 
 import (
+	i "github.com/go-serv/service/internal"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -8,7 +9,7 @@ import (
 
 type (
 	protoExtMap map[*protoimpl.ExtensionInfo]*protoExtValue
-	methodMap   map[string][]*methodDescriptor
+	methodMap   map[protoreflect.FullName][]*methodDescriptor
 )
 
 type protoExtValue struct {
@@ -47,25 +48,22 @@ type messageDescriptor struct {
 	proto.Message
 }
 
-func (m *messageDescriptor) MethodName() string {
-	return ""
-}
-
 type methodDescriptor struct {
 	protoreflect.MethodDescriptor
 	protoExts protoExtMap
 }
 
-func (m *methodDescriptor) Name() string {
-	return string(m.MethodDescriptor.FullName())
-}
-
-func (m *methodDescriptor) ShortName() string {
-	return string(m.MethodDescriptor.Name())
-}
-
 func (m *methodDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 	return m.protoExts.get(key)
+}
+
+//
+// Service descriptor
+//
+
+// Name returns the fully-qualified name of the service
+func (s *serviceDescriptor) Name() string {
+	return string(s.FullName())
 }
 
 func (s *serviceDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
@@ -82,16 +80,20 @@ func (r *serviceDescriptor) AddMethodProtoExt(ext *protoimpl.ExtensionInfo) {
 	r.methodProtoExts[ext] = v
 }
 
-func (r *serviceDescriptor) FindMethodDescriptorByName(fullName string) *methodDescriptor {
-	if _, has := r.methods[fullName]; !has {
-		return nil
+func (r *serviceDescriptor) MethodDescriptorByName(key protoreflect.FullName) (i.MethodDescriptorInterface, bool) {
+	if _, has := r.methods[key]; !has {
+		return nil, false
 	}
-	for _, desc := range r.methods[fullName] {
-		if desc.Name() == fullName {
-			return desc
+	for _, desc := range r.methods[key] {
+		if desc.MethodDescriptor.FullName() == key {
+			return desc, true
 		}
 	}
-	return nil
+	return nil, false
+}
+
+func (r *serviceDescriptor) Descriptor() protoreflect.ServiceDescriptor {
+	return r.ServiceDescriptor
 }
 
 func (r *serviceDescriptor) Populate() {
@@ -102,7 +104,7 @@ func (r *serviceDescriptor) Populate() {
 	for i := 0; i < methods.Len(); i++ {
 		descriptor := methods.Get(i)
 		mDesc := NewMethodDescriptor(descriptor, r.methodProtoExts)
-		key := mDesc.Name()
+		key := mDesc.MethodDescriptor.FullName()
 		if _, has := r.methods[key]; !has {
 			r.methods[key] = make([]*methodDescriptor, methods.Len())
 		}

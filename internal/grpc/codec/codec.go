@@ -1,6 +1,7 @@
 package codec
 
 import (
+	i "github.com/go-serv/service/internal"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -11,7 +12,7 @@ var (
 
 type codec struct {
 	name string
-	proc MessageProcessorInterface
+	proc *msgproc
 }
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
@@ -52,10 +53,10 @@ func (c *codec) Name() string {
 	return c.name
 }
 
-func (c *codec) NewDataFrame() DataFrameInterface {
+func (c *codec) NewDataFrame() i.DataFrameInterface {
 	return NewDataFrame()
 }
 
-func (c *codec) Processor() MessageProcessorInterface {
+func (c *codec) Processor() i.MessageProcessorInterface {
 	return c.proc
 }
