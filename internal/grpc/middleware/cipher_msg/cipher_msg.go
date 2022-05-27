@@ -59,7 +59,7 @@ func NewNetCipherClientHandler(cc i.NetworkClientInterface) *mw_group.GroupItem 
 		return
 	}
 	//
-	cc.Codec().Processor().AddHandlers(pre, post)
+	cc.Codec().ClientProcessor().AddHandlers(pre, post)
 	//
 	reqHandler := func(r i.RequestInterface, svc interface{}) error {
 		return nil

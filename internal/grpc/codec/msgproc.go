@@ -24,16 +24,16 @@ type msgprocTask struct {
 	data       []byte
 }
 
-type msgprocPreTask struct {
+type unmarshalerTask struct {
 	msgprocTask
 }
 
-type msgprocPostTask struct {
+type marshalerTask struct {
 	msgprocTask
 }
 
-func (m *msgproc) NewPreTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
-	t := &msgprocPreTask{}
+func (m *msgproc) NewUnmarshalTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
+	t := &unmarshalerTask{}
 	t.proc = m
 	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
@@ -51,8 +51,8 @@ func (m *msgproc) NewPreTask(wire []byte, msg proto.Message) (i.MessageProcessTa
 	return t, nil
 }
 
-func (m *msgproc) NewPostTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
-	t := &msgprocPostTask{}
+func (m *msgproc) NewMarshalTask(wire []byte, msg proto.Message) (i.MessageProcessTaskInterface, error) {
+	t := &marshalerTask{}
 	t.proc = m
 	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
@@ -72,10 +72,10 @@ func (m *msgproc) AddHandlers(pre i.MsgProcTaskHandler, post i.MsgProcTaskHandle
 	m.postChain = append(m.postChain, post)
 }
 
-func (t *msgprocPreTask) Execute() ([]byte, error) {
+func (t *unmarshalerTask) Execute() ([]byte, error) {
 	var outer, inner, curr i.MsgProcTaskHandler
 	tailCall := func(next i.MsgProcTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-		return nil, nil
+		return in, nil
 	}
 	ch := append(t.proc.preChain, tailCall)
 	l1 := len(ch)
@@ -90,15 +90,15 @@ func (t *msgprocPreTask) Execute() ([]byte, error) {
 	return curr(inner, t.data, t.methodDesc, t.df)
 }
 
-func (t *msgprocPostTask) Execute() (out []byte, err error) {
+func (t *marshalerTask) Execute() (out []byte, err error) {
 	var outer, inner, curr i.MsgProcTaskHandler
 	tailCall := func(next i.MsgProcTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-		return nil, nil
+		return out, nil
 	}
 	// Iterate over the post-processor tasks in reverse order
 	ch := append([]i.MsgProcTaskHandler{tailCall}, t.proc.postChain...)
 	l1 := len(ch)
-	curr = t.proc.postChain[0]
+	curr = ch[0]
 	for ii := 1; ii < l1; ii++ {
 		outer, inner = ch[ii], curr
 		curr = func(next i.MsgProcTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {

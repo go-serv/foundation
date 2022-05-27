@@ -92,11 +92,7 @@ func (df *dataFrame) Compose() ([]byte, error) {
 }
 
 func (df *dataFrame) Payload() []byte {
-	if df.netr == nil {
-		panic("trying to get payload from an uninitialized data frame")
-	} else {
-		return df.netr.Flush()
-	}
+	return df.payload
 }
 
 func (df *dataFrame) WithPayload(b []byte) {

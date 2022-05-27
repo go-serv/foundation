@@ -8,4 +8,6 @@ import (
 type RuntimeInterface interface {
 	NetworkServices() []i.NetworkServiceInterface
 	MethodDescriptorByMessage(proto.Message) (i.MethodDescriptorInterface, error)
+	IsRequestMessage(msg proto.Message) (bool, error)
+	IsResponseMessage(msg proto.Message) (bool, error)
 }

@@ -53,6 +53,10 @@ type methodDescriptor struct {
 	protoExts protoExtMap
 }
 
+func (m *methodDescriptor) Interface() protoreflect.MethodDescriptor {
+	return m.MethodDescriptor
+}
+
 func (m *methodDescriptor) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 	return m.protoExts.get(key)
 }

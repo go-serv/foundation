@@ -60,6 +60,19 @@ func Runtime() *runtime {
 	return rt
 }
 
+func (r *runtime) IsRequestMessage(msg proto.Message) (bool, error) {
+	m, err := r.MethodDescriptorByMessage(msg)
+	if err != nil {
+		return false, err
+	}
+	return m.Interface().Input().FullName() == msg.ProtoReflect().Descriptor().FullName(), nil
+}
+
+func (r *runtime) IsResponseMessage(msg proto.Message) (bool, error) {
+	ok, err := r.IsRequestMessage(msg)
+	return !ok, err
+}
+
 func (r *runtime) MethodDescriptorByMessage(msg proto.Message) (i.MethodDescriptorInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	//

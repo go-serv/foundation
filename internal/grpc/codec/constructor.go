@@ -14,7 +14,8 @@ func NewDataFrame() *dataFrame {
 func NewCodec(name string) *codec {
 	c := &codec{}
 	c.name = name
-	c.proc = newProcessor(c)
+	c.clientProc = newProcessor(c)
+	c.serviceProc = newProcessor(c)
 	return c
 }
 

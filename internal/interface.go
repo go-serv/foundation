@@ -19,6 +19,7 @@ type ServiceDescriptorInterface interface {
 }
 
 type MethodDescriptorInterface interface {
+	Interface() protoreflect.MethodDescriptor
 	Get(key *protoimpl.ExtensionInfo) (interface{}, bool)
 }
 
@@ -72,13 +73,14 @@ type MessageProcessTaskInterface interface {
 
 type MessageProcessorInterface interface {
 	AddHandlers(pre MsgProcTaskHandler, post MsgProcTaskHandler)
-	NewPreTask(wire []byte, msg proto.Message) (MessageProcessTaskInterface, error)
-	NewPostTask(wire []byte, msg proto.Message) (MessageProcessTaskInterface, error)
+	NewUnmarshalTask(wire []byte, msg proto.Message) (MessageProcessTaskInterface, error)
+	NewMarshalTask(wire []byte, msg proto.Message) (MessageProcessTaskInterface, error)
 }
 
 type CodecInterface interface {
 	encoding.Codec
-	Processor() MessageProcessorInterface
+	ServiceProcessor() MessageProcessorInterface
+	ClientProcessor() MessageProcessorInterface
 	NewDataFrame() DataFrameInterface
 }
 
