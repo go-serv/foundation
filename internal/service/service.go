@@ -24,6 +24,7 @@ type BaseService struct {
 	State State
 	Cfg   ConfigInterface
 	Sd    i.ServiceDescriptorInterface
+	cc    i.CodecInterface
 	ancillary.MethodMustBeImplemented
 }
 

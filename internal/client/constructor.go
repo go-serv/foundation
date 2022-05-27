@@ -2,12 +2,11 @@ package client
 
 import (
 	i "github.com/go-serv/service/internal"
-	net_cc "github.com/go-serv/service/internal/grpc/codec/net/client"
+	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	md_cipher "github.com/go-serv/service/internal/grpc/middleware/cipher_msg"
 	mw_net "github.com/go-serv/service/internal/grpc/middleware/mw_group/net"
 	net_service "github.com/go-serv/service/internal/service/net"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/encoding"
 )
 
 func newClient(e i.EndpointInterface) client {
@@ -27,7 +26,7 @@ func NewNetClient(svcName string, e i.EndpointInterface) *netClient {
 	c.client = newClient(e)
 	c.svc = net_service.NewNetworkService(svcName)
 	// Set client codec
-	cc := encoding.GetCodec(net_cc.Name).(i.CodecInterface)
+	cc := net_cc.NewOrRegistered(svcName)
 	c.WithCodec(cc)
 	// Create default group of the client middlewares
 	c.mwGroup = c.defaultMiddlewareGroup()

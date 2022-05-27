@@ -1,4 +1,4 @@
-package server_test
+package net_parcel
 
 import (
 	"context"
@@ -47,6 +47,16 @@ func (tf *testFixtures) finalize() {
 		tf.t.Fatalf("client job failed with %v\n", err)
 	}
 }
+
+//func TestRun(t *testing.T) {
+//	//cwd, _ := os.Getwd()
+//	cmd := exec.Command("go", "run", "/home/pihpah/go/src/github.com/go-serv/service/tests/server/main.go")
+//	if err := cmd.Run(); err != nil {
+//		t.Fatalf("error while running test server: %s", err.Error())
+//	}
+//	o, _ := cmd.Output()
+//	fmt.Printf("got: %v\n", o)
+//}
 
 func TestCryptoNonce(t *testing.T) {
 	tf := setup(t)

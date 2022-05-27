@@ -2,7 +2,6 @@ package net
 
 import (
 	i "github.com/go-serv/service/internal"
-	_ "github.com/go-serv/service/internal/grpc/codec/net"
 	mw_cipher "github.com/go-serv/service/internal/grpc/middleware/cipher_msg"
 	mw "github.com/go-serv/service/internal/grpc/middleware/mw_group/net"
 	mw_session "github.com/go-serv/service/internal/grpc/middleware/net_session"

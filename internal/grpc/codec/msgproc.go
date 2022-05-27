@@ -79,7 +79,7 @@ func (t *msgprocPreTask) Execute() ([]byte, error) {
 	}
 	ch := append(t.proc.preChain, tailCall)
 	l1 := len(ch)
-	curr = t.proc.preChain[l1-1]
+	curr = ch[l1-1]
 	//
 	for ii := l1 - 2; ii >= 0; ii-- {
 		outer, inner = ch[ii], curr
