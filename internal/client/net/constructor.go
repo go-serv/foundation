@@ -22,6 +22,6 @@ func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *netClient 
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
 	cipher_msg.NetClientInit(c)
-	runtime.Runtime().RegisterNetworkClient(svcName, c)
+	runtime.Runtime().RegisterNetworkClient(c)
 	return c
 }

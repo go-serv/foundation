@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrMethodDescriptorNotFound = errors.New("")
+	ErrDescriptorNotFound       = errors.New("")
 )
 
 type registryKey string
@@ -36,26 +37,30 @@ type runtime struct {
 	netClients   registry
 }
 
-func (r *runtime) RegisterNetworkService(svcName protoreflect.FullName, svc i.NetworkServiceInterface) {
-	k := registryKey(svcName)
-	if _, ok := r.netServices[registryKey(svcName)]; ok {
-		panic(fmt.Sprintf("network service '%s' already registered", svcName))
+func (r *runtime) ErrorWrapper(e error) {
+	//switch _, e.
+}
+
+func (r *runtime) RegisterNetworkService(svc i.NetworkServiceInterface) {
+	k := registryKey(svc.Name())
+	if _, ok := r.netServices[k]; ok {
+		panic(fmt.Sprintf("network service '%s' already registered", svc.Name()))
 	}
 	r.netServices[k] = svc
 }
 
-func (r *runtime) RegisterLocalService(svcName protoreflect.FullName, svc i.LocalServiceInterface) {
-	k := registryKey(svcName)
+func (r *runtime) RegisterLocalService(svc i.LocalServiceInterface) {
+	k := registryKey(svc.Name())
 	if _, ok := r.localClients[k]; ok {
-		panic(fmt.Sprintf("Only one local service is allowed per application, '%s' already registered", ""))
+		panic(fmt.Sprintf("Only one local service is allowed per application, '%s' already registered", svc.Name()))
 	}
 	r.localClients[k] = svc
 }
 
-func (r *runtime) RegisterNetworkClient(svcName protoreflect.FullName, c i.NetworkClientInterface) {
-	k := registryKey(svcName)
+func (r *runtime) RegisterNetworkClient(c i.NetworkClientInterface) {
+	k := registryKey(c.ServiceName())
 	if _, ok := r.netClients[k]; ok {
-		panic(fmt.Sprintf("A network client for '%s' already registered", svcName))
+		panic(fmt.Sprintf("A network client for '%s' already registered", c.ServiceName()))
 	}
 	r.netClients[k] = c
 }

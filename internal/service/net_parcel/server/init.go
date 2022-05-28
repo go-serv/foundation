@@ -8,5 +8,5 @@ import (
 func init() {
 	svc := new(netParcel)
 	svc.NetworkServiceInterface = net.NewNetworkService(Name)
-	rt.Runtime().RegisterNetworkService(Name, svc)
+	rt.Runtime().RegisterNetworkService(svc)
 }
