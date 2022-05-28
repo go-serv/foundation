@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var UnixFilePerm uint32 = 0600
+
 func NewSharedMemory(objname string, size int) *blockInfo {
 	b := new(blockInfo)
 	if objname == "" {
@@ -19,7 +21,7 @@ func NewSharedMemory(objname string, size int) *blockInfo {
 
 func (b *blockInfo) Allocate() (err error) {
 	var fd int
-	fd, err = unix.Open(b.objname, unix.O_CREAT|unix.O_RDWR|unix.O_NOFOLLOW, 0600)
+	fd, err = unix.Open(b.objname, unix.O_CREAT|unix.O_RDWR|unix.O_NOFOLLOW, UnixFilePerm)
 	if err != nil {
 		return
 	}
@@ -40,7 +42,7 @@ func (b *blockInfo) Allocate() (err error) {
 
 func (b *blockInfo) Read() (err error) {
 	var fd int
-	fd, err = unix.Open(b.objname, unix.O_RDWR, 0600)
+	fd, err = unix.Open(b.objname, unix.O_RDWR, UnixFilePerm)
 	if err != nil {
 		return
 	}
