@@ -1,7 +1,7 @@
-package net
+package local
 
 import i "github.com/go-serv/service/internal"
 
-type netServer struct {
+type localServer struct {
 	i.ServerInterface
 }

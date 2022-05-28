@@ -50,11 +50,11 @@ func (r *runtime) RegisterNetworkService(svc i.NetworkServiceInterface) {
 }
 
 func (r *runtime) RegisterLocalService(svc i.LocalServiceInterface) {
-	k := registryKey(svc.Name())
-	if _, ok := r.localClients[k]; ok {
-		panic(fmt.Sprintf("Only one local service is allowed per application, '%s' already registered", svc.Name()))
+	if len(r.localService) > 0 {
+		panic(fmt.Sprintf("Only one local service is allowed per application"))
 	}
-	r.localClients[k] = svc
+	k := registryKey(svc.Name())
+	r.localService[k] = svc
 }
 
 func (r *runtime) RegisterNetworkClient(c i.NetworkClientInterface) {
@@ -73,6 +73,10 @@ func (r *runtime) RegisterLocalClient(svcName protoreflect.FullName, c i.LocalCl
 	r.localClients[k] = c
 }
 
+func (r *runtime) RegisteredServices() []i.ServiceInterface {
+	return genericRegistryAsSlice[i.ServiceInterface](r.netServices, r.localService)
+}
+
 func (r *runtime) NetworkServices() []i.NetworkServiceInterface {
 	return genericRegistryAsSlice[i.NetworkServiceInterface](r.netServices)
 }
@@ -82,8 +86,9 @@ func (r *runtime) NetworkClients() []i.NetworkClientInterface {
 }
 
 func (r *runtime) LocalService() i.LocalServiceInterface {
-	//s := genericRegistryAsSlice[i.LocalClientInterface](r.localService)
-	//return s[0]
+	for _, v := range r.localService {
+		return v.(i.LocalServiceInterface)
+	}
 	return nil
 }
 

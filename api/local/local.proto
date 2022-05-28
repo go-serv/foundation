@@ -1,3 +1,20 @@
 syntax = "proto3";
 
+import "go_serv/msg_ext.proto";
+
 package go_serv.local;
+
+message LargeRequest {
+  message Request {
+    option (.go_serv.local_shm_ipc) = true;
+    bytes data = 1;
+    string ping = 2;
+  }
+  message Response {
+    string pong = 2;
+  }
+}
+
+service Sample {
+  rpc DoLargeRequest(LargeRequest.Request) returns (LargeRequest.Response) { }
+}

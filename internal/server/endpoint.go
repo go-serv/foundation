@@ -33,6 +33,13 @@ type tcpEndpoint struct {
 	tlsCfg        *tls.Config
 }
 
+func (e *endpoint) beforeServeInit() {
+	e.grpcSrv = grpc.NewServer(e.srv.GrpcServerOptions()...)
+	for _, svc := range rt.Runtime().RegisteredServices() {
+		svc.Register(e.grpcSrv)
+	}
+}
+
 func (e *tcpEndpoint) serveInit() {
 	//interceptors := grpc.ChainUnaryInterceptor(e.srv.MiddlewareGroup().UnaryServerInterceptor())
 	//e.srv.AddGrpcServerOption(interceptors)
@@ -68,7 +75,7 @@ func (e *tcpEndpoint) listen(network string) error {
 }
 
 func (e *tcpEndpoint) tcpServe() error {
-	e.serveInit()
+	e.beforeServeInit()
 	if !e.httpTransport {
 		if err := e.grpcSrv.Serve(e.lis); err != nil {
 			return err
@@ -102,20 +109,6 @@ func (e *tcp6Endpoint) Listen() error {
 	return e.listen(Tcp6Network)
 }
 
-//func (e *endpoint) netServeInit() {
-//	for _, svc := range rt.Runtime().NetworkServices() {
-//		svc.Register(e.grpcSrv)
-//	}
-//}
-//
-//func (e *localEndpoint) unixServe() error {
-//	e.serveInit()
-//	if err := e.grpcSrv.Serve(e.lis); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-
 //
 // Local endpoint
 //
@@ -126,4 +119,26 @@ type localEndpoint struct {
 
 func (e *localEndpoint) Address() string {
 	return e.pathname
+}
+
+func (e *localEndpoint) Listen() error {
+	var err error
+	var unixAddr *net.UnixAddr
+	unixAddr, err = net.ResolveUnixAddr(UnixDomainSocket, e.pathname)
+	if err != nil {
+		return err
+	}
+	e.lis, err = net.ListenUnix(UnixDomainSocket, unixAddr)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *localEndpoint) unixServe() error {
+	e.beforeServeInit()
+	if err := e.grpcSrv.Serve(e.lis); err != nil {
+		return err
+	}
+	return nil
 }

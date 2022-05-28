@@ -34,22 +34,6 @@ type MiddlewareGroupInterface interface {
 	UnaryClientInterceptor() grpc.UnaryClientInterceptor
 }
 
-type ServerInterface interface {
-	AddGrpcServerOption(opt grpc.ServerOption)
-	GrpcServerOptions() []grpc.ServerOption
-	AddEndpoint(endpoint EndpointInterface)
-	Endpoints() []EndpointInterface
-	Start()
-	Stop()
-	MainJob() job.JobInterface
-	MiddlewareGroup() MiddlewareGroupInterface
-	WithMiddlewareGroup(mg MiddlewareGroupInterface)
-}
-
-type NetworkServerInterface interface {
-	ServerInterface
-}
-
 type MetaInterface interface {
 }
 

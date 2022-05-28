@@ -7,8 +7,8 @@ import (
 
 func NewNetServer() *netServer {
 	srv := new(netServer)
-	srv.Server = server.NewBaseServer()
-	//srv.Server.WithMiddlewareGroup(srv.defaultMiddlewareGroup())
+	srv.ServerInterface = server.NewServer()
+	//srv.server.WithMiddlewareGroup(srv.defaultMiddlewareGroup())
 	return srv
 }
 

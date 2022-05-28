@@ -1,6 +1,8 @@
 package server
 
-import job "github.com/AgentCoop/go-work"
+import (
+	job "github.com/AgentCoop/go-work"
+)
 
 func NewEndpoint() endpoint {
 	e := endpoint{}
@@ -26,14 +28,8 @@ func NewTcp6Endpoint(hostname string, port int) *tcp6Endpoint {
 	return e
 }
 
-func NewBaseServer() Server {
-	s := Server{}
+func NewServer() *server {
+	s := new(server)
 	s.mainJob = job.NewJob(nil)
 	return s
-}
-
-func NewLocalServer() *localServer {
-	srv := new(localServer)
-	srv.Server = NewBaseServer()
-	return srv
 }

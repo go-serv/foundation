@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package go_serv;
+
+extend google.protobuf.MessageOptions {
+  // If set to true enables shared memory IPC for gRPC message transmission.
+  // Should be used only for large messages.
+  bool local_shm_ipc = 60100;
+}

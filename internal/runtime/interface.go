@@ -11,6 +11,7 @@ type RuntimeInterface interface {
 	IsRequestMessage(msg proto.Message) (bool, error)
 	IsResponseMessage(msg proto.Message) (bool, error)
 
+	RegisteredServices() []i.ServiceInterface
 	RegisterLocalClient(i.LocalClientInterface)
 	RegisterNetworkClient(i.NetworkClientInterface)
 }
