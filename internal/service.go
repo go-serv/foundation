@@ -11,10 +11,10 @@ type ServiceInterface interface {
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
 	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
-	Service_Descriptor() ServiceDescriptorInterface
-	Service_AddServiceProtoExtension(info *protoimpl.ExtensionInfo)
-	Service_AddMethodProtoExtension(info *protoimpl.ExtensionInfo)
-	Service_Register(srv *grpc.Server)
+	Descriptor() ServiceDescriptorInterface
+	AddServiceProtoExtension(info *protoimpl.ExtensionInfo)
+	AddMethodProtoExtension(info *protoimpl.ExtensionInfo)
+	Register(srv *grpc.Server)
 }
 
 type NetworkServiceInterface interface {
@@ -24,8 +24,8 @@ type NetworkServiceInterface interface {
 	Service_InfoNewSession(methodName string) int32
 	Service_InfoMsgEncryption(methodName string) bool
 
-	Service_EncriptionKey() []byte
-	Service_WithEncriptionKey([]byte)
+	EncriptionKey() []byte
+	WithEncriptionKey([]byte)
 }
 
 type LocalServiceInterface interface {

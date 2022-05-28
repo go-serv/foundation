@@ -113,7 +113,7 @@ func (r *runtime) ServiceDescriptorByMessage(msg proto.Message) (i.ServiceDescri
 	//
 	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
 	for _, svc := range items {
-		svcDesc := svc.(i.ServiceInterface).Service_Descriptor()
+		svcDesc := svc.(i.ServiceInterface).Descriptor()
 		methods := svcDesc.Descriptor().Methods()
 		l1 := methods.Len()
 		for ii := 0; ii < l1; ii++ {
@@ -133,7 +133,7 @@ func (r *runtime) MethodDescriptorByMessage(msg proto.Message) (i.MethodDescript
 	//
 	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
 	for _, svc := range items {
-		svcDesc := svc.(i.ServiceInterface).Service_Descriptor()
+		svcDesc := svc.(i.ServiceInterface).Descriptor()
 		methods := svcDesc.Descriptor().Methods()
 		l1 := methods.Len()
 		for ii := 0; ii < l1; ii++ {

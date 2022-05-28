@@ -14,12 +14,12 @@ func (b *netService) Service_OnNewSession(req i.RequestInterface) error {
 	return nil
 }
 
-func (b *netService) Service_EncriptionKey() []byte {
+func (b *netService) EncriptionKey() []byte {
 	//TODO implement me
 	return []byte("secret")
 }
 
-func (b *netService) Service_WithEncriptionKey(key []byte) {
+func (b *netService) WithEncriptionKey(key []byte) {
 	b.encKey = key
 }
 

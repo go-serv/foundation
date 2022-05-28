@@ -14,20 +14,24 @@ import (
 
 var Name = protoreflect.FullName(proto.NetParcel_ServiceDesc.ServiceName)
 
-type netParcel struct {
-	i.NetworkServiceInterface
-	proto.NetParcelServer
+type serviceImpl struct {
+	proto.UnimplementedNetParcelServer
 }
 
-func (s *netParcel) Service_Register(srv *grpc.Server) {
-	proto.RegisterNetParcelServer(srv, s)
+type netParcel struct {
+	i.NetworkServiceInterface
+	impl serviceImpl
+}
+
+func (s *netParcel) Register(srv *grpc.Server) {
+	proto.RegisterNetParcelServer(srv, s.impl)
 }
 
 func (s *netParcel) Service_OnNewSession(req i.RequestInterface) error {
 	return nil
 }
 
-func (s *netParcel) GetCryptoNonce(ctx context.Context, req *proto.CryptoNonce_Request) (*proto.CryptoNonce_Response, error) {
+func (s serviceImpl) GetCryptoNonce(ctx context.Context, req *proto.CryptoNonce_Request) (*proto.CryptoNonce_Response, error) {
 	res := &proto.CryptoNonce_Response{}
 	nonce := make([]byte, req.GetLen())
 	rand.Read(nonce)

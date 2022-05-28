@@ -40,7 +40,7 @@ func (e *tcpEndpoint) serveInit() {
 	e.grpcSrv = grpc.NewServer(e.srv.GrpcServerOptions()...)
 	// Register all network gRPC services
 	for _, svc := range rt.Runtime().NetworkServices() {
-		svc.Service_Register(e.grpcSrv)
+		svc.Register(e.grpcSrv)
 	}
 }
 
@@ -104,7 +104,7 @@ func (e *tcp6Endpoint) Listen() error {
 
 //func (e *endpoint) netServeInit() {
 //	for _, svc := range rt.Runtime().NetworkServices() {
-//		svc.Service_Register(e.grpcSrv)
+//		svc.Register(e.grpcSrv)
 //	}
 //}
 //

@@ -25,7 +25,6 @@ type service struct {
 	codec        i.CodecInterface
 	codecMwGroup i.CodecMiddlewareGroupInterface
 	State        State
-	Cfg          ConfigInterface
 	sd           i.ServiceDescriptorInterface
 	ancillary.MethodMustBeImplemented
 }
@@ -47,15 +46,15 @@ func (s *service) CodecMiddlewareGroup() i.CodecMiddlewareGroupInterface {
 	return s.codecMwGroup
 }
 
-func (s service) Service_Descriptor() i.ServiceDescriptorInterface {
+func (s service) Descriptor() i.ServiceDescriptorInterface {
 	return s.sd
 }
 
-func (s service) Service_AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
+func (s service) AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
 	s.sd.AddMethodProtoExt(ext)
 }
 
-func (s service) Service_AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
+func (s service) AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
 	s.sd.AddServiceProtoExt(ext)
 }
 
@@ -63,6 +62,6 @@ func (s service) Service_State() State {
 	return s.State
 }
 
-func (b service) Service_Register(srv *grpc.Server) {
+func (b service) Register(srv *grpc.Server) {
 	b.MethodMustBeImplemented.Panic()
 }
