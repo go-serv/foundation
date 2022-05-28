@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/go-serv/service/internal/server"
+	i "github.com/go-serv/service/internal"
 	net_srv "github.com/go-serv/service/internal/server/net"
 	"github.com/go-serv/service/internal/service"
 	"google.golang.org/grpc"
@@ -11,7 +11,7 @@ import (
 type serverInterface interface {
 	Service_Name(bool) string
 	Service_Register(srv *grpc.Server)
-	AddEndpoint(endpoint server.EndpointInterface)
+	AddEndpoint(endpoint i.EndpointInterface)
 	Start()
 	Stop()
 	State() service.State
@@ -20,7 +20,7 @@ type serverInterface interface {
 }
 
 type NetworkServerApi interface {
-	server.NetworkServerInterface
+	i.NetworkServerInterface
 }
 
 type LocalServerApi interface {

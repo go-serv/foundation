@@ -3,10 +3,11 @@ package client
 import (
 	i "github.com/go-serv/service/internal"
 	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
-	md_cipher "github.com/go-serv/service/internal/grpc/middleware/cipher_msg"
-	mw_net "github.com/go-serv/service/internal/grpc/middleware/mw_group/net"
+	"github.com/go-serv/service/internal/middleware/codec/cipher_msg"
+	"github.com/go-serv/service/internal/runtime"
 	net_service "github.com/go-serv/service/internal/service/net"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func newClient(e i.EndpointInterface) client {
@@ -18,27 +19,23 @@ func newClient(e i.EndpointInterface) client {
 
 func NewLocalClient(e i.EndpointInterface) *localClient {
 	c := &localClient{newClient(e)}
+	//runtime.Runtime().RegisterLocalClient(svcName, c)
 	return c
 }
 
-func NewNetClient(svcName string, e i.EndpointInterface) *netClient {
+func NewNetClient(svcName protoreflect.FullName, e i.EndpointInterface) *netClient {
 	c := &netClient{}
 	c.client = newClient(e)
 	c.svc = net_service.NewNetworkService(svcName)
 	// Set client codec
-	cc := net_cc.NewOrRegistered(svcName)
-	c.WithCodec(cc)
-	// Create default group of the client middlewares
-	c.mwGroup = c.defaultMiddlewareGroup()
+	codec := net_cc.NewOrRegistered(string(svcName))
+	c.WithCodec(codec)
+	cipher_msg.NetClientInit(c)
+	//
 	c.dialOpts = append(c.dialOpts,
-		grpc.WithDefaultCallOptions(grpc.ForceCodec(cc)),
-		grpc.WithChainUnaryInterceptor(c.mwGroup.UnaryClientInterceptor()),
+		grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)),
+		//grpc.WithChainUnaryInterceptor(c.mwGroup.UnaryClientInterceptor()),
 	)
+	runtime.Runtime().RegisterNetworkClient(svcName, c)
 	return c
-}
-
-func (c *netClient) defaultMiddlewareGroup() i.MiddlewareGroupInterface {
-	g := mw_net.NewMiddlewareGroup(c)
-	g.AddItem(md_cipher.NewNetCipherClientHandler(c))
-	return g
 }

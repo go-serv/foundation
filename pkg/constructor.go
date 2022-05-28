@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/go-serv/service/internal/server"
+	i "github.com/go-serv/service/internal"
 	srv "github.com/go-serv/service/internal/server"
 )
 
@@ -9,11 +9,11 @@ import (
 //	return .NewNetworkService(name, cfg)
 //}
 
-func NewTcp4Endpoint(hostname string, port int) server.EndpointInterface {
+func NewTcp4Endpoint(hostname string, port int) i.EndpointInterface {
 	return srv.NewTcp4Endpoint(hostname, port)
 }
 
-func NewTcp6Endpoint(hostname string, port int) server.EndpointInterface {
+func NewTcp6Endpoint(hostname string, port int) i.EndpointInterface {
 	return srv.NewTcp6Endpoint(hostname, port)
 }
 

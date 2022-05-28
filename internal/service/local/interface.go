@@ -5,5 +5,5 @@ import (
 )
 
 type LocalServiceInterface interface {
-	i.BaseServiceInterface
+	i.ServiceInterface
 }

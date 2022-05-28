@@ -12,9 +12,34 @@ var (
 )
 
 type codec struct {
-	name        string
-	clientProc  *msgproc
-	serviceProc *msgproc
+	name string
+}
+
+func clientMiddlewareGroupOnCond(m proto.Message, cond func() (bool, error)) (i.CodecMiddlewareGroupInterface, error) {
+	var (
+		ok     bool
+		err    error
+		client i.ClientInterface
+		svc    i.ServiceInterface
+	)
+	ok, err = cond()
+	if err != nil {
+		return nil, err
+	}
+	switch ok {
+	case true:
+		client, err = runtime.Runtime().ClientByMessage(m)
+		if err != nil {
+			return nil, err
+		}
+		return client.CodecMiddlewareGroup(), nil
+	default:
+		svc, err = runtime.Runtime().ServiceByMessage(m)
+		if err != nil {
+			return nil, err
+		}
+		return svc.CodecMiddlewareGroup(), nil
+	}
 }
 
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
@@ -23,8 +48,8 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 		data []byte
 		ok   bool
 		m    proto.Message
-		proc i.MessageProcessorInterface
-		task i.MessageProcessTaskInterface
+		task i.CodecMwTaskInterface
+		mg   i.CodecMiddlewareGroupInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
@@ -35,23 +60,19 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Check if data are being marshaled by a service client
-	// to select the right message processor
-	ok, err = runtime.Runtime().IsRequestMessage(m)
+	//
+	mg, err = clientMiddlewareGroupOnCond(m, func() (bool, error) {
+		return runtime.Runtime().IsRequestMessage(m)
+	})
 	if err != nil {
 		return nil, err
 	}
-	switch ok {
-	case true:
-		proc = c.clientProc
-	default:
-		proc = c.serviceProc
+	task, err = mg.NewMarshalTask(data, m)
+	//
+	if err != nil {
+		return nil, err
 	}
 	// Invoke marshaler task handlers
-	task, err = proc.NewMarshalTask(data, m)
-	if err != nil {
-		return nil, err
-	}
 	return task.Execute()
 }
 
@@ -60,29 +81,25 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 		err  error
 		ok   bool
 		m    proto.Message
-		proc i.MessageProcessorInterface
-		task i.MessageProcessTaskInterface
+		mg   i.CodecMiddlewareGroupInterface
+		task i.CodecMwTaskInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
 		return nil
 	}
-	// Check if data are being unmarshaled by a service client
-	ok, err = runtime.Runtime().IsResponseMessage(m)
+	//
+	mg, err = clientMiddlewareGroupOnCond(m, func() (bool, error) {
+		return runtime.Runtime().IsResponseMessage(m)
+	})
 	if err != nil {
 		return err
 	}
-	switch ok {
-	case true:
-		proc = c.clientProc
-	default:
-		proc = c.serviceProc
-	}
-	// Invoke unmarshaler task handlers
-	task, err = proc.NewUnmarshalTask(data, m)
+	task, err = mg.NewUnmarshalTask(data, m)
 	if err != nil {
 		return err
 	}
+	//
 	data, err = task.Execute()
 	if err != nil {
 		return err
@@ -96,12 +113,4 @@ func (c *codec) Name() string {
 
 func (c *codec) NewDataFrame() i.DataFrameInterface {
 	return NewDataFrame()
-}
-
-func (c *codec) ServiceProcessor() i.MessageProcessorInterface {
-	return c.serviceProc
-}
-
-func (c *codec) ClientProcessor() i.MessageProcessorInterface {
-	return c.clientProc
 }

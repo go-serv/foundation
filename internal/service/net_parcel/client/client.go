@@ -6,9 +6,10 @@ import (
 	"github.com/go-serv/service/internal/autogen/proto/net"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-var serviceName = proto.NetParcel_ServiceDesc.ServiceName
+var serviceName = protoreflect.FullName(proto.NetParcel_ServiceDesc.ServiceName)
 
 type client struct {
 	i.NetworkClientInterface

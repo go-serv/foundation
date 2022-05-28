@@ -2,31 +2,30 @@ package net
 
 import (
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/service"
 )
 
-type networkService struct {
-	service.BaseService
+type netService struct {
+	i.ServiceInterface
 	encKey []byte
 }
 
-func (b *networkService) Service_OnNewSession(req i.RequestInterface) error {
-	b.MethodMustBeImplemented.Panic()
+func (b *netService) Service_OnNewSession(req i.RequestInterface) error {
+	//b.MethodMustBeImplemented.Panic()
 	return nil
 }
 
-func (b *networkService) Service_EncriptionKey() []byte {
+func (b *netService) Service_EncriptionKey() []byte {
 	//TODO implement me
 	return []byte("secret")
 }
 
-func (b *networkService) Service_WithEncriptionKey(key []byte) {
+func (b *netService) Service_WithEncriptionKey(key []byte) {
 	b.encKey = key
 }
 
-func (b *networkService) Service_InfoNewSession(methodName string) int32 {
+func (b *netService) Service_InfoNewSession(methodName string) int32 {
 	return 0
-	//mDesc := b.BaseService.Sd.FindMethodDescriptorByName(methodName)
+	//mDesc := b.service.sd.FindMethodDescriptorByName(methodName)
 	//if mDesc == nil {
 	//	return 0
 	//} else {
@@ -39,13 +38,13 @@ func (b *networkService) Service_InfoNewSession(methodName string) int32 {
 	//}
 }
 
-func (b *networkService) Service_InfoMsgEncryption(methodName string) bool {
+func (b *netService) Service_InfoMsgEncryption(methodName string) bool {
 	return true
-	//mDesc := b.BaseService.Sd.FindMethodDescriptorByName(methodName)
+	//mDesc := b.service.sd.FindMethodDescriptorByName(methodName)
 	//if v, has := mDesc.Get(go_serv.E_MNetMsgEnc); has {
 	//	return v.(bool)
 	//} else {
-	//	if v, has := b.BaseService.Sd.Get(go_serv.E_NetMsgEnc); has {
+	//	if v, has := b.service.sd.Get(go_serv.E_NetMsgEnc); has {
 	//		return v.(bool)
 	//	} else {
 	//		return false

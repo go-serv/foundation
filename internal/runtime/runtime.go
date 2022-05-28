@@ -4,56 +4,86 @@ import (
 	"errors"
 	"fmt"
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/service/local"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 var (
 	ErrMethodDescriptorNotFound = errors.New("")
 )
 
-type (
-	netServiceRegistry   map[string]i.NetworkServiceInterface
-	localServiceRegistry map[string]i.LocalServiceInterface
-)
+type registryKey string
+type registry map[registryKey]interface{}
+
+//type registryConstraints interface {
+//	i.LocalServiceInterface | i.NetworkServiceInterface | i.LocalClientInterface | i.NetworkClientInterface
+//}
+
+func genericRegistryAsSlice[T any](in ...registry) []T {
+	out := make([]T, 0)
+	for _, reg := range in {
+		for _, item := range reg {
+			out = append(out, item.(T))
+		}
+	}
+	return out
+}
 
 type runtime struct {
-	registeredLocalService localServiceRegistry
-	registeredNetServices  netServiceRegistry
+	localService registry
+	netServices  registry
+	localClients registry
+	netClients   registry
 }
 
-func (r *runtime) RegisterNetworkService(svcName string, svc i.NetworkServiceInterface) {
-	if _, ok := r.registeredNetServices[svcName]; ok {
+func (r *runtime) RegisterNetworkService(svcName protoreflect.FullName, svc i.NetworkServiceInterface) {
+	k := registryKey(svcName)
+	if _, ok := r.netServices[registryKey(svcName)]; ok {
 		panic(fmt.Sprintf("network service '%s' already registered", svcName))
 	}
-	r.registeredNetServices[svcName] = svc
+	r.netServices[k] = svc
 }
 
-func (r *runtime) RegisterLocalService(svcName string, svc local.LocalServiceInterface) {
-	if r.registeredLocalService != nil {
-		// @todo service name
+func (r *runtime) RegisterLocalService(svcName protoreflect.FullName, svc i.LocalServiceInterface) {
+	k := registryKey(svcName)
+	if _, ok := r.localClients[k]; ok {
 		panic(fmt.Sprintf("Only one local service is allowed per application, '%s' already registered", ""))
 	}
-	//r.registeredLocalService = svc
+	r.localClients[k] = svc
 }
 
-func (r *runtime) allRegisteredServices() []interface{} {
-	all := make([]interface{}, len(r.registeredLocalService)+len(r.registeredLocalService))
-	for _, v := range r.registeredNetServices {
-		all = append(all, v)
+func (r *runtime) RegisterNetworkClient(svcName protoreflect.FullName, c i.NetworkClientInterface) {
+	k := registryKey(svcName)
+	if _, ok := r.netClients[k]; ok {
+		panic(fmt.Sprintf("A network client for '%s' already registered", svcName))
 	}
-	for _, v := range r.registeredLocalService {
-		all = append(all, v)
+	r.netClients[k] = c
+}
+
+func (r *runtime) RegisterLocalClient(svcName protoreflect.FullName, c i.LocalClientInterface) {
+	k := registryKey(svcName)
+	if _, ok := r.localClients[k]; ok {
+		panic(fmt.Sprintf("A local client for '%s' already registered", svcName))
 	}
-	return all
+	r.localClients[k] = c
 }
 
 func (r *runtime) NetworkServices() []i.NetworkServiceInterface {
-	var out []i.NetworkServiceInterface
-	for _, svc := range r.registeredNetServices {
-		out = append(out, svc)
-	}
-	return out
+	return genericRegistryAsSlice[i.NetworkServiceInterface](r.netServices)
+}
+
+func (r *runtime) NetworkClients() []i.NetworkClientInterface {
+	return genericRegistryAsSlice[i.NetworkClientInterface](r.netClients)
+}
+
+func (r *runtime) LocalService() i.LocalServiceInterface {
+	//s := genericRegistryAsSlice[i.LocalClientInterface](r.localService)
+	//return s[0]
+	return nil
+}
+
+func (r *runtime) LocalClients() []i.LocalClientInterface {
+	return genericRegistryAsSlice[i.LocalClientInterface](r.localClients)
 }
 
 func Runtime() *runtime {
@@ -73,11 +103,32 @@ func (r *runtime) IsResponseMessage(msg proto.Message) (bool, error) {
 	return !ok, err
 }
 
+func (r *runtime) ServiceDescriptorByMessage(msg proto.Message) (i.ServiceDescriptorInterface, error) {
+	key := msg.ProtoReflect().Descriptor().FullName()
+	//
+	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
+	for _, svc := range items {
+		svcDesc := svc.(i.ServiceInterface).Service_Descriptor()
+		methods := svcDesc.Descriptor().Methods()
+		l1 := methods.Len()
+		for ii := 0; ii < l1; ii++ {
+			m := methods.Get(ii)
+			input := m.Input().FullName()
+			output := m.Output().FullName()
+			if input == key || output == key {
+				return svcDesc, nil
+			}
+		}
+	}
+	return nil, ErrMethodDescriptorNotFound
+}
+
 func (r *runtime) MethodDescriptorByMessage(msg proto.Message) (i.MethodDescriptorInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	//
-	for _, svc := range r.allRegisteredServices() {
-		svcDesc := svc.(i.BaseServiceInterface).Service_Descriptor()
+	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
+	for _, svc := range items {
+		svcDesc := svc.(i.ServiceInterface).Service_Descriptor()
 		methods := svcDesc.Descriptor().Methods()
 		l1 := methods.Len()
 		for ii := 0; ii < l1; ii++ {
@@ -90,6 +141,34 @@ func (r *runtime) MethodDescriptorByMessage(msg proto.Message) (i.MethodDescript
 					return md, nil
 				}
 			}
+		}
+	}
+	return nil, ErrMethodDescriptorNotFound
+}
+
+func (r *runtime) ClientByMessage(msg proto.Message) (i.ClientInterface, error) {
+	svcDesc, err := r.ServiceDescriptorByMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range genericRegistryAsSlice[interface{}](r.localClients, r.netClients) {
+		client := v.(i.ClientInterface)
+		if client.ServiceName() == svcDesc.Descriptor().FullName() {
+			return client, nil
+		}
+	}
+	return nil, ErrMethodDescriptorNotFound
+}
+
+func (r *runtime) ServiceByMessage(msg proto.Message) (i.ServiceInterface, error) {
+	svcDesc, err := r.ServiceDescriptorByMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range genericRegistryAsSlice[interface{}](r.localService, r.netServices) {
+		svc := v.(i.ServiceInterface)
+		if svc.Name() == svcDesc.Descriptor().FullName() {
+			return svc, nil
 		}
 	}
 	return nil, ErrMethodDescriptorNotFound

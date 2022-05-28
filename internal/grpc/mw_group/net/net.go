@@ -3,7 +3,7 @@ package net
 import (
 	"context"
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/grpc/middleware/mw_group"
+	"github.com/go-serv/service/internal/grpc/mw_group"
 	req_net "github.com/go-serv/service/internal/grpc/request/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"

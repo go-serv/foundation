@@ -2,19 +2,21 @@ package pkg
 
 import (
 	"fmt"
+	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/service"
 )
 
 type ServiceConfig interface {
-	service.ConfigInterface
+	//service.ConfigInterface
 }
 
 type LocalServiceInterface interface {
-	service.LocalServiceInterface
+	i.LocalServiceInterface
 }
 
 type NetworkServiceInterface interface {
-	service.NetworkServiceInterface
+	i.NetworkServiceInterface
+	//service.NetworkServiceInterface
 }
 
 // Service state

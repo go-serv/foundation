@@ -34,8 +34,8 @@ type tcpEndpoint struct {
 }
 
 func (e *tcpEndpoint) serveInit() {
-	interceptors := grpc.ChainUnaryInterceptor(e.srv.MiddlewareGroup().UnaryServerInterceptor())
-	e.srv.AddGrpcServerOption(interceptors)
+	//interceptors := grpc.ChainUnaryInterceptor(e.srv.MiddlewareGroup().UnaryServerInterceptor())
+	//e.srv.AddGrpcServerOption(interceptors)
 	// Create a new gRPC server
 	e.grpcSrv = grpc.NewServer(e.srv.GrpcServerOptions()...)
 	// Register all network gRPC services

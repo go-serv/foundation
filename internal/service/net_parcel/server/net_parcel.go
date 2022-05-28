@@ -9,9 +9,10 @@ import (
 	i "github.com/go-serv/service/internal"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-var Name = proto.NetParcel_ServiceDesc.ServiceName
+var Name = protoreflect.FullName(proto.NetParcel_ServiceDesc.ServiceName)
 
 type netParcel struct {
 	i.NetworkServiceInterface
