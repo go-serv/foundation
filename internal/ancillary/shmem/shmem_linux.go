@@ -6,12 +6,14 @@ import (
 	"time"
 )
 
+const UnixPathPrefix = "/dev/shm/go-serv."
+
 var UnixFilePerm uint32 = 0600
 
 func NewSharedMemory(objname string, size int) *blockInfo {
 	b := new(blockInfo)
 	if objname == "" {
-		b.objname = "/dev/shm/go-serv." + strconv.Itoa(int(time.Now().UnixNano()))
+		b.objname = UnixPathPrefix + strconv.Itoa(int(time.Now().UnixNano()))
 	} else {
 		b.objname = objname
 	}
