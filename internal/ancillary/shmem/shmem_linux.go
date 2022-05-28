@@ -2,32 +2,35 @@ package shmem
 
 import (
 	"golang.org/x/sys/unix"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	"strconv"
 	"time"
 )
 
-func NewSharedMemory(serviceName protoreflect.FullName, size int) *shmemInfo {
-	sh := new(shmemInfo)
-	sh.objname = "/dev/shm/" + string(serviceName) + "." + strconv.Itoa(int(time.Now().UnixNano()))
-	sh.size = size
-	return sh
+func NewSharedMemory(objname string, size int) *blockInfo {
+	b := new(blockInfo)
+	if objname == "" {
+		b.objname = "/dev/shm/go-serv." + strconv.Itoa(int(time.Now().UnixNano()))
+	} else {
+		b.objname = objname
+	}
+	b.size = size
+	return b
 }
 
-func (a *shmemInfo) Allocate() (err error) {
+func (b *blockInfo) Allocate() (err error) {
 	var fd int
-	fd, err = unix.Open(a.objname, unix.O_CREAT|unix.O_RDWR|unix.O_CLOEXEC, 0600)
+	fd, err = unix.Open(b.objname, unix.O_CREAT|unix.O_RDWR|unix.O_NOFOLLOW, 0600)
 	if err != nil {
 		return
 	}
 	// https://man7.org/linux/man-pages/man3/ftruncate.3p.html
 	// If fildes refers to a shared memory object, ftruncate() shall set
 	// the size of the shared memory object to length.
-	err = unix.Ftruncate(fd, int64(a.size))
+	err = unix.Ftruncate(fd, int64(b.size))
 	if err != nil {
 		return
 	}
-	a.shmem, err = unix.Mmap(fd, 0, a.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
+	b.data, err = unix.Mmap(fd, 0, b.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
 	if err != nil {
 		return
 	}
@@ -35,17 +38,41 @@ func (a *shmemInfo) Allocate() (err error) {
 	return
 }
 
-func (a *shmemInfo) Populate(src []byte) error {
-	if len(src) > a.size {
+func (b *blockInfo) Read() (err error) {
+	var fd int
+	fd, err = unix.Open(b.objname, unix.O_RDWR, 0600)
+	if err != nil {
+		return
+	}
+	b.data, err = unix.Mmap(fd, 0, b.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
+	if err != nil {
+		return
+	}
+	err = unix.Close(fd)
+	return
+}
+
+func (b *blockInfo) Content() []byte {
+	return b.data
+}
+
+func (b *blockInfo) Populate(src []byte) error {
+	if len(src) > b.size {
 		return nil
 	}
-	n := copy(a.shmem[0:a.size], src)
-	if n != a.size {
+	n := copy(b.data[0:b.size], src)
+	if n != b.size {
 		return nil
 	}
 	return nil
 }
 
-func (a *shmemInfo) Free() error {
-	return unix.Munmap(a.shmem)
+func (a *blockInfo) Free() error {
+	if err := unix.Munmap(a.data); err != nil {
+		return err
+	}
+	if err := unix.Unlink(a.objname); err != nil {
+		return err
+	}
+	return nil
 }
