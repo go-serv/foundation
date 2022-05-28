@@ -1,6 +1,7 @@
 package client
 
 import (
+	job "github.com/AgentCoop/go-work"
 	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
 	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
@@ -13,21 +14,11 @@ type client struct {
 	svcName      protoreflect.FullName
 	codec        i.CodecInterface
 	codecMwGroup i.CodecMiddlewareGroupInterface
+	mwGroup      i.MiddlewareGroupInterface
 	endpoint     i.EndpointInterface
 	conn         net.Conn
 	dialOpts     []grpc.DialOption
-	mwGroup      i.MiddlewareGroupInterface
-	insecure     bool
 	ancillary.MethodMustBeImplemented
-}
-
-type localClient struct {
-	client
-}
-
-type netClient struct {
-	client
-	svc i.NetworkServiceInterface
 }
 
 func (c *client) ServiceName() protoreflect.FullName {
@@ -51,10 +42,18 @@ func (c *client) Endpoint() i.EndpointInterface {
 	return c.endpoint
 }
 
+func (c *client) WithDialOption(opts grpc.DialOption) {
+	c.dialOpts = append(c.dialOpts, opts)
+}
+
+func (c *client) DialOptions() []grpc.DialOption {
+	return c.dialOpts
+}
+
 func (c *client) NewClient(cc grpc.ClientConnInterface) {
 	c.MethodMustBeImplemented.Panic()
 }
 
-func (c *netClient) NetService() i.NetworkServiceInterface {
-	return c.svc
+func (c *client) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
+	return nil, nil, nil
 }

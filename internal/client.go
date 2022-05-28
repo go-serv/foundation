@@ -14,6 +14,8 @@ type ClientInterface interface {
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	NewClient(cc grpc.ClientConnInterface)
+	WithDialOption(grpc.DialOption)
+	DialOptions() []grpc.DialOption
 }
 
 type NetworkClientInterface interface {

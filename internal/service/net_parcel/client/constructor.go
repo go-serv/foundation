@@ -3,12 +3,12 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/go-serv/service/internal"
-	cc "github.com/go-serv/service/internal/client"
+	net_client "github.com/go-serv/service/internal/client/net"
 )
 
 func NewClient(e i.EndpointInterface) *client {
 	c := new(client)
-	c.NetworkClientInterface = cc.NewNetClient(serviceName, e)
+	c.NetworkClientInterface = net_client.NewClient(serviceName, e)
 	return c
 }
 
