@@ -10,7 +10,7 @@ import (
 const (
 	Tcp4Network      = "tcp4"
 	Tcp6Network      = "tcp6"
-	UnixDomainSocket = "unixpacket"
+	UnixDomainSocket = "unix"
 )
 
 type server struct {

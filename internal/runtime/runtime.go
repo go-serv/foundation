@@ -5,7 +5,6 @@ import (
 	"fmt"
 	i "github.com/go-serv/service/internal"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 var (
@@ -65,10 +64,10 @@ func (r *runtime) RegisterNetworkClient(c i.NetworkClientInterface) {
 	r.netClients[k] = c
 }
 
-func (r *runtime) RegisterLocalClient(svcName protoreflect.FullName, c i.LocalClientInterface) {
-	k := registryKey(svcName)
+func (r *runtime) RegisterLocalClient(c i.LocalClientInterface) {
+	k := registryKey(c.ServiceName())
 	if _, ok := r.localClients[k]; ok {
-		panic(fmt.Sprintf("A local client for '%s' already registered", svcName))
+		panic(fmt.Sprintf("A local client for '%s' already registered", c.ServiceName()))
 	}
 	r.localClients[k] = c
 }

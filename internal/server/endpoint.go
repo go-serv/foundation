@@ -124,7 +124,8 @@ func (e *localEndpoint) Address() string {
 func (e *localEndpoint) Listen() error {
 	var err error
 	var unixAddr *net.UnixAddr
-	unixAddr, err = net.ResolveUnixAddr(UnixDomainSocket, e.pathname)
+	socketAddr := "@/tmp/." + e.pathname
+	unixAddr, err = net.ResolveUnixAddr(UnixDomainSocket, socketAddr)
 	if err != nil {
 		return err
 	}
