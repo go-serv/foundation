@@ -3,7 +3,6 @@ package internal
 import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 type ServiceInterface interface {
@@ -11,9 +10,6 @@ type ServiceInterface interface {
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
 	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
-	Descriptor() ServiceDescriptorInterface
-	AddServiceProtoExtension(info *protoimpl.ExtensionInfo)
-	AddMethodProtoExtension(info *protoimpl.ExtensionInfo)
 	Register(srv *grpc.Server)
 }
 

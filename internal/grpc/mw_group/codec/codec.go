@@ -16,10 +16,11 @@ type codecMwGroup struct {
 }
 
 type task struct {
-	mwGroup    *codecMwGroup
-	df         i.DataFrameInterface
-	methodDesc i.MethodDescriptorInterface
-	data       []byte
+	mwGroup       *codecMwGroup
+	df            i.DataFrameInterface
+	methodReflect i.MethodReflectInterface
+	msgRefect     i.MessageReflectInterface
+	data          []byte
 }
 
 type unmarshalerTask struct {
@@ -83,7 +84,7 @@ func (t *unmarshalerTask) Execute() (out []byte, err error) {
 	//
 	for ii := 0; ii < l1; ii++ {
 		handler := ch[ii]
-		t.data, err = handler(t.data, t.methodDesc, t.df)
+		t.data, err = handler(t.data, t.methodReflect, t.msgRefect, t.df)
 		if err != nil {
 			return
 		}
@@ -99,7 +100,7 @@ func (t *marshalerTask) Execute() ([]byte, error) {
 	//
 	for ii := l1 - 1; ii >= 0; ii-- {
 		handler := ch[ii]
-		t.data, err = handler(t.data, t.methodDesc, t.df)
+		t.data, err = handler(t.data, t.methodReflect, t.msgRefect, t.df)
 		if err != nil {
 			return nil, err
 		}

@@ -21,11 +21,13 @@ func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.Codec
 		return nil, err
 	}
 	//
-	md, err := runtime.Runtime().MethodDescriptorByMessage(msg)
+	ref := runtime.Runtime().Reflection()
+	mReflect, err := ref.MethodReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
-	t.methodDesc = md
+	t.methodReflect = mReflect
+	t.msgRefect = mReflect.FromMessage(msg)
 	t.data = t.df.Payload()
 	return t, nil
 }
@@ -36,11 +38,13 @@ func (m *codecMwGroup) NewMarshalTask(wire []byte, msg proto.Message) (i.CodecMw
 	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
 	//
-	md, err := runtime.Runtime().MethodDescriptorByMessage(msg)
+	ref := runtime.Runtime().Reflection()
+	mReflect, err := ref.MethodReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
-	t.methodDesc = md
+	t.methodReflect = mReflect
+	t.msgRefect = mReflect.FromMessage(msg)
 	t.data = wire
 	return t, nil
 }

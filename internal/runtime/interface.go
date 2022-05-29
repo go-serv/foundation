@@ -7,11 +7,13 @@ import (
 
 type RuntimeInterface interface {
 	NetworkServices() []i.NetworkServiceInterface
-	MethodDescriptorByMessage(proto.Message) (i.MethodDescriptorInterface, error)
+	//MethodDescriptorByMessage(proto.Message) (i.MethodDescriptorInterface, error)
 	IsRequestMessage(msg proto.Message) (bool, error)
 	IsResponseMessage(msg proto.Message) (bool, error)
 
 	RegisteredServices() []i.ServiceInterface
 	RegisterLocalClient(i.LocalClientInterface)
 	RegisterNetworkClient(i.NetworkClientInterface)
+
+	Reflection() i.ReflectInterface
 }

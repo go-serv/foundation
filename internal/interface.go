@@ -12,6 +12,7 @@ type ServiceDescriptorInterface interface {
 	Get(key *protoimpl.ExtensionInfo) (interface{}, bool)
 	AddServiceProtoExt(ext *protoimpl.ExtensionInfo)
 	AddMethodProtoExt(ext *protoimpl.ExtensionInfo)
+	AddMessageExtension(ext *protoimpl.ExtensionInfo)
 	Populate()
 	MethodDescriptorByName(protoreflect.FullName) (MethodDescriptorInterface, bool)
 }

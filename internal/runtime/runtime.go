@@ -30,10 +30,15 @@ func genericRegistryAsSlice[T any](in ...registry) []T {
 }
 
 type runtime struct {
+	ref          i.ReflectInterface
 	localService registry
 	netServices  registry
 	localClients registry
 	netClients   registry
+}
+
+func (r *runtime) Reflection() i.ReflectInterface {
+	return r.ref
 }
 
 func (r *runtime) ErrorWrapper(e error) {
@@ -98,11 +103,11 @@ func Runtime() *runtime {
 }
 
 func (r *runtime) IsRequestMessage(msg proto.Message) (bool, error) {
-	m, err := r.MethodDescriptorByMessage(msg)
+	m, err := r.Reflection().MethodReflectionFromMessage(msg)
 	if err != nil {
 		return false, err
 	}
-	return m.Interface().Input().FullName() == msg.ProtoReflect().Descriptor().FullName(), nil
+	return m.IsRequest(msg), nil
 }
 
 func (r *runtime) IsResponseMessage(msg proto.Message) (bool, error) {
@@ -110,57 +115,14 @@ func (r *runtime) IsResponseMessage(msg proto.Message) (bool, error) {
 	return !ok, err
 }
 
-func (r *runtime) ServiceDescriptorByMessage(msg proto.Message) (i.ServiceDescriptorInterface, error) {
-	key := msg.ProtoReflect().Descriptor().FullName()
-	//
-	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
-	for _, svc := range items {
-		svcDesc := svc.(i.ServiceInterface).Descriptor()
-		methods := svcDesc.Descriptor().Methods()
-		l1 := methods.Len()
-		for ii := 0; ii < l1; ii++ {
-			m := methods.Get(ii)
-			input := m.Input().FullName()
-			output := m.Output().FullName()
-			if input == key || output == key {
-				return svcDesc, nil
-			}
-		}
-	}
-	return nil, ErrMethodDescriptorNotFound
-}
-
-func (r *runtime) MethodDescriptorByMessage(msg proto.Message) (i.MethodDescriptorInterface, error) {
-	key := msg.ProtoReflect().Descriptor().FullName()
-	//
-	items := genericRegistryAsSlice[interface{}](r.netServices, r.localService)
-	for _, svc := range items {
-		svcDesc := svc.(i.ServiceInterface).Descriptor()
-		methods := svcDesc.Descriptor().Methods()
-		l1 := methods.Len()
-		for ii := 0; ii < l1; ii++ {
-			m := methods.Get(ii)
-			input := m.Input().FullName()
-			output := m.Output().FullName()
-			if input == key || output == key {
-				md, found := svcDesc.MethodDescriptorByName(m.FullName())
-				if found {
-					return md, nil
-				}
-			}
-		}
-	}
-	return nil, ErrMethodDescriptorNotFound
-}
-
 func (r *runtime) ClientByMessage(msg proto.Message) (i.ClientInterface, error) {
-	svcDesc, err := r.ServiceDescriptorByMessage(msg)
+	sf, err := r.Reflection().ServiceReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range genericRegistryAsSlice[interface{}](r.localClients, r.netClients) {
 		client := v.(i.ClientInterface)
-		if client.ServiceName() == svcDesc.Descriptor().FullName() {
+		if client.ServiceName() == sf.Descriptor().FullName() {
 			return client, nil
 		}
 	}
@@ -168,13 +130,13 @@ func (r *runtime) ClientByMessage(msg proto.Message) (i.ClientInterface, error) 
 }
 
 func (r *runtime) ServiceByMessage(msg proto.Message) (i.ServiceInterface, error) {
-	svcDesc, err := r.ServiceDescriptorByMessage(msg)
+	sf, err := r.Reflection().ServiceReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range genericRegistryAsSlice[interface{}](r.localService, r.netServices) {
 		svc := v.(i.ServiceInterface)
-		if svc.Name() == svcDesc.Descriptor().FullName() {
+		if svc.Name() == sf.Descriptor().FullName() {
 			return svc, nil
 		}
 	}

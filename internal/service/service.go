@@ -7,7 +7,6 @@ import (
 	_ "github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 type State int
@@ -44,18 +43,6 @@ func (s *service) WithCodec(cc i.CodecInterface) {
 
 func (s *service) CodecMiddlewareGroup() i.CodecMiddlewareGroupInterface {
 	return s.codecMwGroup
-}
-
-func (s service) Descriptor() i.ServiceDescriptorInterface {
-	return s.sd
-}
-
-func (s service) AddMethodProtoExtension(ext *protoimpl.ExtensionInfo) {
-	s.sd.AddMethodProtoExt(ext)
-}
-
-func (s service) AddServiceProtoExtension(ext *protoimpl.ExtensionInfo) {
-	s.sd.AddServiceProtoExt(ext)
 }
 
 func (s service) Service_State() State {

@@ -13,8 +13,11 @@ func NewService(name protoreflect.FullName) *localService {
 	s.ServiceInterface = service.NewBaseService(name)
 	cc := local_cc.NewOrRegistered(string(name))
 	s.ServiceInterface.WithCodec(cc)
-	s.ServiceInterface.AddMethodProtoExtension(go_serv.E_LocalShmIpc)
-	s.ServiceInterface.Descriptor().Populate()
+	//
+	sd := s.ServiceInterface.Descriptor()
+	sd.AddMessageExtension(go_serv.E_LocalShmIpc)
+	sd.Populate()
+	//
 	runtime.Runtime().RegisterLocalService(s)
 	return s
 }
