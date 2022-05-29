@@ -3,6 +3,7 @@ package server
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/go-serv/service/internal"
+	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
 	"github.com/go-serv/service/internal/logger"
 	"google.golang.org/grpc"
 )
@@ -14,10 +15,12 @@ const (
 )
 
 type server struct {
-	endpoints []i.EndpointInterface
-	mainJob   job.JobInterface
-	mwGroup   i.MiddlewareGroupInterface
-	grpcOpts  []grpc.ServerOption
+	codec        i.CodecInterface
+	codecMwGroup i.CodecMiddlewareGroupInterface
+	endpoints    []i.EndpointInterface
+	mainJob      job.JobInterface
+	mwGroup      i.MiddlewareGroupInterface
+	grpcOpts     []grpc.ServerOption
 }
 
 func (s *server) AddEndpoint(e i.EndpointInterface) {
@@ -72,4 +75,17 @@ func (s *server) Stop() {
 		e.GrpcServer().GracefulStop()
 	}
 	//s.state = StateStopped
+}
+
+func (c *server) Codec() i.CodecInterface {
+	return c.codec
+}
+
+func (s *server) WithCodec(cc i.CodecInterface) {
+	s.codec = cc
+	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
+}
+
+func (s *server) CodecMiddlewareGroup() i.CodecMiddlewareGroupInterface {
+	return s.codecMwGroup
 }

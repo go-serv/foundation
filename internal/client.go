@@ -7,10 +7,8 @@ import (
 )
 
 type ClientInterface interface {
+	CodecAwareInterface
 	ServiceName() protoreflect.FullName
-	Codec() CodecInterface
-	WithCodec(cc CodecInterface)
-	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	NewClient(cc grpc.ClientConnInterface)

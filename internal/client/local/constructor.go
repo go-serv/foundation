@@ -20,7 +20,7 @@ func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *localClien
 	c.WithCodec(codec)
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	// Local client middlewares
-	mw_shmem.Init(c)
+	mw_shmem.ClientInit(c)
 	//
 	rt := runtime.Runtime()
 	rt.RegisterLocalClient(c)

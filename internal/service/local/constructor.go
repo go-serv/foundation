@@ -1,23 +1,23 @@
 package local
 
 import (
-	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 	local_cc "github.com/go-serv/service/internal/grpc/codec/local"
+	mw_shmem "github.com/go-serv/service/internal/middleware/codec/shm_ipc"
 	"github.com/go-serv/service/internal/runtime"
 	"github.com/go-serv/service/internal/service"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func NewService(name protoreflect.FullName) *localService {
-	s := &localService{service.NewBaseService(name)}
-	s.ServiceInterface = service.NewBaseService(name)
+	svc := &localService{service.NewBaseService(name)}
+	svc.ServiceInterface = service.NewBaseService(name)
 	cc := local_cc.NewOrRegistered(string(name))
-	s.ServiceInterface.WithCodec(cc)
+	svc.WithCodec(cc)
+	mw_shmem.ServiceInit(svc)
 	//
-	sd := s.ServiceInterface.Descriptor()
-	sd.AddMessageExtension(go_serv.E_LocalShmIpc)
-	sd.Populate()
-	//
-	runtime.Runtime().RegisterLocalService(s)
-	return s
+	rt := runtime.Runtime()
+	rt.Reflection().AddService(name)
+	rt.Reflection().Populate()
+	rt.RegisterLocalService(svc)
+	return svc
 }

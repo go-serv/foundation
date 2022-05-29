@@ -39,3 +39,9 @@ type CodecInterface interface {
 	encoding.Codec
 	NewDataFrame() DataFrameInterface
 }
+
+type CodecAwareInterface interface {
+	Codec() CodecInterface
+	WithCodec(cc CodecInterface)
+	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
+}

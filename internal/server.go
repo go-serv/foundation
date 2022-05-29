@@ -14,6 +14,7 @@ type EndpointInterface interface {
 }
 
 type ServerInterface interface {
+	CodecAwareInterface
 	AddGrpcServerOption(opt grpc.ServerOption)
 	GrpcServerOptions() []grpc.ServerOption
 	AddEndpoint(endpoint EndpointInterface)

@@ -5,16 +5,36 @@ import (
 	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 )
 
-func Init(cc i.LocalClientInterface) {
-	unmarshalHandler := func(in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) (out []byte, err error) {
-		if _, has := md.Get(go_serv.E_LocalShmIpc); !has {
+func ServiceInit(srv i.LocalServiceInterface) {
+	unmarshalHandler := func(in []byte, mr i.MethodReflectInterface, msgr i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
+		if _, has := msgr.Get(go_serv.E_LocalShmIpc); !has {
 			out = in
 			return
 		}
 		return
 	}
-	marshalHandler := func(in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) (out []byte, err error) {
-		if _, has := md.Get(go_serv.E_LocalShmIpc); !has {
+	marshalHandler := func(in []byte, mr i.MethodReflectInterface, msgr i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
+		if _, has := msgr.Get(go_serv.E_LocalShmIpc); !has {
+			out = in
+			return
+		}
+		return
+	}
+	//
+	mg := srv.CodecMiddlewareGroup()
+	mg.AddHandlers(unmarshalHandler, marshalHandler)
+}
+
+func ClientInit(cc i.LocalClientInterface) {
+	unmarshalHandler := func(in []byte, mr i.MethodReflectInterface, msgr i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
+		if _, has := msgr.Get(go_serv.E_LocalShmIpc); !has {
+			out = in
+			return
+		}
+		return
+	}
+	marshalHandler := func(in []byte, mr i.MethodReflectInterface, msgr i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
+		if _, has := msgr.Get(go_serv.E_LocalShmIpc); !has {
 			out = in
 			return
 		}
