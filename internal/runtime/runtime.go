@@ -48,10 +48,8 @@ func (r *runtime) RegisterNetworkService(svc i.NetworkServiceInterface) {
 	r.netServices[k] = svc
 }
 
+// RegisterLocalService registers a local service either by its client or by itself
 func (r *runtime) RegisterLocalService(svc i.LocalServiceInterface) {
-	if len(r.localService) > 0 {
-		panic(fmt.Sprintf("Only one local service is allowed per application"))
-	}
 	k := registryKey(svc.Name())
 	r.localService[k] = svc
 }

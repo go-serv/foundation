@@ -2,6 +2,7 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
+	i "github.com/go-serv/service/internal"
 )
 
 func NewEndpoint() endpoint {
@@ -25,6 +26,12 @@ func NewTcp4Endpoint(hostname string, port int) *tcp4Endpoint {
 
 func NewTcp6Endpoint(hostname string, port int) *tcp6Endpoint {
 	e := &tcp6Endpoint{newTcpEndpoint(hostname, port), nil}
+	return e
+}
+
+func NewLocalEndpoint(svc i.LocalServiceInterface) *localEndpoint {
+	pathname := string(svc.Name())
+	e := &localEndpoint{NewEndpoint(), pathname}
 	return e
 }
 

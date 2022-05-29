@@ -20,6 +20,7 @@ func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *localClien
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
 	//cipher_msg.NetClientInit(c)
-	runtime.Runtime().RegisterLocalClient(c)
+	rt := runtime.Runtime()
+	rt.RegisterLocalClient(c)
 	return c
 }

@@ -117,14 +117,10 @@ type localEndpoint struct {
 	pathname string
 }
 
-func (e *localEndpoint) Address() string {
-	return e.pathname
-}
-
 func (e *localEndpoint) Listen() error {
 	var err error
 	var unixAddr *net.UnixAddr
-	socketAddr := "@/tmp/." + e.pathname
+	socketAddr := e.Address()
 	unixAddr, err = net.ResolveUnixAddr(UnixDomainSocket, socketAddr)
 	if err != nil {
 		return err

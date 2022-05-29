@@ -23,7 +23,8 @@ func (s *sample) Register(srv *grpc.Server) {
 	proto.RegisterSampleServer(srv, s.impl)
 }
 
-func (s serviceImpl) DoLargeRequest(context.Context, *proto.LargeRequest_Request) (*proto.LargeRequest_Response, error) {
+func (s serviceImpl) DoLargeRequest(ctx context.Context, req *proto.LargeRequest_Request) (*proto.LargeRequest_Response, error) {
 	res := &proto.LargeRequest_Response{}
+	res.Pong = req.Ping
 	return res, nil
 }
