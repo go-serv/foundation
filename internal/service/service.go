@@ -24,7 +24,6 @@ type service struct {
 	codec        i.CodecInterface
 	codecMwGroup i.CodecMiddlewareGroupInterface
 	State        State
-	sd           i.ServiceDescriptorInterface
 	ancillary.MethodMustBeImplemented
 }
 

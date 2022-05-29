@@ -43,6 +43,7 @@ func (r *reflect) MethodReflectionFromMessage(msg proto.Message) (i.MethodReflec
 	return nil, fmt.Errorf("reflection: failed to find method descriptor for '%s'", key)
 }
 
+// A helper function to get a service descriptor by its name
 func serviceDescriptorByName(name protoreflect.FullName) (protoreflect.ServiceDescriptor, error) {
 	desc, err := protoregistry.GlobalFiles.FindDescriptorByName(name)
 	if err != nil {
