@@ -22,8 +22,8 @@ type DataFrameInterface interface {
 	AttachData(b []byte)
 }
 
-type UnmarshalMwTaskHandler func(next UnmarshalMwTaskHandler, in []byte, md MethodDescriptorInterface, df DataFrameInterface) ([]byte, error)
-type MarshalMwTaskHandler func(next MarshalMwTaskHandler, in []byte, md MethodDescriptorInterface, df DataFrameInterface) ([]byte, error)
+type UnmarshalMwTaskHandler func(in []byte, md MethodDescriptorInterface, df DataFrameInterface) ([]byte, error)
+type MarshalMwTaskHandler func(in []byte, md MethodDescriptorInterface, df DataFrameInterface) ([]byte, error)
 
 type CodecMwTaskInterface interface {
 	Execute() ([]byte, error)

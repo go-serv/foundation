@@ -35,44 +35,75 @@ func (m *codecMwGroup) AddHandlers(un i.UnmarshalMwTaskHandler, marshal i.Marsha
 	m.marshalChain = append(m.marshalChain, marshal)
 }
 
-func (t *unmarshalerTask) Execute() ([]byte, error) {
-	var outer, inner, curr i.UnmarshalMwTaskHandler
-	stubCall := func(next i.UnmarshalMwTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-		return in, nil
-	}
-	ch := append(t.mwGroup.unmarshalChain, stubCall)
+//func (t *unmarshalerTask) Execute() ([]byte, error) {
+//	var outer, inner, curr i.UnmarshalMwTaskHandler
+//	stubCall := func(next i.UnmarshalMwTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+//		return in, nil
+//	}
+//	ch := append(t.mwGroup.unmarshalChain, stubCall)
+//	l1 := len(ch)
+//	curr = ch[l1-1]
+//	//
+//	for ii := l1 - 2; ii >= 0; ii-- {
+//		outer, inner = ch[ii], curr
+//		curr = func(next i.UnmarshalMwTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+//			return outer(inner, in, md, df)
+//		}
+//	}
+//	return curr(inner, t.data, t.methodDesc, t.df)
+//}
+//
+//func (t *marshalerTask) Execute() (out []byte, err error) {
+//	var outer, inner, curr i.MarshalMwTaskHandler
+//	stubCall := func(next i.MarshalMwTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+//		return out, nil
+//	}
+//	// Iterate over the post-processor tasks in reverse order
+//	ch := append([]i.MarshalMwTaskHandler{stubCall}, t.mwGroup.marshalChain...)
+//	l1 := len(ch)
+//	curr = ch[0]
+//	for ii := 1; ii < l1; ii++ {
+//		outer, inner = ch[ii], curr
+//		curr = func(next i.MarshalMwTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
+//			return outer(inner, out, md, df)
+//		}
+//	}
+//	out, err = curr(inner, t.data, t.methodDesc, t.df)
+//	if err != nil {
+//		return nil, err
+//	}
+//	//
+//	t.df.WithPayload(out)
+//	return t.df.Compose()
+//}
+
+func (t *unmarshalerTask) Execute() (out []byte, err error) {
+	ch := t.mwGroup.unmarshalChain
 	l1 := len(ch)
-	curr = ch[l1-1]
 	//
-	for ii := l1 - 2; ii >= 0; ii-- {
-		outer, inner = ch[ii], curr
-		curr = func(next i.UnmarshalMwTaskHandler, in []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-			return outer(inner, in, md, df)
+	for ii := 0; ii < l1; ii++ {
+		handler := ch[ii]
+		t.data, err = handler(t.data, t.methodDesc, t.df)
+		if err != nil {
+			return
 		}
 	}
-	return curr(inner, t.data, t.methodDesc, t.df)
+	out = t.data
+	return
 }
 
-func (t *marshalerTask) Execute() (out []byte, err error) {
-	var outer, inner, curr i.MarshalMwTaskHandler
-	stubCall := func(next i.MarshalMwTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-		return out, nil
-	}
-	// Iterate over the post-processor tasks in reverse order
-	ch := append([]i.MarshalMwTaskHandler{stubCall}, t.mwGroup.marshalChain...)
+func (t *marshalerTask) Execute() ([]byte, error) {
+	var err error
+	ch := t.mwGroup.marshalChain
 	l1 := len(ch)
-	curr = ch[0]
-	for ii := 1; ii < l1; ii++ {
-		outer, inner = ch[ii], curr
-		curr = func(next i.MarshalMwTaskHandler, out []byte, md i.MethodDescriptorInterface, df i.DataFrameInterface) ([]byte, error) {
-			return outer(inner, out, md, df)
+	//
+	for ii := l1 - 1; ii >= 0; ii-- {
+		handler := ch[ii]
+		t.data, err = handler(t.data, t.methodDesc, t.df)
+		if err != nil {
+			return nil, err
 		}
 	}
-	out, err = curr(inner, t.data, t.methodDesc, t.df)
-	if err != nil {
-		return nil, err
-	}
-	//
-	t.df.WithPayload(out)
+	t.df.WithPayload(t.data)
 	return t.df.Compose()
 }

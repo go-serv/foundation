@@ -4,6 +4,7 @@ import (
 	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/client"
 	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
+	mw_shmem "github.com/go-serv/service/internal/middleware/codec/shm_ipc"
 	"github.com/go-serv/service/internal/runtime"
 	loc_service "github.com/go-serv/service/internal/service/local"
 	"google.golang.org/grpc"
@@ -18,8 +19,9 @@ func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *localClien
 	codec := net_cc.NewOrRegistered(string(svcName))
 	c.WithCodec(codec)
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
+	// Local client middlewares
+	mw_shmem.Init(c)
 	//
-	//cipher_msg.NetClientInit(c)
 	rt := runtime.Runtime()
 	rt.RegisterLocalClient(c)
 	return c
