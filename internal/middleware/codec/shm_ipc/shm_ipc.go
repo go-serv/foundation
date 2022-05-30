@@ -17,7 +17,7 @@ func (ipc *ipcType) unmarshal(in []byte, msg i.MessageReflectInterface, df i.Loc
 	if err != nil {
 		return nil, err
 	}
-	err = ipc.codec.PureUnmarshal(out, msg.Value())
+	//err = ipc.codec.PureUnmarshal(out, msg.Value())
 	ipc.memPool.release(df.SharedMemObjectName())
 	return
 }

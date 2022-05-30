@@ -21,10 +21,11 @@ type sharedMemPool struct {
 	max    int32
 }
 
-func newSharedMemPool(maxBlocks uint) *sharedMemPool {
-	pool := new(sharedMemPool)
-	pool.max = int32(maxBlocks)
-	return pool
+func newSharedMemPool(size uint) *sharedMemPool {
+	p := new(sharedMemPool)
+	p.max = int32(size)
+	p.blocks = make([]*memBlockInfo, 0, size)
+	return p
 }
 
 func (pool *sharedMemPool) release(objname string) {
@@ -43,27 +44,27 @@ func (pool *sharedMemPool) acquire(size uint32) memChan {
 	ch := make(memChan, 0)
 	go func() {
 		if atomic.LoadInt32(&pool.inUse) < pool.max {
+			atomic.AddInt32(&pool.inUse, 1)
+			pool.mu.Lock()
+			defer pool.mu.Unlock()
 			mblock := shmem.NewSharedMemory(size)
 			err := mblock.Allocate()
 			if err != nil {
+				atomic.AddInt32(&pool.inUse, -1)
 				close(ch)
-				return
 			} else {
-				pool.mu.Lock()
-				atomic.AddInt32(&pool.inUse, 1)
 				info := &memBlockInfo{}
 				info.block = mblock
 				pool.blocks = append(pool.blocks, info)
-				pool.mu.Unlock()
 				ch <- mblock
-				return
 			}
+			return
 		} else { // try to acquire any free block in loop
 			for {
 				pool.mu.Lock()
 				smallestFree := -1
 				for ii, b := range pool.blocks {
-					if b.free != true {
+					if !b.free {
 						continue
 					}
 					if b.block.Cap() >= size {
