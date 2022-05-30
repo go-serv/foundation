@@ -26,7 +26,7 @@ func genRandomData(size int) []byte {
 
 func TestAllocateAndFree(t *testing.T) {
 	memSize := 1024
-	shm := NewSharedMemory("", memSize)
+	shm := NewSharedMemory(uint32(memSize))
 	if err := shm.Allocate(); err != nil {
 		alloc_failed(t, err)
 	}
@@ -37,7 +37,7 @@ func TestAllocateAndFree(t *testing.T) {
 
 func TestRead(t *testing.T) {
 	memSize := 1024
-	shm := NewSharedMemory("", memSize)
+	shm := NewSharedMemory(uint32(memSize))
 	if err := shm.Allocate(); err != nil {
 		alloc_failed(t, err)
 	}
@@ -46,7 +46,7 @@ func TestRead(t *testing.T) {
 		t.Fatalf("failed to populated shared memory with data, error: %v", err)
 	}
 	// Receiver side
-	shmRecv := NewSharedMemory(shm.ObjectName(), shm.Size())
+	shmRecv := NewForRead(shm.ObjectName(), shm.Len(), shm.Cap())
 	data, err := shmRecv.Read()
 	if err != nil {
 		t.Fatalf("failed to read shared memory content, error: %v", err)

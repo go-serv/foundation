@@ -2,7 +2,8 @@ package shmem
 
 type SharedMemoryInterface interface {
 	ObjectName() string
-	Size() uint32
+	Cap() uint32
+	Len() uint32
 	Allocate() error
 	Read() ([]byte, error)
 	Write([]byte) error

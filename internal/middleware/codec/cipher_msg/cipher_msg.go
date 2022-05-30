@@ -9,12 +9,14 @@ import (
 func NetServiceInit(netSvc i.NetworkServiceInterface) {
 	unmarshalHandler := func(in []byte, mdReflect i.MethodReflectInterface, msgReflect i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out, _ = enc.Decrypt(in)
+		out, _ = enc.Decrypt(df.Payload())
 		return
 	}
 	marshalHandler := func(in []byte, mdReflect i.MethodReflectInterface, msgReflect i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
 		out = enc.Encrypt(in)
+		df.WithPayload(out)
+		out, err = df.Compose(nil)
 		return
 	}
 	//
@@ -25,12 +27,14 @@ func NetClientInit(cc i.NetworkClientInterface) {
 	netSvc := cc.NetService()
 	unmarshalHandler := func(in []byte, mdReflect i.MethodReflectInterface, msgReflect i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out, _ = enc.Decrypt(in)
+		out, _ = enc.Decrypt(df.Payload())
 		return
 	}
 	marshalHandler := func(in []byte, mdReflect i.MethodReflectInterface, msgReflect i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
 		out = enc.Encrypt(in)
+		df.WithPayload(out)
+		out, err = df.Compose(nil)
 		return
 	}
 	//

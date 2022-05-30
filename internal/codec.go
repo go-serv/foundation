@@ -29,6 +29,8 @@ type LocalDataFrameInterface interface {
 	WithSharedMemObjectName(string)
 	SharedMemBlockSize() uint32
 	WithSharedMemBlockSize(uint32)
+	SharedMemDataSize() uint32
+	WithSharedMemDataSize(uint32)
 }
 
 type UnmarshalMwTaskHandler func(in []byte, mf MethodReflectInterface, msgRef MessageReflectInterface, df DataFrameInterface) ([]byte, error)

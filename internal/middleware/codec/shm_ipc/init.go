@@ -3,6 +3,7 @@ package shm_ipc
 import (
 	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/autogen/proto/go_serv"
+	local_cc "github.com/go-serv/service/internal/grpc/codec/local"
 )
 
 func ClientInit(cc i.LocalClientInterface) {
@@ -23,6 +24,7 @@ func ClientInit(cc i.LocalClientInterface) {
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
 			return
 		}
+		df.WithHeaderFlag(local_cc.SharedMemoryIpc)
 		out, err = ipc.marshal(in, df.(i.LocalDataFrameInterface))
 		return
 	}
