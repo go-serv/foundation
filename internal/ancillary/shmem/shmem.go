@@ -18,3 +18,7 @@ func (b *blockInfo) Cap() uint32 {
 func (b *blockInfo) Len() uint32 {
 	return b.len
 }
+
+func (b *blockInfo) WithLen(len uint32) {
+	b.len = len
+}

@@ -12,16 +12,16 @@ func ClientInit(cc i.LocalClientInterface) {
 	ipc.codec = cc.Codec()
 	// Handlers
 	unmarshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
-		out = in
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
+			out = in
 			return
 		}
 		out, err = ipc.unmarshal(in, msg, df.(i.LocalDataFrameInterface))
 		return
 	}
 	marshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
-		out = in
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
+			out, err = df.Compose(nil)
 			return
 		}
 		df.WithHeaderFlag(local_cc.SharedMemoryIpc)
@@ -39,16 +39,17 @@ func ServiceInit(srv i.LocalServiceInterface) {
 	ipc.codec = srv.Codec()
 	//
 	unmarshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
-		out = in
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
+			out = in
 			return
 		}
 		out, err = ipc.unmarshal(in, msg, df.(i.LocalDataFrameInterface))
 		return
 	}
 	marshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
-		out = in
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
+			df.WithPayload(in)
+			out, err = df.Compose(nil)
 			return
 		}
 		out, err = ipc.marshal(in, df.(i.LocalDataFrameInterface))

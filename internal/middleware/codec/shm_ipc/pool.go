@@ -43,7 +43,7 @@ func (pool *sharedMemPool) acquire(size uint32) memChan {
 	ch := make(memChan, 0)
 	go func() {
 		if atomic.LoadInt32(&pool.inUse) < pool.max {
-			mblock := shmem.NewSharedMemory("", size)
+			mblock := shmem.NewSharedMemory(size)
 			err := mblock.Allocate()
 			if err != nil {
 				close(ch)
@@ -66,15 +66,16 @@ func (pool *sharedMemPool) acquire(size uint32) memChan {
 					if b.free != true {
 						continue
 					}
-					if b.block.Size() >= size {
+					if b.block.Cap() >= size {
 						b.free = false
+						b.block.WithLen(size)
 						atomic.AddInt32(&pool.inUse, 1)
 						ch <- b.block
 						goto exit
 					} else {
 						if smallestFree == -1 {
 							smallestFree = ii
-						} else if b.block.Size() < pool.blocks[smallestFree].block.Size() {
+						} else if b.block.Cap() < pool.blocks[smallestFree].block.Cap() {
 							smallestFree = ii
 						}
 					}
@@ -88,7 +89,7 @@ func (pool *sharedMemPool) acquire(size uint32) memChan {
 						close(ch)
 						goto exit
 					}
-					mblock := shmem.NewSharedMemory("", size)
+					mblock := shmem.NewSharedMemory(size)
 					err := mblock.Allocate()
 					if err != nil {
 						// The block was freed but failed to be re-allocated
