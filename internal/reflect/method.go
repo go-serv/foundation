@@ -66,8 +66,10 @@ func (m *method) IsResponse(msg proto.Message) bool {
 
 func (m *method) FromMessage(msg proto.Message) i.MessageReflectInterface {
 	if m.IsRequest(msg) {
+		m.req.WithValue(msg)
 		return m.req
 	} else {
+		m.res.WithValue(msg)
 		return m.res
 	}
 }

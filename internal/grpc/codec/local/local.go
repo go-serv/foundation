@@ -13,3 +13,9 @@ const (
 type codec struct {
 	i.CodecInterface
 }
+
+type dataframe struct {
+	i.DataFrameInterface
+	shmObjName   string
+	shmBlockSize int
+}

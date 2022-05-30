@@ -17,9 +17,18 @@ type DataFrameInterface interface {
 	HeaderFlags() HeaderFlags32Type
 	WithHeaderFlag(HeaderFlags32Type)
 	Compose() ([]byte, error)
+	ComposeHook() ([]byte, error)
 	Payload() []byte
 	WithPayload([]byte)
 	AttachData(b []byte)
+}
+
+type LocalDataFrameInterface interface {
+	DataFrameInterface
+	SharedMemObjectName() string
+	WithSharedMemObjectName(string)
+	SharedMemBlockSize() int
+	WithSharedMemBlockSize(int)
 }
 
 type UnmarshalMwTaskHandler func(in []byte, mf MethodReflectInterface, msgRef MessageReflectInterface, df DataFrameInterface) ([]byte, error)
@@ -37,6 +46,8 @@ type CodecMiddlewareGroupInterface interface {
 
 type CodecInterface interface {
 	encoding.Codec
+	PureUnmarshal(wire []byte, m proto.Message) error
+	PureMarshal(m proto.Message) ([]byte, error)
 	NewDataFrame() DataFrameInterface
 }
 

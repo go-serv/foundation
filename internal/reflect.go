@@ -40,6 +40,8 @@ type MethodReflectInterface interface {
 type MessageReflectInterface interface {
 	ReflectAccessor
 	Descriptor() protoreflect.MessageDescriptor
+	Value() proto.Message
+	WithValue(v proto.Message)
 	Fields() []FieldReflectInterface
 }
 

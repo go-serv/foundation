@@ -34,6 +34,7 @@ func (b *blockInfo) Allocate() (err error) {
 	if err != nil {
 		return
 	}
+	//
 	b.data, err = unix.Mmap(fd, 0, b.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
 	if err != nil {
 		return
@@ -42,7 +43,7 @@ func (b *blockInfo) Allocate() (err error) {
 	return
 }
 
-func (b *blockInfo) Read() (err error) {
+func (b *blockInfo) Read() (out []byte, err error) {
 	var fd int
 	fd, err = unix.Open(b.objname, unix.O_RDWR, UnixFilePerm)
 	if err != nil {
@@ -53,14 +54,11 @@ func (b *blockInfo) Read() (err error) {
 		return
 	}
 	err = unix.Close(fd)
+	out = b.data
 	return
 }
 
-func (b *blockInfo) Content() []byte {
-	return b.data
-}
-
-func (b *blockInfo) Populate(src []byte) error {
+func (b *blockInfo) Write(src []byte) error {
 	if len(src) > b.size {
 		return nil
 	}

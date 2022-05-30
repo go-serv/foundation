@@ -42,6 +42,10 @@ func clientMiddlewareGroupOnCond(m proto.Message, cond func() (bool, error)) (i.
 	}
 }
 
+func (c *codec) PureMarshal(m proto.Message) ([]byte, error) {
+	return MarshalOptions.Marshal(m)
+}
+
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	var (
 		err  error
@@ -74,6 +78,10 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	}
 	// Invoke marshaler task handlers
 	return task.Execute()
+}
+
+func (c *codec) PureUnmarshal(data []byte, m proto.Message) error {
+	return UnmarshalOptions.Unmarshal(data, m)
 }
 
 func (c *codec) Unmarshal(data []byte, v interface{}) error {

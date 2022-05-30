@@ -42,17 +42,17 @@ func TestRead(t *testing.T) {
 		alloc_failed(t, err)
 	}
 	rdata := genRandomData(memSize)
-	if err := shm.Populate(rdata); err != nil {
+	if err := shm.Write(rdata); err != nil {
 		t.Fatalf("failed to populated shared memory with data, error: %v", err)
 	}
 	// Receiver side
-	shmRecv := NewSharedMemory(shm.Name(), shm.Size())
-	if err := shmRecv.Read(); err != nil {
+	shmRecv := NewSharedMemory(shm.ObjectName(), shm.Size())
+	data, err := shmRecv.Read()
+	if err != nil {
 		t.Fatalf("failed to read shared memory content, error: %v", err)
 	}
-	content := shmRecv.Content()
 	for i := 0; i < memSize; i++ {
-		if content[i] != rdata[i] {
+		if data[i] != rdata[i] {
 			t.Fatalf("memory corrupted")
 		}
 	}

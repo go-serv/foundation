@@ -79,16 +79,23 @@ func (df *dataFrame) AttachData(in []byte) {
 
 func (df *dataFrame) Compose() ([]byte, error) {
 	var err error
+	// Magic word
 	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
 		return nil, err
 	}
+	// Header
 	if err = ancillary.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
 		return nil, err
 	}
+	// Payload
 	if _, err = df.netw.Write(df.payload); err != nil {
 		return nil, err
 	}
 	return df.netw.Bytes(), nil
+}
+
+func (df *dataFrame) ComposeHook() ([]byte, error) {
+	return nil, nil
 }
 
 func (df *dataFrame) Payload() []byte {

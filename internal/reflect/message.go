@@ -2,6 +2,7 @@ package reflect
 
 import (
 	i "github.com/go-serv/service/internal"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -22,6 +23,7 @@ type message struct {
 	desc      protoreflect.MessageDescriptor
 	fields    []i.FieldReflectInterface
 	extValues extValueMap
+	value     proto.Message
 }
 
 func (m *message) Descriptor() protoreflect.MessageDescriptor {
@@ -30,6 +32,14 @@ func (m *message) Descriptor() protoreflect.MessageDescriptor {
 
 func (m *message) Fields() []i.FieldReflectInterface {
 	return m.fields
+}
+
+func (m *message) Value() proto.Message {
+	return m.value
+}
+
+func (m *message) WithValue(v proto.Message) {
+	m.value = v
 }
 
 func (m *message) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {

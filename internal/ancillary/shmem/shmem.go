@@ -6,7 +6,7 @@ type blockInfo struct {
 	objname string
 }
 
-func (b *blockInfo) Name() string {
+func (b *blockInfo) ObjectName() string {
 	return b.objname
 }
 
