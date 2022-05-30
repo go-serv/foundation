@@ -27,11 +27,11 @@ func newSharedMemPool(maxBlocks uint) *sharedMemPool {
 	return pool
 }
 
-func (pool *sharedMemPool) release(b shmem.SharedMemoryInterface) {
+func (pool *sharedMemPool) release(objname string) {
 	pool.mu.Lock()
 	defer pool.mu.Unlock()
 	for _, v := range pool.blocks {
-		if v.block.ObjectName() == b.ObjectName() {
+		if v.block.ObjectName() == objname {
 			v.free = true
 			atomic.AddInt32(&pool.inUse, -1)
 			return
