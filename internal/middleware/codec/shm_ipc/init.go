@@ -21,7 +21,7 @@ func ClientInit(cc i.LocalClientInterface) {
 	}
 	marshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
-			out, err = df.Compose(nil)
+			out = in
 			return
 		}
 		df.WithHeaderFlag(local_cc.SharedMemoryIpc)
@@ -48,8 +48,7 @@ func ServiceInit(srv i.LocalServiceInterface) {
 	}
 	marshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
 		if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
-			df.WithPayload(in)
-			out, err = df.Compose(nil)
+			out = in
 			return
 		}
 		out, err = ipc.marshal(in, df.(i.LocalDataFrameInterface))
