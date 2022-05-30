@@ -1,7 +1,10 @@
 package local_test
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
+	"crypto/rand"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/go-serv/service/internal"
 	proto "github.com/go-serv/service/internal/autogen/proto/local"
@@ -42,14 +45,25 @@ func (tf *testFixtures) finalize() {
 func TestSharedMemIpc(t *testing.T) {
 	tf := setup(t)
 	doLargeReq := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
+		chunkSize := 4 * 1024 * 1024
 		run := func(task job.TaskInterface) {
 			cc := j.GetValue().(proto.SampleClient)
-			req := &proto.LargeRequest_Request{}
-			req.Ping = "Hello, World!"
-			res, err := cc.DoLargeRequest(context.Background(), req)
+			dataChunk := make([]byte, chunkSize)
+			_, err := rand.Read(dataChunk)
 			task.Assert(err)
+			// Do call
+			req := &proto.LargeRequestIpc_Request{}
+			req.Data = dataChunk
+			senderMd5Hash := md5.Sum(dataChunk)
+			req.Ping = "Hello, World!"
+			res, err := cc.DoLargeRequestIpc(context.Background(), req)
+			task.Assert(err)
+			// Check the call response
 			if strings.Compare(res.GetPong(), req.GetPing()) != 0 {
 				t.Fatalf("expected %s, got %s", req.GetPing(), res.GetPong())
+			}
+			if bytes.Compare(senderMd5Hash[:], res.Md5Hash) != 0 {
+				t.Fatal("wrong data hash")
 			}
 			task.Done()
 		}

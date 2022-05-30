@@ -23,3 +23,7 @@ func (c *client) NewClient(cc grpc.ClientConnInterface) {
 func (c *client) DoLargeRequest(ctx context.Context, in *proto.LargeRequest_Request, opts ...grpc.CallOption) (*proto.LargeRequest_Response, error) {
 	return c.stubs.DoLargeRequest(ctx, in)
 }
+
+func (c *client) DoLargeRequestIpc(ctx context.Context, in *proto.LargeRequestIpc_Request, opts ...grpc.CallOption) (*proto.LargeRequestIpc_Response, error) {
+	return c.stubs.DoLargeRequestIpc(ctx, in)
+}
