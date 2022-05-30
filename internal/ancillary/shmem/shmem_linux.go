@@ -10,7 +10,7 @@ const UnixPathPrefix = "/dev/shm/go-serv."
 
 var UnixFilePerm uint32 = 0600
 
-func NewSharedMemory(objname string, size int) *blockInfo {
+func NewSharedMemory(objname string, size uint32) *blockInfo {
 	b := new(blockInfo)
 	if objname == "" {
 		b.objname = UnixPathPrefix + strconv.Itoa(int(time.Now().UnixNano()))
@@ -35,7 +35,7 @@ func (b *blockInfo) Allocate() (err error) {
 		return
 	}
 	//
-	b.data, err = unix.Mmap(fd, 0, b.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
+	b.data, err = unix.Mmap(fd, 0, int(b.size), unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
 	if err != nil {
 		return
 	}
@@ -49,7 +49,7 @@ func (b *blockInfo) Read() (out []byte, err error) {
 	if err != nil {
 		return
 	}
-	b.data, err = unix.Mmap(fd, 0, b.size, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
+	b.data, err = unix.Mmap(fd, 0, int(b.size), unix.PROT_READ|unix.PROT_WRITE, unix.MAP_SHARED)
 	if err != nil {
 		return
 	}
@@ -59,11 +59,11 @@ func (b *blockInfo) Read() (out []byte, err error) {
 }
 
 func (b *blockInfo) Write(src []byte) error {
-	if len(src) > b.size {
+	if len(src) > int(b.size) {
 		return nil
 	}
 	n := copy(b.data[0:b.size], src)
-	if n != b.size {
+	if n != int(b.size) {
 		return nil
 	}
 	return nil

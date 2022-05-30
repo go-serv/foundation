@@ -27,11 +27,11 @@ func (df *dataFrame) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func (df *dataFrame) ParseHook() error {
+func (df *dataFrame) ParseHook(*ancillary.NetReader) error {
 	return nil
 }
 
-func (df *dataFrame) Parse(b []byte) error {
+func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) error) error {
 	// Check for header magic word
 	{
 		df.netr = ancillary.NewNetReader(b)
@@ -52,8 +52,10 @@ func (df *dataFrame) Parse(b []byte) error {
 		df.hdrFlags = i.HeaderFlags32Type(flags)
 	}
 	// Call parser hook
-	if err := df.ParseHook(); err != nil {
-		return err
+	if hookFn != nil {
+		if err := hookFn(df.netr); err != nil {
+			return err
+		}
 	}
 	df.payload = df.netr.Flush()
 	return nil
@@ -77,25 +79,23 @@ func (df *dataFrame) AttachData(in []byte) {
 	df.payload = buf
 }
 
-func (df *dataFrame) Compose() ([]byte, error) {
-	var err error
+func (df *dataFrame) Compose(header []byte) (out []byte, err error) {
 	// Magic word
 	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
-		return nil, err
+		return
 	}
 	// Header
 	if err = ancillary.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
-		return nil, err
+		return
 	}
+	// Write header data
+	df.netw.Write(header)
 	// Payload
 	if _, err = df.netw.Write(df.payload); err != nil {
-		return nil, err
+		return
 	}
-	return df.netw.Bytes(), nil
-}
-
-func (df *dataFrame) ComposeHook() ([]byte, error) {
-	return nil, nil
+	out = df.netw.Bytes()
+	return
 }
 
 func (df *dataFrame) Payload() []byte {

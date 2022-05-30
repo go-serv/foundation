@@ -39,7 +39,7 @@ func (pool *sharedMemPool) release(objname string) {
 	}
 }
 
-func (pool *sharedMemPool) acquire(size int) memChan {
+func (pool *sharedMemPool) acquire(size uint32) memChan {
 	ch := make(memChan, 0)
 	go func() {
 		if atomic.LoadInt32(&pool.inUse) < pool.max {

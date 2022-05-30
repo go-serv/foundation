@@ -17,7 +17,7 @@ func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.Codec
 	t.mwGroup = m
 	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
-	if err := t.df.Parse(wire); err != nil {
+	if err := t.df.Parse(wire, nil); err != nil {
 		return nil, err
 	}
 	//

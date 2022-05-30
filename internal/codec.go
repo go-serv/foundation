@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/go-serv/service/internal/ancillary"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"
 )
@@ -12,12 +13,11 @@ func (f HeaderFlags32Type) Has(chkFlag HeaderFlags32Type) bool {
 }
 
 type DataFrameInterface interface {
-	Parse([]byte) error
-	ParseHook() error
+	Parse([]byte, func(netr *ancillary.NetReader) error) error
+	ParseHook(*ancillary.NetReader) error
 	HeaderFlags() HeaderFlags32Type
 	WithHeaderFlag(HeaderFlags32Type)
-	Compose() ([]byte, error)
-	ComposeHook() ([]byte, error)
+	Compose(header []byte) ([]byte, error)
 	Payload() []byte
 	WithPayload([]byte)
 	AttachData(b []byte)
@@ -27,8 +27,8 @@ type LocalDataFrameInterface interface {
 	DataFrameInterface
 	SharedMemObjectName() string
 	WithSharedMemObjectName(string)
-	SharedMemBlockSize() int
-	WithSharedMemBlockSize(int)
+	SharedMemBlockSize() uint32
+	WithSharedMemBlockSize(uint32)
 }
 
 type UnmarshalMwTaskHandler func(in []byte, mf MethodReflectInterface, msgRef MessageReflectInterface, df DataFrameInterface) ([]byte, error)

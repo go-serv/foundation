@@ -105,6 +105,5 @@ func (t *marshalerTask) Execute() ([]byte, error) {
 			return nil, err
 		}
 	}
-	t.df.WithPayload(t.data)
-	return t.df.Compose()
+	return t.data, nil
 }

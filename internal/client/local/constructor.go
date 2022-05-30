@@ -3,7 +3,7 @@ package local
 import (
 	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/client"
-	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
+	local_cc "github.com/go-serv/service/internal/grpc/codec/local"
 	mw_shmem "github.com/go-serv/service/internal/middleware/codec/shm_ipc"
 	"github.com/go-serv/service/internal/runtime"
 	loc_service "github.com/go-serv/service/internal/service/local"
@@ -16,7 +16,7 @@ func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *localClien
 	c.ClientInterface = client.NewClient(svcName, e)
 	c.svc = loc_service.NewService(svcName)
 	// Set client codec
-	codec := net_cc.NewOrRegistered(string(svcName))
+	codec := local_cc.NewOrRegistered(string(svcName))
 	c.WithCodec(codec)
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	// Local client middlewares
