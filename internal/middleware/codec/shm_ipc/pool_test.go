@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	minBlockSize = 1 * 1024 * 1024
+	maxBlockSize = 4 * 1024 * 1024
+)
+
 type testFixtures struct {
 	wg   sync.WaitGroup
 	pool *sharedMemPool
@@ -14,7 +19,7 @@ type testFixtures struct {
 
 func (f *testFixtures) worker(t *testing.T) {
 	go func() {
-		randSize := uint32(1024 + rand.Intn(4096))
+		randSize := uint32(minBlockSize + rand.Intn(maxBlockSize-minBlockSize))
 		block := <-f.pool.acquire(randSize)
 		if block == nil {
 			t.Fatalf("failed to acquire memory block")
@@ -30,7 +35,7 @@ func TestMemPool(t *testing.T) {
 	f := new(testFixtures)
 	f.wg = sync.WaitGroup{}
 	f.pool = newSharedMemPool(5)
-	for i := 0; i < 900; i++ {
+	for i := 0; i < 100; i++ {
 		f.wg.Add(1)
 		f.worker(t)
 	}

@@ -12,6 +12,7 @@ type ipcType struct {
 }
 
 func (ipc *ipcType) unmarshal(in []byte, msg i.MessageReflectInterface, df i.LocalDataFrameInterface) (out []byte, err error) {
+	fmt.Printf("response from server\n")
 	block := shmem.NewForRead(df.SharedMemObjectName(), df.SharedMemDataSize(), df.SharedMemBlockSize())
 	out, err = block.Read()
 	if err != nil {
@@ -19,12 +20,15 @@ func (ipc *ipcType) unmarshal(in []byte, msg i.MessageReflectInterface, df i.Loc
 	}
 	//err = ipc.codec.PureUnmarshal(out, msg.Value())
 	ipc.memPool.release(df.SharedMemObjectName())
+	//fmt.Printf("mem block released\n")
 	return
 }
 
 func (ipc *ipcType) marshal(in []byte, df i.LocalDataFrameInterface) (out []byte, err error) {
 	blockSize := uint32(len(in))
+	//fmt.Printf("acquire mem block\n")
 	memBlock := <-ipc.memPool.acquire(blockSize)
+	//fmt.Printf("mem block acqired\n")
 	if memBlock == nil {
 		return nil, fmt.Errorf("shmem pool: failed to acquire a memory block of %d bytes size", blockSize)
 	}

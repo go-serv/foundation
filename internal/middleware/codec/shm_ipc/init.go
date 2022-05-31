@@ -8,7 +8,7 @@ import (
 
 func ClientInit(cc i.LocalClientInterface) {
 	ipc := new(ipcType)
-	ipc.memPool = newSharedMemPool(20)
+	ipc.memPool = newSharedMemPool(50)
 	ipc.codec = cc.Codec()
 	// Handlers
 	unmarshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {
@@ -24,7 +24,7 @@ func ClientInit(cc i.LocalClientInterface) {
 			out = in
 			return
 		}
-		df.WithHeaderFlag(local_cc.SharedMemoryIpc)
+		df.WithHeaderFlag(local_cc.SharedMemRead)
 		out, err = ipc.marshal(in, df.(i.LocalDataFrameInterface))
 		return
 	}
@@ -35,7 +35,7 @@ func ClientInit(cc i.LocalClientInterface) {
 
 func ServiceInit(srv i.LocalServiceInterface) {
 	ipc := new(ipcType)
-	ipc.memPool = newSharedMemPool(20)
+	ipc.memPool = newSharedMemPool(5)
 	ipc.codec = srv.Codec()
 	//
 	unmarshalHandler := func(in []byte, method i.MethodReflectInterface, msg i.MessageReflectInterface, df i.DataFrameInterface) (out []byte, err error) {

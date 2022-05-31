@@ -70,7 +70,7 @@ func (r *runtime) RegisterNetworkClient(c i.NetworkClientInterface) {
 func (r *runtime) RegisterLocalClient(c i.LocalClientInterface) {
 	k := registryKey(c.ServiceName())
 	if _, ok := r.localClients[k]; ok {
-		panic(fmt.Sprintf("A local client for '%s' already registered", c.ServiceName()))
+		//panic(fmt.Sprintf("A local client for '%s' already registered", c.ServiceName()))
 	}
 	r.localClients[k] = c
 }

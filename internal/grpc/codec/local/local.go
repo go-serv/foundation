@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	SharedMemoryIpc i.HeaderFlags32Type = 1 << iota
+	SharedMemRead i.HeaderFlags32Type = 1 << iota
+	SharedMemRelease
 )
 
 type codec struct {
@@ -30,7 +31,7 @@ func (c *codec) NewDataFrame() i.DataFrameInterface {
 func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) error {
 	return df.DataFrameInterface.Parse(b, func(netr *ancillary.NetReader) (err error) {
 		// Do nothing unless the shared memory IPC flag is set
-		if !df.HeaderFlags().Has(SharedMemoryIpc) {
+		if !df.HeaderFlags().Has(SharedMemRead) {
 			return
 		}
 		df.shmObjName, err = netr.ReadString()
@@ -51,7 +52,7 @@ func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) erro
 
 func (df *dataFrame) Compose([]byte) (out []byte, err error) {
 	var header []byte
-	if df.HeaderFlags().Has(SharedMemoryIpc) {
+	if df.HeaderFlags().Has(SharedMemRead) {
 		netw := ancillary.NewNetWriter()
 		netw.WriteString(df.shmObjName)
 		err = ancillary.GenericNetWriter[uint32](netw, df.shmBlockSize)

@@ -26,6 +26,8 @@ func (s *sample) Register(srv *grpc.Server) {
 
 func (s serviceImpl) DoLargeRequest(ctx context.Context, req *proto.LargeRequest_Request) (*proto.LargeRequest_Response, error) {
 	res := &proto.LargeRequest_Response{}
+	md5Hash := md5.Sum(req.Data)
+	res.Hash = md5Hash[:]
 	res.Pong = req.Ping
 	return res, nil
 }
