@@ -34,10 +34,6 @@ type marshalerTask struct {
 	task
 }
 
-var handlerStub = func(_ in.MwTaskChainElement, _ []byte, _ in.MethodReflectInterface, _ in.MessageReflectInterface, _ in.DataFrameInterface) ([]byte, error) {
-	return nil, nil
-}
-
 func (m *codecMwGroup) AddHandlers(un in.CodecMwTaskUnHandler, marshal in.CodecMwTaskMarshalHandler) {
 	m.unmarshalChain = append(m.unmarshalChain, un)
 	m.marshalChain = append(m.marshalChain, marshal)
@@ -53,18 +49,18 @@ func (t *marshalerTask) Execute() (out []byte, err error) {
 		_, err = next(out)
 		return
 	}
+	// A stub to get rid of a check for the last element in the middleware chain
 	stub := func(_ in.MwTaskChainElement, in []byte, _ in.MethodReflectInterface, _ in.MessageReflectInterface, _ in.DataFrameInterface) (out []byte, err error) {
 		t.data = in
 		return
 	}
-	//
+	// Build a middleware chain of the added handlers in direct order: first added handler will be called first.
 	ch := append([]in.CodecMwTaskMarshalHandler{headCall}, t.mwGroup.marshalChain...)
 	ch = append(ch, stub)
 	l1 := len(ch)
 	for i := l1 - 1; i >= 0; i-- {
 		handler := ch[i]
 		next := curr
-		//_in := t.data
 		curr = func(in []byte) (in.MwTaskChainElement, error) {
 			out, err = handler(next, in, t.methodReflect, t.msgReflect, t.df)
 			if err != nil {
