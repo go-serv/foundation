@@ -12,7 +12,7 @@ func NewCodecMiddlewareGroup(cc i.CodecInterface) *codecMwGroup {
 	return g
 }
 
-func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.CodecMwTaskInterface, error) {
+func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.CodecMwUnmarshalTaskInterface, error) {
 	t := &unmarshalerTask{}
 	t.mwGroup = m
 	// Parse incoming data frame
@@ -27,15 +27,15 @@ func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.Codec
 		return nil, err
 	}
 	t.methodReflect = mReflect
-	t.msgRefect = mReflect.FromMessage(msg)
+	t.msgReflect = mReflect.FromMessage(msg)
 	t.data = t.df.Payload()
+	t.codec = m.codec
 	return t, nil
 }
 
-func (m *codecMwGroup) NewMarshalTask(wire []byte, msg proto.Message) (i.CodecMwTaskInterface, error) {
+func (m *codecMwGroup) NewMarshalTask(msg proto.Message) (i.CodecMwMarshalTaskInterface, error) {
 	t := &marshalerTask{}
 	t.mwGroup = m
-	// Parse incoming data frame
 	t.df = m.codec.NewDataFrame()
 	//
 	ref := runtime.Runtime().Reflection()
@@ -44,7 +44,7 @@ func (m *codecMwGroup) NewMarshalTask(wire []byte, msg proto.Message) (i.CodecMw
 		return nil, err
 	}
 	t.methodReflect = mReflect
-	t.msgRefect = mReflect.FromMessage(msg)
-	t.data = wire
+	t.msgReflect = mReflect.FromMessage(msg)
+	t.codec = m.codec
 	return t, nil
 }

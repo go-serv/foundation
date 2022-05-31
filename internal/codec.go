@@ -33,17 +33,22 @@ type LocalDataFrameInterface interface {
 	WithSharedMemDataSize(uint32)
 }
 
-type UnmarshalMwTaskHandler func(in []byte, mf MethodReflectInterface, msgRef MessageReflectInterface, df DataFrameInterface) ([]byte, error)
-type MarshalMwTaskHandler func(in []byte, mf MethodReflectInterface, msgRef MessageReflectInterface, df DataFrameInterface) ([]byte, error)
+type CodecMwTaskUnHandler func(next MwTaskChainElement, in []byte, method MethodReflectInterface, msg MessageReflectInterface, df DataFrameInterface) ([]byte, error)
+type CodecMwTaskMarshalHandler func(next MwTaskChainElement, in []byte, method MethodReflectInterface, msg MessageReflectInterface, df DataFrameInterface) ([]byte, error)
+type MwTaskChainElement func(in []byte) (MwTaskChainElement, error)
 
-type CodecMwTaskInterface interface {
+type CodecMwMarshalTaskInterface interface {
 	Execute() ([]byte, error)
 }
 
+type CodecMwUnmarshalTaskInterface interface {
+	Execute() error
+}
+
 type CodecMiddlewareGroupInterface interface {
-	AddHandlers(UnmarshalMwTaskHandler, MarshalMwTaskHandler)
-	NewUnmarshalTask(wire []byte, msg proto.Message) (CodecMwTaskInterface, error)
-	NewMarshalTask(wire []byte, msg proto.Message) (CodecMwTaskInterface, error)
+	AddHandlers(CodecMwTaskUnHandler, CodecMwTaskMarshalHandler)
+	NewUnmarshalTask(wire []byte, msg proto.Message) (CodecMwUnmarshalTaskInterface, error)
+	NewMarshalTask(msg proto.Message) (CodecMwMarshalTaskInterface, error)
 }
 
 type CodecInterface interface {

@@ -49,20 +49,14 @@ func (c *codec) PureMarshal(m proto.Message) ([]byte, error) {
 func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	var (
 		err  error
-		data []byte
 		ok   bool
 		m    proto.Message
-		task i.CodecMwTaskInterface
+		task i.CodecMwMarshalTaskInterface
 		mg   i.CodecMiddlewareGroupInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
 		return nil, nil
-	}
-	//
-	data, err = MarshalOptions.Marshal(m)
-	if err != nil {
-		return nil, err
 	}
 	//
 	mg, err = clientMiddlewareGroupOnCond(m, func() (bool, error) {
@@ -71,12 +65,11 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	task, err = mg.NewMarshalTask(data, m)
 	//
+	task, err = mg.NewMarshalTask(m)
 	if err != nil {
 		return nil, err
 	}
-	// Invoke marshaler task handlers
 	return task.Execute()
 }
 
@@ -90,7 +83,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 		ok   bool
 		m    proto.Message
 		mg   i.CodecMiddlewareGroupInterface
-		task i.CodecMwTaskInterface
+		task i.CodecMwUnmarshalTaskInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
@@ -108,11 +101,7 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 	//
-	data, err = task.Execute()
-	if err != nil {
-		return err
-	}
-	return UnmarshalOptions.Unmarshal(data, m)
+	return task.Execute()
 }
 
 func (c *codec) Name() string {
