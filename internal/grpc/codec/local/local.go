@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	SharedMemRead i.HeaderFlags32Type = 1 << iota
-	SharedMemRelease
+	SharedMem_IPC i.HeaderFlags32Type = 1 << iota
 )
 
 type codec struct {
@@ -31,20 +30,19 @@ func (c *codec) NewDataFrame() i.DataFrameInterface {
 func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) error {
 	return df.DataFrameInterface.Parse(b, func(netr *ancillary.NetReader) (err error) {
 		// Do nothing unless the shared memory IPC flag is set
-		if !df.HeaderFlags().Has(SharedMemRead) {
-			return
-		}
-		df.shmObjName, err = netr.ReadString()
-		if err != nil {
-			return
-		}
-		df.shmBlockSize, err = ancillary.GenericNetReader[uint32](netr)
-		if err != nil {
-			return
-		}
-		df.shmDataSize, err = ancillary.GenericNetReader[uint32](netr)
-		if err != nil {
-			return
+		if df.HeaderFlags().Has(SharedMem_IPC) {
+			df.shmObjName, err = netr.ReadString()
+			if err != nil {
+				return
+			}
+			df.shmBlockSize, err = ancillary.GenericNetReader[uint32](netr)
+			if err != nil {
+				return
+			}
+			df.shmDataSize, err = ancillary.GenericNetReader[uint32](netr)
+			if err != nil {
+				return
+			}
 		}
 		return
 	})
@@ -52,7 +50,7 @@ func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) erro
 
 func (df *dataFrame) Compose([]byte) (out []byte, err error) {
 	var header []byte
-	if df.HeaderFlags().Has(SharedMemRead) {
+	if df.HeaderFlags().Has(SharedMem_IPC) {
 		netw := ancillary.NewNetWriter()
 		netw.WriteString(df.shmObjName)
 		err = ancillary.GenericNetWriter[uint32](netw, df.shmBlockSize)

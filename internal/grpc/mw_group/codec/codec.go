@@ -49,7 +49,7 @@ func (t *marshalerTask) Execute() (out []byte, err error) {
 		_, err = next(out)
 		return
 	}
-	// A stub to get rid of a check for the last element in the middleware chain
+	// A stub to get rid of a check in handlers for the last element in the middleware chain
 	stub := func(_ in.MwTaskChainElement, in []byte, _ in.MethodReflectInterface, _ in.MessageReflectInterface, _ in.DataFrameInterface) (out []byte, err error) {
 		t.data = in
 		return
