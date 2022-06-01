@@ -120,7 +120,7 @@ type localEndpoint struct {
 func (e *localEndpoint) Listen() error {
 	var err error
 	var unixAddr *net.UnixAddr
-	socketAddr := e.Address()
+	socketAddr := "@" + e.Address()
 	unixAddr, err = net.ResolveUnixAddr(UnixDomainSocket, socketAddr)
 	if err != nil {
 		return err

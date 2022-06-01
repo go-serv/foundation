@@ -14,7 +14,7 @@ func (c *localClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fi
 	}
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()
-		addr := "unix:" + c.Endpoint().Address()
+		addr := "unix-abstract://" + c.Endpoint().Address()
 		//addr := "@/tmp/." + c.Endpoint().Address()
 		conn, err := grpc.Dial(addr, c.DialOptions()...)
 		task.Assert(err)

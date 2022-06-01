@@ -40,8 +40,8 @@ type benchFixtures struct {
 
 const pingMsg = "Hello, World!"
 const (
-	minDataSize = 3000000
-	maxDataSize = 4000000
+	minDataSize = 30000
+	maxDataSize = 40000
 )
 
 func largeDataIpcCall(cc proto.SampleClient) (req *proto.LargeRequestIpc_Request, res *proto.LargeRequestIpc_Response, err error) {
@@ -80,10 +80,12 @@ func largeDataCall(cc proto.SampleClient) (req *proto.LargeRequest_Request, res 
 	return
 }
 
+const N = 100
+
 func (f *testFixtures) doLargeReqTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.TaskInterface) {
 		cc := f.clientJob.GetValue().(proto.SampleClient)
-		for kk := 0; kk < 10; kk++ {
+		for kk := 0; kk < N; kk++ {
 			req, res, err := largeDataCall(cc)
 			task.Assert(err)
 			reqHash := md5.Sum(req.Data)
@@ -102,7 +104,8 @@ func (f *testFixtures) doLargeReqTask(j job.JobInterface) (job.Init, job.Run, jo
 func (f *testFixtures) doLargeReqIpcTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.TaskInterface) {
 		cc := f.clientJob.GetValue().(proto.SampleClient)
-		for kk := 0; kk < 3; kk++ {
+		for kk := 0; kk < N; kk++ {
+			//time.Sleep(time.Millisecond * 50)
 			req, res, err := largeDataIpcCall(cc)
 			task.Assert(err)
 			reqHash := md5.Sum(req.Data)
@@ -181,7 +184,7 @@ func TestSharedMemIpc(t *testing.T) {
 	}()
 	//time.Sleep(time.Millisecond * 10)
 	now := time.Now().UnixMilli()
-	for k := 0; k < 2; k++ {
+	for k := 0; k < 1; k++ {
 		//tf.clientJob.AddTask(tf.doLargeReqTask)
 		tf.clientJob.AddTask(tf.doLargeReqIpcTask)
 	}

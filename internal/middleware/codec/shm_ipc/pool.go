@@ -1,16 +1,17 @@
 package shm_ipc
 
 import (
-	"github.com/go-serv/service/internal/ancillary/shmem"
+	"fmt"
+	shmem2 "github.com/go-serv/service/internal/ancillary/platform/shmem"
 	"runtime"
 	"sync"
 	"sync/atomic"
 )
 
-type memChan chan shmem.SharedMemoryInterface
+type memChan chan shmem2.SharedMemoryInterface
 
 type memBlockInfo struct {
-	block shmem.SharedMemoryInterface
+	block shmem2.SharedMemoryInterface
 	free  bool
 }
 
@@ -33,6 +34,7 @@ func (pool *sharedMemPool) release(objname string) {
 	defer pool.mu.Unlock()
 	for _, v := range pool.blocks {
 		if v.block.ObjectName() == objname {
+			fmt.Printf("release mem %d bytes\n", v.block.Len())
 			v.free = true
 			atomic.AddInt32(&pool.inUse, -1)
 			return
@@ -41,13 +43,14 @@ func (pool *sharedMemPool) release(objname string) {
 }
 
 func (pool *sharedMemPool) acquire(size uint32) memChan {
+	fmt.Printf("acquire mem %d bytes\n", size)
 	ch := make(memChan, 0)
 	go func() {
 		if atomic.LoadInt32(&pool.inUse) < pool.max {
 			atomic.AddInt32(&pool.inUse, 1)
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
-			mblock := shmem.NewSharedMemory(size)
+			mblock := shmem2.NewSharedMemory(size)
 			err := mblock.Allocate()
 			if err != nil {
 				atomic.AddInt32(&pool.inUse, -1)
@@ -90,7 +93,7 @@ func (pool *sharedMemPool) acquire(size uint32) memChan {
 						close(ch)
 						goto exit
 					}
-					mblock := shmem.NewSharedMemory(size)
+					mblock := shmem2.NewSharedMemory(size)
 					err := mblock.Allocate()
 					if err != nil {
 						// The block was freed but failed to be re-allocated

@@ -3,7 +3,7 @@ package shm_ipc
 import (
 	"fmt"
 	z "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/ancillary/shmem"
+	"github.com/go-serv/service/internal/ancillary/platform/shmem"
 	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 	local_cc "github.com/go-serv/service/internal/grpc/codec/local"
 )
