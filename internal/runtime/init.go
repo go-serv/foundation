@@ -13,6 +13,8 @@ func init() {
 	rt.ref.AddProtoExtension(go_serv.E_LocalShmIpc)
 	rt.ref.AddProtoExtension(go_serv.E_NetMsgEnc)
 	//
+	rt.eventsMap = make(eventsMapTyp, 0)
+	//
 	rt.netServices = make(registry, 0)
 	rt.netClients = make(registry, 0)
 	rt.localService = make(registry, 0)

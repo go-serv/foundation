@@ -1,5 +1,20 @@
 package shmem
 
+import (
+	"crypto/rand"
+	"encoding/binary"
+)
+
+type BlockRandId uint64
+
+func (BlockRandId) New() BlockRandId {
+	var buf [8]byte
+	_, _ = rand.Read(buf[:])
+	out := binary.LittleEndian.Uint64(buf[:])
+	out = out & (^uint64(0) >> 9)
+	return BlockRandId(out)
+}
+
 type blockInfo struct {
 	data    []byte // allocated shared memory block
 	len     uint32

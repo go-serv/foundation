@@ -10,4 +10,7 @@ type RuntimeInterface interface {
 	NetworkServices() []NetworkServiceInterface
 	IsRequestMessage(msg proto.Message) (bool, error)
 	IsResponseMessage(msg proto.Message) (bool, error)
+
+	RegisterEventHandler(func(eventTyp interface{}))
+	TriggerEvent(eventTyp interface{}, extra ...interface{})
 }

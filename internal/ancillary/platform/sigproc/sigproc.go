@@ -10,15 +10,37 @@ import (
 	"github.com/go-serv/service/internal/ancillary/platform"
 )
 
-//export sigproc_event_hander
-func sigproc_event_hander(e int) {
-	fmt.Printf("event %d\n", e)
-}
-
-type ProcSignalType uint
+type SignalTyp uint
 
 const (
-	SharedMemRelease ProcSignalType = iota + 1
+	SharedMemRelease SignalTyp = iota + 1
 )
+
+type (
+	SigCodeTyp  uint
+	SigValueTyp uint
+)
+
+func (c SigCodeTyp) Validate() SigCodeTyp {
+	return c
+}
+
+func (v SigValueTyp) Validate() SigValueTyp {
+	return v
+}
+
+func (v SigValueTyp) pack(c SigCodeTyp) uint64 {
+	return (uint64(c) << 54) | (uint64(v) & (^uint64(0) >> 10))
+}
+
+const (
+	SharedMemoryRelease SignalTyp = iota + 1
+)
+
+//export sigproc_event_hander
+func sigproc_event_hander(code int, extra_val int) {
+	fmt.Printf("event code %d value %d\n", code, extra_val)
+	//runtime.Runtime().TriggerEvent(SigCodeTyp(code).Validate(), SigValueTyp(extra_val).Validate())
+}
 
 type platformTyp platform.PlatformType

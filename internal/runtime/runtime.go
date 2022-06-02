@@ -12,8 +12,15 @@ var (
 	ErrDescriptorNotFound       = errors.New("")
 )
 
-type registryKey string
-type registry map[registryKey]interface{}
+type (
+	registryKey string
+	registry    map[registryKey]interface{}
+)
+
+type (
+	eventsMapTyp   map[interface{}][]eventHandlerFn
+	eventHandlerFn func(...interface{}) bool
+)
 
 //type registryConstraints interface {
 //	i.LocalServiceInterface | i.NetworkServiceInterface | i.LocalClientInterface | i.NetworkClientInterface
@@ -35,14 +42,11 @@ type runtime struct {
 	netServices  registry
 	localClients registry
 	netClients   registry
+	eventsMap    eventsMapTyp
 }
 
 func (r *runtime) Reflection() i.ReflectInterface {
 	return r.ref
-}
-
-func (r *runtime) ErrorWrapper(e error) {
-	//switch _, e.
 }
 
 func (r *runtime) RegisterNetworkService(svc i.NetworkServiceInterface) {
@@ -141,4 +145,24 @@ func (r *runtime) ServiceByMessage(msg proto.Message) (i.ServiceInterface, error
 		}
 	}
 	return nil, ErrMethodDescriptorNotFound
+}
+
+func (r *runtime) RegisterEventHandler(event interface{}, h eventHandlerFn) {
+	if _, has := r.eventsMap[event]; !has {
+		r.eventsMap[event] = make([]eventHandlerFn, 0)
+	}
+	r.eventsMap[event] = append(r.eventsMap[event], h)
+}
+
+func (r *runtime) TriggerEvent(event interface{}, extra ...interface{}) {
+	handlers, has := r.eventsMap[event]
+	if !has {
+		return
+	}
+	for i := 0; i < len(handlers); i++ {
+		stop := handlers[i](extra...)
+		if stop {
+			return
+		}
+	}
 }

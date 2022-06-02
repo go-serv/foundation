@@ -8,6 +8,6 @@ import (
 )
 
 func TestSignalProcess(t *testing.T) {
-	SignalProcess(0, 1)
+	SignalProcess(0, 255, 4456)
 	time.Sleep(time.Millisecond)
 }

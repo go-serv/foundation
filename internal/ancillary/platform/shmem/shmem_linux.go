@@ -18,14 +18,6 @@ func NewSharedMemory(cap uint32) *blockInfo {
 	return b
 }
 
-func NewForRead(objname string, len uint32, cap uint32) *blockInfo {
-	b := new(blockInfo)
-	b.objname = objname
-	b.len = len
-	b.cap = cap
-	return b
-}
-
 func (b *blockInfo) Allocate() (err error) {
 	var fd int
 	fd, err = unix.Open(b.objname, unix.O_CREAT|unix.O_RDWR|unix.O_NOFOLLOW, UnixFilePerm)
