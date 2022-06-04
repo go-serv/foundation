@@ -19,7 +19,7 @@ type SampleDictionary struct {
 	Bytes    []byte    `name:"bytes"`
 }
 
-type Foo struct {
+type embeddedDic struct {
 	SampleDictionary
 }
 
@@ -32,7 +32,7 @@ const (
 var bytes = []byte{0x1, 0x2, 0x3}
 
 func TestHydrate(t *testing.T) {
-	dic := new(Foo)
+	dic := new(embeddedDic)
 	dic.RegisterTypeHandler(reflect.TypeOf(uint(0)), func(op OpType, name, alias string, v reflect.Value) {
 		switch op {
 		case HydrateOp:

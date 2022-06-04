@@ -38,15 +38,13 @@ func (d *Dictionary) iterateOver(struc interface{}, fn func(name, alias string, 
 	}
 	for i := 0; i < typ.NumField(); i++ {
 		fld := typ.Field(i)
-		if fld.Type == reflect.TypeOf((*Dictionary)(nil)).Elem() {
+		if fld.Type == reflect.TypeOf((*Dictionary)(nil)).Elem() { // base type Dictionary, skip
 			continue
 		}
 		if !fld.IsExported() {
 			return fmt.Errorf("dictionary: field '%s' must be exported", fld.Name)
 		}
 		fldVal := indir.Field(i).Addr().Interface()
-		// tt := reflect.TypeOf(struc).Implements(reflect.TypeOf((*DictionaryInterface)(nil)).Elem())
-		// _ = tt
 		if _, ok := fldVal.(DictionaryInterface); ok {
 			if err := d.iterateOver(fldVal, fn); err != nil {
 				return err
