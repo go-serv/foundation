@@ -2,20 +2,22 @@ package meta
 
 import (
 	z "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/internal/ancillary/dictionary"
 	ancillary_net "github.com/go-serv/service/internal/ancillary/net"
 	"net"
 )
 
-type CommonDictionary struct {
-	z.MetaDictionary
-	SessionId z.SessionId `header:"gserv-session-id"`
+type HttpCommonDictionary struct {
+	dictionary.Dictionary
+	SessionId z.SessionId `name:"gserv-session-id"`
 }
 
-type ServiceDictionary struct {
-	CommonDictionary
+type HttpServerDictionary struct {
+	HttpCommonDictionary
 	// The Content-Type representation header is used to indicate the original media type of the resource
 	// (prior to any content encoding applied for sending).
-	//
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+	ContentType string `name:"content-type"`
 
 	// The X-Forwarded-For (XFF) request header is a de-facto standard header for identifying the originating IP address
 	// of a client connecting to a web server through a proxy server.
@@ -33,6 +35,6 @@ type ServiceDictionary struct {
 	ForwardedProto string `name:"x-forwarded-proto"`
 }
 
-type ClientDictionary struct {
-	CommonDictionary
+type HttpClientDictionary struct {
+	HttpCommonDictionary
 }

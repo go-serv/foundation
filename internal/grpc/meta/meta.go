@@ -6,17 +6,25 @@ import (
 )
 
 type meta struct {
-	data        metadata.MD
-	cryptoAlgo  string
-	cryptoNonce string
+	data metadata.MD
 }
 
 type serverMeta struct {
 	meta
+	srvDic *HttpServerDictionary
+}
+
+func (s *serverMeta) Hydrate() error {
+	return s.srvDic.Hydrate(s.srvDic)
 }
 
 type clientMeta struct {
 	meta
+	clientDic *HttpClientDictionary
+}
+
+func (c *clientMeta) Hydrate() error {
+	return c.clientDic.Hydrate(c.clientDic)
 }
 
 func (m *serverMeta) GetIP() string {
