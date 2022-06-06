@@ -1,15 +1,12 @@
+// Package net
+// The implementation of the network middleware group.
+// Request handlers chain: wire data -> codec middleware: m1 -> m2 -> marshaler -> req -> network middleware: h1 -> h2 -> gRPC call
+// Response handlers chain: gRPC call -> response -> h1 -> h2 -> codec middleware -> m2 -> m1 -> unmarshaler -> wire data
 package net
 
 import (
 	z "github.com/go-serv/service/internal"
 )
-
-//
-// The implementation of the codec middleware.
-// Marshaler task: message -> marshaler -> t1 -> t2 -> wire data
-// Unmarshaler task: wire data -> t2 -> t1 -> unmarshaler -> message
-
-// Wrapper functions for unmarshal/marshal reqHandlers
 
 type netMwGroup struct {
 	preStreamHandlers []z.NetPreStreamHandlerFn
