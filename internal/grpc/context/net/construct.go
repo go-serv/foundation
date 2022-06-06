@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewCall(ctx context.Context, req z.RequestInterface, handler grpc.UnaryHandler) *NetContext {
-	c := new(NetContext)
+func NewCall(ctx context.Context, req z.RequestInterface, handler grpc.UnaryHandler) *netContext {
+	c := new(netContext)
 	c.Context = ctx
 	c.req = req
 	c.res = net.NewResponse()
