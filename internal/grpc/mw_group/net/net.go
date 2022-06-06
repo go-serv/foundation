@@ -41,7 +41,7 @@ func (m *netMwGroup) AddResponseHandler(h z.NetResponseHandlerFn) {
 	m.resHandlers = append(m.resHandlers, h)
 }
 
-func (t *requestChain) passThrough(call z.CallInterface) (res z.ResponseInterface, err error) {
+func (t *requestChain) passThrough(call z.NetContextInterface) (res z.ResponseInterface, err error) {
 	var curr z.NetChainElement
 	invokeHandler := func(next z.NetChainElement, _ z.RequestInterface, res z.ResponseInterface) (err error) {
 		var payload interface{}
@@ -66,13 +66,14 @@ func (t *requestChain) passThrough(call z.CallInterface) (res z.ResponseInterfac
 		}
 	}
 	_, err = curr(call.Request(), call.Response())
-	return
+	return call.Response(), err
 }
 
 func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, err error) {
 	var curr z.NetChainElement
-	tailCall := func(_ z.NetChainElement, res z.ResponseInterface) (out interface{}, err error) {
-		return res.ToGrpcResponse(), nil
+	tailCall := func(_ z.NetChainElement, res z.ResponseInterface) (err error) {
+		out = res.Payload()
+		return
 	}
 	//
 	ch := append([]z.NetResponseHandlerFn{tailCall}, t.mwGroup.resHandlers...)
@@ -81,13 +82,13 @@ func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, e
 		handler := ch[i]
 		next := curr
 		curr = func(_ z.RequestInterface, res z.ResponseInterface) (z.NetChainElement, error) {
-			_, err = handler(next, res)
+			err = handler(next, res)
 			if err != nil {
 				return nil, err
 			}
 			return curr, nil
 		}
 	}
-	out, err = curr(nil, res)
+	_, err = curr(nil, res)
 	return
 }

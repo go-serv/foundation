@@ -12,13 +12,13 @@ type MiddlewareGroupInterface interface {
 type (
 	NetPreStreamHandlerFn func(ServiceReflectInterface, MethodReflectionInterface, MessageReflectionInterface) error
 	NetRequestHandlerFn   func(next NetChainElement, req RequestInterface, res ResponseInterface) error
-	NetResponseHandlerFn  func(next NetChainElement, res ResponseInterface) (interface{}, error)
+	NetResponseHandlerFn  func(next NetChainElement, res ResponseInterface) error
 	NetChainElement       func(RequestInterface, ResponseInterface) (NetChainElement, error)
 )
 type NetMiddlewareGroupInterface interface {
 	AddPreStreamHandler(fn NetPreStreamHandlerFn)
 	AddRequestHandler(fn NetRequestHandlerFn)
-	AddResponseHandler(fn NetRequestHandlerFn)
+	AddResponseHandler(fn NetResponseHandlerFn)
 }
 
 type MetaInterface interface {
@@ -48,19 +48,19 @@ type ResponseInterface interface {
 	ToGrpcResponse() interface{}
 }
 
-type CallInterface interface {
+type ContextInterface interface {
 	Request() RequestInterface
 	Response() ResponseInterface
 	Invoke() (interface{}, error)
 }
 
-type NetCallInterface interface {
-	CallInterface
+type NetContextInterface interface {
+	ContextInterface
 	Session() SessionInterface
 }
 
-type LocalCallInterface interface {
-	CallInterface
+type LocalContextInterface interface {
+	ContextInterface
 }
 
 type SessionInterface interface {

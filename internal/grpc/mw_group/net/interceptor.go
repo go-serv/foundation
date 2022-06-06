@@ -3,7 +3,7 @@ package net
 import (
 	"context"
 	z "github.com/go-serv/service/internal"
-	net_call "github.com/go-serv/service/internal/grpc/call/net"
+	net_call "github.com/go-serv/service/internal/grpc/context/net"
 	net_req "github.com/go-serv/service/internal/grpc/request/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

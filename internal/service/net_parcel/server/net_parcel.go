@@ -32,9 +32,12 @@ func (s *netParcel) Service_OnNewSession(req i.RequestInterface) error {
 }
 
 func (s serviceImpl) GetCryptoNonce(ctx context.Context, req *proto.CryptoNonce_Request) (*proto.CryptoNonce_Response, error) {
+	netCtx := ctx.(i.NetContextInterface)
 	res := &proto.CryptoNonce_Response{}
 	nonce := make([]byte, req.GetLen())
 	rand.Read(nonce)
 	res.Nonce = nonce
+	r := netCtx.Request()
+	_ = r
 	return res, nil
 }

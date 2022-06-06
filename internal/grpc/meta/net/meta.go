@@ -20,8 +20,8 @@ type serverMeta struct {
 	meta
 }
 
-func (s *meta) registerTypeHandlers() {
-	s.dic.(*HttpCommonDictionary).RegisterTypeHandler(reflect.TypeOf(""), func(op dictionary.OpType, name, alias string, rv reflect.Value) {
+func (s *meta) registerTypeHandlers(dic *HttpCommonDictionary) {
+	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op dictionary.OpType, name, alias string, rv reflect.Value) {
 		switch op {
 		case dictionary.HydrateOp:
 			v := s.data.Get(name)

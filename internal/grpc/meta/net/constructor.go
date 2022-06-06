@@ -6,7 +6,7 @@ func NewServerMeta(md metadata.MD) *serverMeta {
 	s := new(serverMeta)
 	s.data = md
 	s.dic = new(HttpServerDictionary)
-	s.registerTypeHandlers()
+	s.registerTypeHandlers(&s.dic.(*HttpServerDictionary).HttpCommonDictionary)
 	return s
 }
 
