@@ -23,8 +23,8 @@ func (r *reflect) newMethod(desc protoreflect.MethodDescriptor) *method {
 
 type method struct {
 	desc      protoreflect.MethodDescriptor
-	req       i.MessageReflectInterface
-	res       i.MessageReflectInterface
+	req       i.MessageReflectionInterface
+	res       i.MessageReflectionInterface
 	extValues extValueMap
 }
 
@@ -32,11 +32,11 @@ func (m *method) Descriptor() protoreflect.MethodDescriptor {
 	return m.desc
 }
 
-func (m *method) Request() i.MessageReflectInterface {
+func (m *method) Request() i.MessageReflectionInterface {
 	return m.req
 }
 
-func (m *method) Response() i.MessageReflectInterface {
+func (m *method) Response() i.MessageReflectionInterface {
 	return m.res
 }
 
@@ -64,7 +64,7 @@ func (m *method) IsResponse(msg proto.Message) bool {
 	}
 }
 
-func (m *method) FromMessage(msg proto.Message) i.MessageReflectInterface {
+func (m *method) FromMessage(msg proto.Message) i.MessageReflectionInterface {
 	if m.IsRequest(msg) {
 		m.req.WithValue(msg)
 		return m.req

@@ -28,7 +28,7 @@ func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (i.ServiceRefl
 	return nil, fmt.Errorf("reflection: failed to find service descriptor for '%s'", key)
 }
 
-func (r *reflect) MethodReflectionFromMessage(msg proto.Message) (i.MethodReflectInterface, error) {
+func (r *reflect) MethodReflectionFromMessage(msg proto.Message) (i.MethodReflectionInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	for _, s := range r.services {
 		if s == nil {

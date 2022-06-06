@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/go-serv/service/internal/ancillary"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"
 )
@@ -33,9 +34,11 @@ type LocalDataFrameInterface interface {
 	WithSharedMemDataSize(uint32)
 }
 
-type CodecMwTaskUnHandler func(next MwTaskChainElement, in []byte, method MethodReflectInterface, msg MessageReflectInterface, df DataFrameInterface) ([]byte, error)
-type CodecMwTaskMarshalHandler func(next MwTaskChainElement, in []byte, method MethodReflectInterface, msg MessageReflectInterface, df DataFrameInterface) ([]byte, error)
-type MwTaskChainElement func(in []byte) (MwTaskChainElement, error)
+type CodecMwTaskUnHandler func(next MwChainElement, in []byte, method MethodReflectionInterface, msg MessageReflectionInterface, df DataFrameInterface) ([]byte, error)
+type CodecMwTaskMarshalHandler func(next MwChainElement, in []byte, method MethodReflectionInterface, msg MessageReflectionInterface, df DataFrameInterface) ([]byte, error)
+type NetMiddlewareReqHandler func(next MwChainElement, req RequestInterface, h grpc.UnaryHandler) (ResponseInterface, error)
+type NetMiddlewareResHandler func(next MwChainElement, req ResponseInterface) (proto.Message, error)
+type MwChainElement func(in []byte) (MwChainElement, error)
 
 type CodecMwMarshalTaskInterface interface {
 	Execute() ([]byte, error)

@@ -8,7 +8,7 @@ import (
 
 type service struct {
 	desc      protoreflect.ServiceDescriptor
-	methods   []i.MethodReflectInterface
+	methods   []i.MethodReflectionInterface
 	extValues extValueMap
 }
 
@@ -16,7 +16,7 @@ func (s *service) Descriptor() protoreflect.ServiceDescriptor {
 	return s.desc
 }
 
-func (s *service) Methods() []i.MethodReflectInterface {
+func (s *service) Methods() []i.MethodReflectionInterface {
 	return s.methods
 }
 

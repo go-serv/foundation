@@ -18,6 +18,7 @@ type (
 
 type Dictionary struct {
 	typeHandlers typeHandlersMap
+	ctx          interface{}
 }
 
 func (d *Dictionary) RegisterTypeHandler(typ any, handler TypeHandler) {
@@ -79,4 +80,12 @@ func (d *Dictionary) Dehydrate(target interface{}) error {
 		}
 		handler(DehydrateOp, name, alias, v.Elem())
 	})
+}
+
+func (d *Dictionary) Context() interface{} {
+	return d.ctx
+}
+
+func (d *Dictionary) WithContext(ctx interface{}) {
+	d.ctx = ctx
 }

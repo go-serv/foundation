@@ -51,7 +51,7 @@ func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) erro
 		}
 		df.hdrFlags = i.HeaderFlags32Type(flags)
 	}
-	// Call parser hook
+	// Invoke parser hook
 	if hookFn != nil {
 		if err := hookFn(df.netr); err != nil {
 			return err

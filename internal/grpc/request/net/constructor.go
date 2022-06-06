@@ -2,27 +2,45 @@ package net
 
 import (
 	"context"
-	"github.com/go-serv/service/internal/ancillary"
-	"google.golang.org/grpc"
+	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
+	"github.com/go-serv/service/internal/runtime"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
+	"google.golang.org/protobuf/proto"
 )
 
-func FromServerContext(ctx context.Context, data interface{}) *netRequest {
-	r := &netRequest{}
-	r.Context = ctx
-	name, _ := grpc.Method(r.Context)
-	r.Method = ancillary.GrpcDotNotation(name).MethodName()
-	//r.Meta = md
-	r.WithData(data)
-	return r
+func NewRequest(payload interface{}, md metadata.MD, info *clientInfo) (r *request, err error) {
+	var (
+		ok bool
+	)
+	r = new(request)
+	r.payload = payload
+	r.clientInfo = info
+	msg, ok := payload.(proto.Message)
+	if !ok {
+		return nil, nil
+	}
+	// Meta
+	r.meta = meta_net.NewServerMeta(md)
+	err = r.meta.Hydrate()
+	if err != nil {
+		return
+	}
+	// Reflection
+	reflect := runtime.Runtime().Reflection()
+	r.methodReflect, err = reflect.MethodReflectionFromMessage(msg)
+	if err != nil {
+		return
+	}
+	r.msgReflect = r.methodReflect.FromMessage(msg)
+	return
 }
 
-func FromClientContext(ctx context.Context, data interface{}, methodName string) *netRequest {
-	if ctx == nil {
-		ctx = context.Background()
+func NewClientInfo(ctx context.Context) *clientInfo {
+	info := new(clientInfo)
+	client, ok := peer.FromContext(ctx)
+	if ok {
+		info.addr = client.Addr
 	}
-	r := &netRequest{}
-	r.Context = ctx
-	r.Method = ancillary.GrpcDotNotation(methodName).MethodName()
-	r.WithData(data)
-	return r
+	return info
 }

@@ -9,7 +9,7 @@ import (
 type ReflectInterface interface {
 	ServiceReflectionFromMessage(msg proto.Message) (ServiceReflectInterface, error)
 	ServiceReflectionFromName(name protoreflect.FullName) (ServiceReflectInterface, bool)
-	MethodReflectionFromMessage(msg proto.Message) (MethodReflectInterface, error)
+	MethodReflectionFromMessage(msg proto.Message) (MethodReflectionInterface, error)
 	AddService(name protoreflect.FullName)
 	AddProtoExtension(*protoimpl.ExtensionInfo)
 	Populate() error
@@ -23,21 +23,21 @@ type ReflectAccessor interface {
 type ServiceReflectInterface interface {
 	ReflectAccessor
 	Descriptor() protoreflect.ServiceDescriptor
-	Methods() []MethodReflectInterface
+	Methods() []MethodReflectionInterface
 }
 
-type MethodReflectInterface interface {
+type MethodReflectionInterface interface {
 	ReflectAccessor
 	Descriptor() protoreflect.MethodDescriptor
-	Request() MessageReflectInterface
-	Response() MessageReflectInterface
-	FromMessage(proto.Message) MessageReflectInterface
+	Request() MessageReflectionInterface
+	Response() MessageReflectionInterface
+	FromMessage(proto.Message) MessageReflectionInterface
 	IsRequest(proto.Message) bool
 	IsResponse(proto.Message) bool
 	IsValidMessage(proto.Message) bool
 }
 
-type MessageReflectInterface interface {
+type MessageReflectionInterface interface {
 	ReflectAccessor
 	Descriptor() protoreflect.MessageDescriptor
 	Value() proto.Message

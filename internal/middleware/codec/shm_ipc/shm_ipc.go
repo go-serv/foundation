@@ -13,7 +13,7 @@ type ipcType struct {
 	codec   z.CodecInterface
 }
 
-func (ipc *ipcType) unmarshalHandler(next z.MwTaskChainElement, in []byte, _ z.MethodReflectInterface, msg z.MessageReflectInterface, df z.DataFrameInterface) (out []byte, err error) {
+func (ipc *ipcType) unmarshalHandler(next z.MwChainElement, in []byte, _ z.MethodReflectionInterface, msg z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 	if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
 		out = in
 		_, err = next(out)
@@ -37,7 +37,7 @@ func (ipc *ipcType) unmarshalHandler(next z.MwTaskChainElement, in []byte, _ z.M
 	return
 }
 
-func (ipc *ipcType) marshalHandler(next z.MwTaskChainElement, in []byte, _ z.MethodReflectInterface, msg z.MessageReflectInterface, df z.DataFrameInterface) (out []byte, err error) {
+func (ipc *ipcType) marshalHandler(next z.MwChainElement, in []byte, _ z.MethodReflectionInterface, msg z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 	if _, has := msg.Get(go_serv.E_LocalShmIpc); !has {
 		out = in
 		_, err = next(out)

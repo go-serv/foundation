@@ -1,80 +1,93 @@
 package net
 
 import (
-	"context"
-	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/grpc/mw_group"
-	req_net "github.com/go-serv/service/internal/grpc/request/net"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/peer"
+	z "github.com/go-serv/service/internal"
 )
 
+//
+// The implementation of the codec middleware.
+// Marshaler task: message -> marshaler -> t1 -> t2 -> wire data
+// Unmarshaler task: wire data -> t2 -> t1 -> unmarshaler -> message
+
+// Wrapper functions for unmarshal/marshal reqHandlers
+
 type netMwGroup struct {
-	mw_group.MwGroup
+	preStreamHandlers []z.NetPreStreamHandlerFn
+	reqHandlers       []z.NetRequestHandlerFn
+	resHandlers       []z.NetResponseHandlerFn
 }
 
-func (mw *netMwGroup) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		//var md metadata.MD
-		var ok bool
-		var ctxPeer *peer.Peer
-		// Request metadata
-		//md, ok = metadata.FromIncomingContext(ctx)
-		//if !ok {
-		//	return nil, status.Error(codes.Internal, "failed to retrieve metadata")
-		//}
-		// Client address
-		ctxPeer, ok = peer.FromContext(ctx)
-		if !ok {
-			return nil, nil
+type chain struct {
+	mwGroup *netMwGroup
+}
+
+type responseChain struct {
+	chain
+}
+
+type requestChain struct {
+	chain
+}
+
+func (m *netMwGroup) AddPreStreamHandler(h z.NetPreStreamHandlerFn) {
+	m.preStreamHandlers = append(m.preStreamHandlers, h)
+}
+
+func (m *netMwGroup) AddRequestHandler(h z.NetRequestHandlerFn) {
+	m.reqHandlers = append(m.reqHandlers, h)
+}
+
+func (m *netMwGroup) AddResponseHandler(h z.NetResponseHandlerFn) {
+	m.resHandlers = append(m.resHandlers, h)
+}
+
+func (t *requestChain) passThrough(call z.CallInterface) (res z.ResponseInterface, err error) {
+	var curr z.NetChainElement
+	invokeHandler := func(next z.NetChainElement, _ z.RequestInterface, res z.ResponseInterface) (err error) {
+		var payload interface{}
+		if payload, err = call.Invoke(); err != nil {
+			return
 		}
-		_ = ctxPeer
-		r := req_net.FromServerContext(ctx, req)
-		for _, item := range mw.Items {
-			err := item.ReqHandler(r, info.Server)
+		res.WithPayload(payload)
+		return
+	}
+	// Build a middleware chain so that the first added handler will be called first.
+	ch := append(t.mwGroup.reqHandlers, invokeHandler)
+	l1 := len(ch)
+	for i := l1 - 1; i >= 0; i-- {
+		handler := ch[i]
+		next := curr
+		curr = func(req z.RequestInterface, res z.ResponseInterface) (el z.NetChainElement, err error) {
+			err = handler(next, req, res)
+			if err != nil {
+				return
+			}
+			return curr, nil
+		}
+	}
+	_, err = curr(call.Request(), call.Response())
+	return
+}
+
+func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, err error) {
+	var curr z.NetChainElement
+	tailCall := func(_ z.NetChainElement, res z.ResponseInterface) (out interface{}, err error) {
+		return res.ToGrpcResponse(), nil
+	}
+	//
+	ch := append([]z.NetResponseHandlerFn{tailCall}, t.mwGroup.resHandlers...)
+	l1 := len(ch)
+	for i := 0; i < l1; i++ {
+		handler := ch[i]
+		next := curr
+		curr = func(_ z.RequestInterface, res z.ResponseInterface) (z.NetChainElement, error) {
+			_, err = handler(next, res)
 			if err != nil {
 				return nil, err
 			}
+			return curr, nil
 		}
-		// Handle request
-		res, err := handler(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-		// Iterate over the response middleware handlers in reverse order
-		for i := len(mw.Items) - 1; i >= 0; i-- {
-			err := mw.Items[i].ResHandler(res, info.Server)
-			if err != nil {
-				return nil, err
-			}
-		}
-		return res, nil
 	}
-}
-
-func (mw *netMwGroup) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		r := req_net.FromClientContext(ctx, req, method)
-		svc := mw.Target.(i.NetworkClientInterface).NetService()
-		// Invoke middleware request handlers
-		for _, item := range mw.Items {
-			err := item.ReqHandler(r, svc)
-			if err != nil {
-				return nil
-			}
-		}
-		// Invoke gRPC method
-		err := invoker(ctx, method, req, reply, cc, opts...)
-		if err != nil {
-			return err
-		}
-		// Invoke middleware response handlers in reverse order
-		for i := len(mw.Items) - 1; i >= 0; i-- {
-			err := mw.Items[i].ResHandler(reply, svc)
-			if err != nil {
-				return nil
-			}
-		}
-		return nil
-	}
+	out, err = curr(nil, res)
+	return
 }

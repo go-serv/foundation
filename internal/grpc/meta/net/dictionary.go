@@ -1,4 +1,4 @@
-package meta
+package net
 
 import (
 	z "github.com/go-serv/service/internal"

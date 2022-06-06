@@ -21,8 +21,8 @@ type task struct {
 	codec         in.CodecInterface
 	mwGroup       *codecMwGroup
 	df            in.DataFrameInterface
-	methodReflect in.MethodReflectInterface
-	msgReflect    in.MessageReflectInterface
+	methodReflect in.MethodReflectionInterface
+	msgReflect    in.MessageReflectionInterface
 	data          []byte
 }
 
@@ -40,8 +40,8 @@ func (m *codecMwGroup) AddHandlers(un in.CodecMwTaskUnHandler, marshal in.CodecM
 }
 
 func (t *marshalerTask) Execute() (out []byte, err error) {
-	var curr in.MwTaskChainElement
-	headCall := func(next in.MwTaskChainElement, _ []byte, _ in.MethodReflectInterface, msgReflect in.MessageReflectInterface, _ in.DataFrameInterface) (out []byte, err error) {
+	var curr in.MwChainElement
+	headCall := func(next in.MwChainElement, _ []byte, _ in.MethodReflectionInterface, msgReflect in.MessageReflectionInterface, _ in.DataFrameInterface) (out []byte, err error) {
 		out, err = t.codec.PureMarshal(msgReflect.Value())
 		if err != nil {
 			return
@@ -50,7 +50,7 @@ func (t *marshalerTask) Execute() (out []byte, err error) {
 		return
 	}
 	// A stub to get rid of a check in handlers for the last element in the middleware chain
-	stub := func(_ in.MwTaskChainElement, in []byte, _ in.MethodReflectInterface, _ in.MessageReflectInterface, _ in.DataFrameInterface) (out []byte, err error) {
+	stub := func(_ in.MwChainElement, in []byte, _ in.MethodReflectionInterface, _ in.MessageReflectionInterface, _ in.DataFrameInterface) (out []byte, err error) {
 		t.data = in
 		return
 	}
@@ -61,7 +61,7 @@ func (t *marshalerTask) Execute() (out []byte, err error) {
 	for i := l1 - 1; i >= 0; i-- {
 		handler := ch[i]
 		next := curr
-		curr = func(in []byte) (in.MwTaskChainElement, error) {
+		curr = func(in []byte) (in.MwChainElement, error) {
 			out, err = handler(next, in, t.methodReflect, t.msgReflect, t.df)
 			if err != nil {
 				return nil, err
@@ -81,8 +81,8 @@ func (t *marshalerTask) Execute() (out []byte, err error) {
 }
 
 func (t *unmarshalerTask) Execute() (err error) {
-	var curr in.MwTaskChainElement
-	tailCall := func(_ in.MwTaskChainElement, in []byte, _ in.MethodReflectInterface, msgReflect in.MessageReflectInterface, _ in.DataFrameInterface) (out []byte, err error) {
+	var curr in.MwChainElement
+	tailCall := func(_ in.MwChainElement, in []byte, _ in.MethodReflectionInterface, msgReflect in.MessageReflectionInterface, _ in.DataFrameInterface) (out []byte, err error) {
 		err = t.codec.PureUnmarshal(in, msgReflect.Value())
 		if err != nil {
 			return
@@ -96,7 +96,7 @@ func (t *unmarshalerTask) Execute() (err error) {
 	for i := 0; i < l1; i++ {
 		handler := ch[i]
 		next := curr
-		curr = func(in []byte) (in.MwTaskChainElement, error) {
+		curr = func(in []byte) (in.MwChainElement, error) {
 			_, err = handler(next, in, t.methodReflect, t.msgReflect, t.df)
 			if err != nil {
 				return nil, err

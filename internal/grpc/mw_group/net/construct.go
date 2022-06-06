@@ -1,7 +1,18 @@
 package net
 
-func NewMiddlewareGroup(target interface{}) *netMwGroup {
+func NewMiddlewareGroup() *netMwGroup {
 	g := new(netMwGroup)
-	g.Target = target
 	return g
+}
+
+func (mw *netMwGroup) newRequestChain() *requestChain {
+	r := new(requestChain)
+	r.mwGroup = mw
+	return r
+}
+
+func (mw *netMwGroup) newResponseChain() *responseChain {
+	r := new(responseChain)
+	r.mwGroup = mw
+	return r
 }
