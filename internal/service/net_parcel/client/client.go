@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/autogen/proto/net"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -12,7 +12,7 @@ import (
 var serviceName = protoreflect.FullName(proto.NetParcel_ServiceDesc.ServiceName)
 
 type client struct {
-	i.NetworkClientInterface
+	z.NetworkClientInterface
 	stubs net.NetParcelClient
 }
 

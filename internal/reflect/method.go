@@ -2,7 +2,7 @@ package reflect
 
 import (
 	"errors"
-	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -23,8 +23,8 @@ func (r *reflect) newMethod(desc protoreflect.MethodDescriptor) *method {
 
 type method struct {
 	desc      protoreflect.MethodDescriptor
-	req       i.MessageReflectionInterface
-	res       i.MessageReflectionInterface
+	req       z.MessageReflectionInterface
+	res       z.MessageReflectionInterface
 	extValues extValueMap
 }
 
@@ -32,11 +32,11 @@ func (m *method) Descriptor() protoreflect.MethodDescriptor {
 	return m.desc
 }
 
-func (m *method) Request() i.MessageReflectionInterface {
+func (m *method) Request() z.MessageReflectionInterface {
 	return m.req
 }
 
-func (m *method) Response() i.MessageReflectionInterface {
+func (m *method) Response() z.MessageReflectionInterface {
 	return m.res
 }
 
@@ -64,7 +64,7 @@ func (m *method) IsResponse(msg proto.Message) bool {
 	}
 }
 
-func (m *method) FromMessage(msg proto.Message) i.MessageReflectionInterface {
+func (m *method) FromMessage(msg proto.Message) z.MessageReflectionInterface {
 	if m.IsRequest(msg) {
 		m.req.WithValue(msg)
 		return m.req

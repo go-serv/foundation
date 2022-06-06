@@ -2,9 +2,9 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
-	i "github.com/go-serv/service/internal"
 	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
 	"github.com/go-serv/service/internal/logger"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 )
 
@@ -15,21 +15,21 @@ const (
 )
 
 type server struct {
-	codec        i.CodecInterface
-	codecMwGroup i.CodecMiddlewareGroupInterface
-	endpoints    []i.EndpointInterface
+	codec        z.CodecInterface
+	codecMwGroup z.CodecMiddlewareGroupInterface
+	endpoints    []z.EndpointInterface
 	mainJob      job.JobInterface
-	mwGroup      i.MiddlewareGroupInterface
+	mwGroup      z.MiddlewareInterface
 	grpcOpts     []grpc.ServerOption
 }
 
-func (s *server) AddEndpoint(e i.EndpointInterface) {
+func (s *server) AddEndpoint(e z.EndpointInterface) {
 	e.WithServer(s)
 	s.endpoints = append(s.endpoints, e)
 }
 
-func (s *server) Endpoints() []i.EndpointInterface {
-	out := make([]i.EndpointInterface, 1)
+func (s *server) Endpoints() []z.EndpointInterface {
+	out := make([]z.EndpointInterface, 1)
 	for _, e := range s.endpoints {
 		out = append(out, e)
 	}
@@ -59,11 +59,11 @@ func (s *server) MainJob() job.JobInterface {
 	return s.mainJob
 }
 
-func (s *server) MiddlewareGroup() i.MiddlewareGroupInterface {
+func (s *server) MiddlewareGroup() z.MiddlewareInterface {
 	return s.mwGroup
 }
 
-func (s *server) WithMiddlewareGroup(mw i.MiddlewareGroupInterface) {
+func (s *server) WithMiddlewareGroup(mw z.MiddlewareInterface) {
 	s.mwGroup = mw
 }
 
@@ -77,15 +77,15 @@ func (s *server) Stop() {
 	//s.state = StateStopped
 }
 
-func (c *server) Codec() i.CodecInterface {
+func (c *server) Codec() z.CodecInterface {
 	return c.codec
 }
 
-func (s *server) WithCodec(cc i.CodecInterface) {
+func (s *server) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
 	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
 }
 
-func (s *server) CodecMiddlewareGroup() i.CodecMiddlewareGroupInterface {
+func (s *server) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {
 	return s.codecMwGroup
 }

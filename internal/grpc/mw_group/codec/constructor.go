@@ -1,18 +1,18 @@
 package codec
 
 import (
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/runtime"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/proto"
 )
 
-func NewCodecMiddlewareGroup(cc i.CodecInterface) *codecMwGroup {
+func NewCodecMiddlewareGroup(cc z.CodecInterface) *codecMwGroup {
 	g := new(codecMwGroup)
 	g.codec = cc
 	return g
 }
 
-func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.CodecMwUnmarshalTaskInterface, error) {
+func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (z.CodecMwUnmarshalTaskInterface, error) {
 	t := &unmarshalerTask{}
 	t.mwGroup = m
 	// Parse incoming data frame
@@ -33,7 +33,7 @@ func (m *codecMwGroup) NewUnmarshalTask(wire []byte, msg proto.Message) (i.Codec
 	return t, nil
 }
 
-func (m *codecMwGroup) NewMarshalTask(msg proto.Message) (i.CodecMwMarshalTaskInterface, error) {
+func (m *codecMwGroup) NewMarshalTask(msg proto.Message) (z.CodecMwMarshalTaskInterface, error) {
 	t := &marshalerTask{}
 	t.mwGroup = m
 	t.df = m.codec.NewDataFrame()

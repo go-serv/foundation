@@ -1,7 +1,7 @@
 package net
 
 import (
-	z "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 	"net"
 )
 

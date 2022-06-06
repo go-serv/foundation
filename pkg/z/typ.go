@@ -1,4 +1,4 @@
-package internal
+package z
 
 import "math/rand"
 
@@ -10,8 +10,8 @@ func (u *UniqueId) Generate() {
 	*u = UniqueId(rand.Uint64())
 }
 
-type UniqueId uint64
-
-type SessionId UniqueId
-
-type TransactionId UniqueId
+type (
+	UniqueId      uint64
+	SessionId     UniqueId
+	TransactionId UniqueId
+)

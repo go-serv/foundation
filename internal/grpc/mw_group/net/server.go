@@ -2,16 +2,16 @@ package net
 
 import (
 	"context"
-	z "github.com/go-serv/service/internal"
 	net_call "github.com/go-serv/service/internal/grpc/context/net"
 	net_req "github.com/go-serv/service/internal/grpc/request/net"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (mw *netMwGroup) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
+func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
 		var (
 			md         metadata.MD
@@ -42,14 +42,8 @@ func (mw *netMwGroup) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (mw *netMwGroup) StreamServerInterceptor() grpc.StreamServerInterceptor {
+func (mw *netMiddleware) StreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 		return
-	}
-}
-
-func (mw *netMwGroup) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		return nil
 	}
 }

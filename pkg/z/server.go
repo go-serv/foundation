@@ -1,4 +1,4 @@
-package internal
+package z
 
 import (
 	job "github.com/AgentCoop/go-work"
@@ -22,8 +22,8 @@ type ServerInterface interface {
 	Start()
 	Stop()
 	MainJob() job.JobInterface
-	MiddlewareGroup() MiddlewareGroupInterface
-	WithMiddlewareGroup(mg MiddlewareGroupInterface)
+	MiddlewareGroup() MiddlewareInterface
+	WithMiddlewareGroup(mg MiddlewareInterface)
 }
 
 type LocalServerInterface interface {

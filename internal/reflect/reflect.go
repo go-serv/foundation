@@ -2,7 +2,7 @@ package reflect
 
 import (
 	"fmt"
-	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -16,7 +16,7 @@ type reflect struct {
 	services  serviceMapType
 }
 
-func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (i.ServiceReflectInterface, error) {
+func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (z.ServiceReflectInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	for _, s := range r.services {
 		for _, m := range s.Methods() {
@@ -28,7 +28,7 @@ func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (i.ServiceRefl
 	return nil, fmt.Errorf("reflection: failed to find service descriptor for '%s'", key)
 }
 
-func (r *reflect) MethodReflectionFromMessage(msg proto.Message) (i.MethodReflectionInterface, error) {
+func (r *reflect) MethodReflectionFromMessage(msg proto.Message) (z.MethodReflectionInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	for _, s := range r.services {
 		if s == nil {
@@ -93,7 +93,7 @@ func (r *reflect) AddService(name protoreflect.FullName) {
 	r.services[name] = nil
 }
 
-func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service i.ServiceReflectInterface, has bool) {
+func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service z.ServiceReflectInterface, has bool) {
 	service, has = r.services[name]
 	return
 }

@@ -1,13 +1,13 @@
 package net
 
-import i "github.com/go-serv/service/internal"
+import "github.com/go-serv/service/pkg/z"
 
 type netClient struct {
-	i.ClientInterface
-	svc      i.NetworkServiceInterface
+	z.ClientInterface
+	svc      z.NetworkServiceInterface
 	insecure bool
 }
 
-func (c *netClient) NetService() i.NetworkServiceInterface {
+func (c *netClient) NetService() z.NetworkServiceInterface {
 	return c.svc
 }

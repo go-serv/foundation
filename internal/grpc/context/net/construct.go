@@ -2,8 +2,8 @@ package net
 
 import (
 	"context"
-	z "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/grpc/response/net"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 )
 

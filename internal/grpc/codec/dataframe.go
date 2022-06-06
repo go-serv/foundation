@@ -2,8 +2,8 @@ package codec
 
 import (
 	"bytes"
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,7 +17,7 @@ var (
 )
 
 type dataFrame struct {
-	hdrFlags i.HeaderFlags32Type
+	hdrFlags z.HeaderFlags32Type
 	payload  []byte
 	netw     *ancillary.NetWriter
 	netr     *ancillary.NetReader
@@ -49,7 +49,7 @@ func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) erro
 		if err != nil {
 			return errorHeaderParserFailed
 		}
-		df.hdrFlags = i.HeaderFlags32Type(flags)
+		df.hdrFlags = z.HeaderFlags32Type(flags)
 	}
 	// Invoke parser hook
 	if hookFn != nil {
@@ -61,11 +61,11 @@ func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) erro
 	return nil
 }
 
-func (df *dataFrame) HeaderFlags() i.HeaderFlags32Type {
+func (df *dataFrame) HeaderFlags() z.HeaderFlags32Type {
 	return df.hdrFlags
 }
 
-func (df *dataFrame) WithHeaderFlag(f i.HeaderFlags32Type) {
+func (df *dataFrame) WithHeaderFlag(f z.HeaderFlags32Type) {
 	df.hdrFlags |= f
 }
 

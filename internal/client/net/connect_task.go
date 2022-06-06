@@ -2,7 +2,7 @@ package net
 
 import (
 	job "github.com/AgentCoop/go-work"
-	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -18,7 +18,7 @@ func (c *netClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fina
 		v := j.GetValue()
 		conn, err := grpc.Dial(c.Endpoint().Address(), c.DialOptions()...)
 		task.Assert(err)
-		v.(i.NetworkClientInterface).NewClient(conn)
+		v.(z.NetworkClientInterface).NewClient(conn)
 		task.Done()
 	}
 	return init, run, nil

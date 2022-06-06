@@ -1,18 +1,18 @@
 package net
 
-func NewMiddlewareGroup() *netMwGroup {
-	g := new(netMwGroup)
+func NewMiddleware() *netMiddleware {
+	g := new(netMiddleware)
 	return g
 }
 
-func (mw *netMwGroup) newRequestChain() *requestChain {
+func (mw *netMiddleware) newRequestChain() *requestChain {
 	r := new(requestChain)
-	r.mwGroup = mw
+	r.mw = mw
 	return r
 }
 
-func (mw *netMwGroup) newResponseChain() *responseChain {
+func (mw *netMiddleware) newResponseChain() *responseChain {
 	r := new(responseChain)
-	r.mwGroup = mw
+	r.mw = mw
 	return r
 }

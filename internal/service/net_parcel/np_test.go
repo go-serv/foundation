@@ -3,11 +3,11 @@ package net_parcel
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/autogen/proto/net"
 	srv "github.com/go-serv/service/internal/server"
 	net_srv "github.com/go-serv/service/internal/server/net"
 	np_client "github.com/go-serv/service/internal/service/net_parcel/client"
+	"github.com/go-serv/service/pkg/z"
 	"testing"
 	"time"
 )
@@ -19,8 +19,8 @@ const (
 
 type testFixtures struct {
 	t         *testing.T
-	endpoint  i.EndpointInterface
-	srv       i.NetworkServerInterface
+	endpoint  z.EndpointInterface
+	srv       z.NetworkServerInterface
 	clientJob job.JobInterface
 }
 

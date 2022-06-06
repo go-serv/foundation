@@ -1,4 +1,4 @@
-package internal
+package z
 
 import (
 	job "github.com/AgentCoop/go-work"

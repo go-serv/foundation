@@ -2,22 +2,22 @@ package server
 
 import (
 	"crypto/tls"
-	i "github.com/go-serv/service/internal"
 	rt "github.com/go-serv/service/internal/runtime"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"
 )
 
 type endpoint struct {
-	srv                       i.ServerInterface
+	srv                       z.ServerInterface
 	lis                       net.Listener
 	grpcSrv                   *grpc.Server
 	GrpcSrvUnaryInterceptors  []grpc.UnaryServerInterceptor
 	GrpcSrvStreamInterceptors []grpc.StreamServerInterceptor
 }
 
-func (e *endpoint) WithServer(s i.ServerInterface) {
+func (e *endpoint) WithServer(s z.ServerInterface) {
 	e.srv = s
 }
 

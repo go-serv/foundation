@@ -1,15 +1,13 @@
 package net
 
-import (
-	i "github.com/go-serv/service/internal"
-)
+import "github.com/go-serv/service/pkg/z"
 
 type netService struct {
-	i.ServiceInterface
+	z.ServiceInterface
 	encKey []byte
 }
 
-func (b *netService) Service_OnNewSession(req i.RequestInterface) error {
+func (b *netService) Service_OnNewSession(req z.RequestInterface) error {
 	//b.MethodMustBeImplemented.Panic()
 	return nil
 }

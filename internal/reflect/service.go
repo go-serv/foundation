@@ -1,14 +1,14 @@
 package reflect
 
 import (
-	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 type service struct {
 	desc      protoreflect.ServiceDescriptor
-	methods   []i.MethodReflectionInterface
+	methods   []z.MethodReflectionInterface
 	extValues extValueMap
 }
 
@@ -16,7 +16,7 @@ func (s *service) Descriptor() protoreflect.ServiceDescriptor {
 	return s.desc
 }
 
-func (s *service) Methods() []i.MethodReflectionInterface {
+func (s *service) Methods() []z.MethodReflectionInterface {
 	return s.methods
 }
 

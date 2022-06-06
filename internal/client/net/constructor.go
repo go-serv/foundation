@@ -1,17 +1,17 @@
 package net
 
 import (
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/client"
 	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	"github.com/go-serv/service/internal/middleware/codec/cipher_msg"
 	"github.com/go-serv/service/internal/runtime"
 	net_service "github.com/go-serv/service/internal/service/net"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func NewClient(svcName protoreflect.FullName, e i.EndpointInterface) *netClient {
+func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *netClient {
 	c := new(netClient)
 	c.insecure = true
 	c.ClientInterface = client.NewClient(svcName, e)

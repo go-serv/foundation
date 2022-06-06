@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package go_serv.net;
+
+message Fs {
+  // Creates a remote directory
+  message CreateDir {
+    message Request {
+    }
+    message Response {
+    }
+  }
+  // Creates a remote file
+  message CreateFile {
+    message Request {
+    }
+    message Response {
+    }
+  }
+  //
+  message TransferFileChunk {
+    message Request {
+    }
+    message Response {
+    }
+  }
+}

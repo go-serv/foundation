@@ -1,8 +1,6 @@
 package net
 
-import (
-	z "github.com/go-serv/service/internal"
-)
+import "github.com/go-serv/service/pkg/z"
 
 type response struct {
 	payload interface{}

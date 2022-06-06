@@ -1,4 +1,4 @@
-package internal
+package z
 
 import (
 	"github.com/go-serv/service/internal/ancillary"

@@ -1,9 +1,7 @@
 package session
 
-import (
-	z "github.com/go-serv/service/internal"
-)
+import "github.com/go-serv/service/pkg/z"
 
-func ServerInit(mwGroup z.NetMiddlewareGroupInterface) {
+func ServerInit(mwGroup z.NetMiddlewareInterface) {
 	mwGroup.AddRequestHandler(ServerSessionHandler)
 }

@@ -1,10 +1,10 @@
 package service
 
 import (
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/ancillary"
 	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
 	_ "github.com/go-serv/service/internal/logger"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -21,8 +21,8 @@ const (
 
 type service struct {
 	name         protoreflect.FullName
-	codec        i.CodecInterface
-	codecMwGroup i.CodecMiddlewareGroupInterface
+	codec        z.CodecInterface
+	codecMwGroup z.CodecMiddlewareGroupInterface
 	State        State
 	ancillary.MethodMustBeImplemented
 }
@@ -31,16 +31,16 @@ func (s *service) Name() protoreflect.FullName {
 	return s.name
 }
 
-func (s *service) Codec() i.CodecInterface {
+func (s *service) Codec() z.CodecInterface {
 	return s.codec
 }
 
-func (s *service) WithCodec(cc i.CodecInterface) {
+func (s *service) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
 	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
 }
 
-func (s *service) CodecMiddlewareGroup() i.CodecMiddlewareGroupInterface {
+func (s *service) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {
 	return s.codecMwGroup
 }
 

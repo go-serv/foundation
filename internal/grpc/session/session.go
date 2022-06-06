@@ -1,6 +1,8 @@
 package session
 
-import z "github.com/go-serv/service/internal"
+import (
+	"github.com/go-serv/service/pkg/z"
+)
 
 type session struct {
 	id z.SessionId

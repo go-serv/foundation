@@ -1,12 +1,12 @@
 package local
 
-import i "github.com/go-serv/service/internal"
+import "github.com/go-serv/service/pkg/z"
 
 type localClient struct {
-	i.ClientInterface
-	svc i.LocalServiceInterface
+	z.ClientInterface
+	svc z.LocalServiceInterface
 }
 
-func (c *localClient) LocalService() i.LocalServiceInterface {
+func (c *localClient) LocalService() z.LocalServiceInterface {
 	return c.svc
 }

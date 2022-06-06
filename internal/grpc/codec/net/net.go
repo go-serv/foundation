@@ -1,15 +1,15 @@
 package net
 
 import (
-	i "github.com/go-serv/service/internal"
+	"github.com/go-serv/service/pkg/z"
 )
 
-type headerFlags i.HeaderFlags32Type
+type headerFlags z.HeaderFlags32Type
 
 const (
 	Encryption headerFlags = 1 << iota
 )
 
 type codec struct {
-	i.CodecInterface
+	z.CodecInterface
 }

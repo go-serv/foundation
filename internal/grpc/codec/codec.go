@@ -1,8 +1,8 @@
 package codec
 
 import (
-	i "github.com/go-serv/service/internal"
 	"github.com/go-serv/service/internal/runtime"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -15,12 +15,12 @@ type codec struct {
 	name string
 }
 
-func clientMiddlewareGroupOnCond(m proto.Message, cond func() (bool, error)) (i.CodecMiddlewareGroupInterface, error) {
+func clientMiddlewareGroupOnCond(m proto.Message, cond func() (bool, error)) (z.CodecMiddlewareGroupInterface, error) {
 	var (
 		ok     bool
 		err    error
-		client i.ClientInterface
-		svc    i.ServiceInterface
+		client z.ClientInterface
+		svc    z.ServiceInterface
 	)
 	ok, err = cond()
 	if err != nil {
@@ -51,8 +51,8 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 		err  error
 		ok   bool
 		m    proto.Message
-		task i.CodecMwMarshalTaskInterface
-		mg   i.CodecMiddlewareGroupInterface
+		task z.CodecMwMarshalTaskInterface
+		mg   z.CodecMiddlewareGroupInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
@@ -82,8 +82,8 @@ func (c *codec) Unmarshal(data []byte, v interface{}) error {
 		err  error
 		ok   bool
 		m    proto.Message
-		mg   i.CodecMiddlewareGroupInterface
-		task i.CodecMwUnmarshalTaskInterface
+		mg   z.CodecMiddlewareGroupInterface
+		task z.CodecMwUnmarshalTaskInterface
 	)
 	m, ok = v.(proto.Message)
 	if !ok {
@@ -108,6 +108,6 @@ func (c *codec) Name() string {
 	return c.name
 }
 
-func (c *codec) NewDataFrame() i.DataFrameInterface {
+func (c *codec) NewDataFrame() z.DataFrameInterface {
 	return NewDataFrame()
 }

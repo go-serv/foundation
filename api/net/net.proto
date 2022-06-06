@@ -3,6 +3,7 @@ syntax = "proto3";
 import "go_serv/method_ext.proto";
 import "go_serv/service_ext.proto";
 import "net/crypto_nonce.proto";
+import "net/fs.proto";
 
 package go_serv.net;
 
@@ -12,5 +13,15 @@ service NetParcel {
   // Retrieves a crypto nonce that will be used for encryption in the following session calls.
   rpc GetCryptoNonce(CryptoNonce.Request) returns (CryptoNonce.Response) {
     option (.go_serv.net_new_session) = 60;
+  }
+  //
+  rpc Fs_CreateDir(Fs.CreateDir.Request) returns (Fs.CreateDir.Request) {
+    option (.go_serv.net_new_session) = 60;
+  }
+  //
+  rpc Fs_CreateFile(Fs.CreateFile.Request) returns (Fs.CreateFile.Response) {
+  }
+  //
+  rpc Fs_TransferFileChunk() returns () {
   }
 }
