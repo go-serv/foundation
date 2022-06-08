@@ -58,16 +58,15 @@ func (tf *testFixtures) finalize() {
 //	fmt.Printf("got: %v\n", o)
 //}
 
-func TestCryptoNonce(t *testing.T) {
+func TestSecureSession(t *testing.T) {
 	tf := setup(t)
 	getNonceTask := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		const nonceLen = 32
 		run := func(task job.TaskInterface) {
 			cc := j.GetValue().(net.NetParcelClient)
-			req := &net.CryptoNonce_Request{}
-			req.Len = nonceLen
-			req.Msg = "Hello, World!"
-			res, err := cc.GetCryptoNonce(context.Background(), req)
+			req := &net.Session_Request{}
+			req.NonceLength = nonceLen
+			res, err := cc.SecureSession(context.Background(), req)
 			task.Assert(err)
 			if len(res.GetNonce()) != nonceLen {
 				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(res.GetNonce()))

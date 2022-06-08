@@ -1,9 +1,14 @@
 package z
 
+type (
+	OnGCFn func()
+)
 type SessionInterface interface {
 	Id() SessionId
-	CryptoNonce() []byte
-	WithCryptoNonce([]byte)
+	Nonce() []byte
+	WithNonce([]byte)
 	EncKey() []byte
 	WithEncKey([]byte)
+	Context() interface{}
+	WithContext(interface{})
 }

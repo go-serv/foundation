@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package go_serv.net;
+
+message PubKeyExchange {
+  message Psk { // Pre-shared key
+
+  }
+  message ECDH { // Elliptic-curve Diffie-Hellman
+    bytes pub_key = 1;
+  }
+  message DiffieHellman {
+    bytes pub_key = 1;
+  }
+  message Rsa {
+    bytes pub_key = 1;
+  }
+}
+
+message AEAD_Cipher {
+  uint32 nonce_length = 1;
+  message AES { }
+}

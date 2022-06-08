@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "go_serv/msg_ext.proto";
+import "go_serv/local/message.proto";
 
 package go_serv.local;
 
@@ -17,7 +17,7 @@ message LargeRequest {
 
 message LargeRequestIpc {
   message Request {
-    option (.go_serv.local_shm_ipc) = true;
+    option (.go_serv.local.local_shm_ipc) = true;
     bytes data = 1;
     string ping = 2;
   }

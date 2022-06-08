@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package go_serv;
+package go_serv.net;
 
 extend google.protobuf.MessageOptions {
   // If set to true enables shared memory IPC for gRPC message transmission.

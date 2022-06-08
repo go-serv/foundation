@@ -6,8 +6,8 @@ type UniqueIdInterface interface {
 	Generate() UniqueId
 }
 
-func (u *UniqueId) Generate() {
-	*u = UniqueId(rand.Uint64())
+func (UniqueId) Generate() UniqueId {
+	return UniqueId(rand.Uint64())
 }
 
 type (

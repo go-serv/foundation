@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package go_serv.net;
+
+extend google.protobuf.ServiceOptions {
+  string require_roles = 60000;
+}

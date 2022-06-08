@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package go_serv.net;
+
+//
+extend google.protobuf.MethodOptions {
+  // Open a new session with specified session lifetime in seconds
+  int32 new_insecure_session = 60103;
+  // Ask server to close an opened session
+  bool close_session = 60104;
+  //
+  bool require_session = 60105;
+}

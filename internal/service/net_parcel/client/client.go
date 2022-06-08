@@ -20,6 +20,6 @@ func (c *client) NewClient(cc grpc.ClientConnInterface) {
 	c.stubs = net.NewNetParcelClient(cc)
 }
 
-func (c *client) GetCryptoNonce(ctx context.Context, in *proto.CryptoNonce_Request, opts ...grpc.CallOption) (*proto.CryptoNonce_Response, error) {
-	return c.stubs.GetCryptoNonce(ctx, in)
+func (c *client) SecureSession(ctx context.Context, in *proto.Session_Request, opts ...grpc.CallOption) (*proto.Session_Response, error) {
+	return c.stubs.SecureSession(ctx, in)
 }

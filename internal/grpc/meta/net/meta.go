@@ -13,7 +13,7 @@ type meta struct {
 }
 
 func (s *meta) Dictionary() interface{} {
-	return s
+	return s.dic
 }
 
 type serverMeta struct {

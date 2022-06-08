@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "net/crypto.proto";
+
+package go_serv.net;
+
+//
+message Session {
+  message Request {
+    uint32 lifetime = 1; // Session lifetime in seconds
+    oneof key_exch_algo {
+      PubKeyExchange.DiffieHellman dh = 10;
+      PubKeyExchange.ECDH ecdh = 11;
+      PubKeyExchange.Rsa rsa = 12;
+      PubKeyExchange.Psk psk = 13;
+    };
+    oneof stream_cipher_algo {
+      AEAD_Cipher.AES aes = 20;
+    };
+    uint32 nonce_length = 30;
+  }
+  message Response {
+    sfixed64 id = 1;
+    bytes nonce = 2;
+    optional bytes pub_key = 3; // Server's public key
+  }
+}
