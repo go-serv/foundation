@@ -1,64 +1,80 @@
 package net
 
 import (
-	"github.com/go-serv/service/internal/ancillary/dictionary"
+	"bytes"
+	"encoding/base64"
+	"encoding/binary"
+	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"reflect"
-	"strings"
 )
 
 type meta struct {
 	data metadata.MD
-	dic  interface{}
+	dic  z.DictionaryInterface
 }
 
 func (s *meta) Dictionary() interface{} {
 	return s.dic
 }
 
-type serverMeta struct {
-	meta
+func (s *meta) Hydrate() error {
+	return s.dic.Hydrate(s.dic)
 }
 
-func (s *meta) registerTypeHandlers(dic *HttpCommonDictionary) {
-	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op dictionary.OpType, name, alias string, rv reflect.Value) {
+func (s *meta) Dehydrate() (md metadata.MD, err error) {
+	err = s.dic.Dehydrate(s.dic)
+	if err != nil {
+		return
+	}
+	return s.data, nil
+}
+
+func (s *meta) uint64toBase64(v uint64) string {
+	var data [8]byte
+	binary.LittleEndian.PutUint64(data[:], v)
+	return base64.StdEncoding.EncodeToString(data[:])
+}
+
+func (s *meta) base64ToUint64(v string) (out uint64, err error) {
+	var data []byte
+	data, err = base64.StdEncoding.DecodeString(v)
+	if err != nil {
+		return
+	}
+	err = binary.Read(bytes.NewReader(data), binary.LittleEndian, &out)
+	return
+}
+
+func (s *meta) registerTypeHandlers(dic z.DictionaryInterface) {
+	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op z.DictionaryOp, name, alias string, rv reflect.Value) {
 		switch op {
-		case dictionary.HydrateOp:
+		case z.HydrateOp:
 			v := s.data.Get(name)
 			if len(v) > 0 {
 				rv.SetString(v[0])
 			}
-		case dictionary.DehydrateOp:
+		case z.DehydrateOp:
 			v := rv.String()
 			if len(v) > 0 {
 				s.data.Set(name, v)
 			}
 		}
 	})
-}
-
-func (s *serverMeta) Hydrate() error {
-	dic := s.dic.(*HttpServerDictionary)
-	return dic.Hydrate(dic)
-}
-
-type clientMeta struct {
-	meta
-}
-
-func (c *clientMeta) Hydrate() error {
-	dic := c.dic.(*HttpClientDictionary)
-	return dic.Hydrate(dic)
-}
-
-func (m *serverMeta) GetIP() string {
-	xForwardFor := m.data.Get("x-forwarded-for")
-	if len(xForwardFor) > 0 && xForwardFor[0] != "" {
-		ips := strings.Split(xForwardFor[0], ",")
-		if len(ips) > 0 {
-			clientIp := ips[0]
-			return clientIp
+	dic.RegisterTypeHandler(reflect.TypeOf(z.SessionId(0)), func(op z.DictionaryOp, name, alias string, rv reflect.Value) {
+		switch op {
+		case z.HydrateOp:
+			v := s.data.Get(name)
+			if len(v) > 0 {
+				sId, _ := s.base64ToUint64(v[0])
+				rv.SetUint(sId)
+			}
+		case z.DehydrateOp:
+			v := rv.Uint()
+			if v > 0 {
+				id := s.uint64toBase64(v)
+				s.data.Set(name, id)
+			}
 		}
-	}
-	return ""
+	})
 }

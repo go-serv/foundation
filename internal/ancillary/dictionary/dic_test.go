@@ -2,6 +2,7 @@ package dictionary
 
 import (
 	bb "bytes"
+	"github.com/go-serv/service/pkg/z"
 	"reflect"
 	"testing"
 )
@@ -33,27 +34,27 @@ var bytes = []byte{0x1, 0x2, 0x3}
 
 func TestHydrate(t *testing.T) {
 	dic := new(embeddedDic)
-	dic.RegisterTypeHandler(reflect.TypeOf(uint(0)), func(op OpType, name, alias string, v reflect.Value) {
+	dic.RegisterTypeHandler(reflect.TypeOf(uint(0)), func(op z.DictionaryOp, name, alias string, v reflect.Value) {
 		switch op {
-		case HydrateOp:
+		case z.HydrateOp:
 			v.SetUint(primeNum)
 		}
 	})
-	dic.RegisterTypeHandler(reflect.TypeOf(bytes), func(op OpType, name, alias string, v reflect.Value) {
+	dic.RegisterTypeHandler(reflect.TypeOf(bytes), func(op z.DictionaryOp, name, alias string, v reflect.Value) {
 		switch op {
-		case HydrateOp:
+		case z.HydrateOp:
 			v.SetBytes(bytes)
 		}
 	})
-	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op OpType, name, alias string, v reflect.Value) {
+	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op z.DictionaryOp, name, alias string, v reflect.Value) {
 		switch op {
-		case HydrateOp:
+		case z.HydrateOp:
 			v.SetString(authorName)
 		}
 	})
-	dic.RegisterTypeHandler(reflect.TypeOf(PersonTyp{}), func(op OpType, name, alias string, v reflect.Value) {
+	dic.RegisterTypeHandler(reflect.TypeOf(PersonTyp{}), func(op z.DictionaryOp, name, alias string, v reflect.Value) {
 		switch op {
-		case HydrateOp:
+		case z.HydrateOp:
 			p := PersonTyp{
 				name: authorName,
 				age:  authorAge,

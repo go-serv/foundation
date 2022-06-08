@@ -2,26 +2,19 @@ package dictionary
 
 import (
 	"fmt"
+	"github.com/go-serv/service/pkg/z"
 	"reflect"
 )
 
-const (
-	HydrateOp OpType = iota + 1
-	DehydrateOp
-)
-
 type (
-	TypeHandler     func(op OpType, name, alias string, value reflect.Value)
-	typeHandlersMap map[any]TypeHandler
-	OpType          int
+	typeHandlersMap map[any]z.DictionaryTypeHandlerFn
 )
 
 type Dictionary struct {
 	typeHandlers typeHandlersMap
-	ctx          interface{}
 }
 
-func (d *Dictionary) RegisterTypeHandler(typ any, handler TypeHandler) {
+func (d *Dictionary) RegisterTypeHandler(typ any, handler z.DictionaryTypeHandlerFn) {
 	if d.typeHandlers == nil {
 		d.typeHandlers = make(typeHandlersMap)
 	}
@@ -46,7 +39,7 @@ func (d *Dictionary) iterateOver(struc interface{}, fn func(name, alias string, 
 			return fmt.Errorf("dictionary: field '%s' must be exported", fld.Name)
 		}
 		fldVal := indir.Field(i).Addr().Interface()
-		if _, ok := fldVal.(DictionaryInterface); ok {
+		if _, ok := fldVal.(z.DictionaryInterface); ok {
 			if err := d.iterateOver(fldVal, fn); err != nil {
 				return err
 			}
@@ -68,7 +61,7 @@ func (d *Dictionary) Hydrate(target interface{}) error {
 		if !ok {
 			return
 		}
-		handler(HydrateOp, name, alias, v.Elem())
+		handler(z.HydrateOp, name, alias, v.Elem())
 	})
 }
 
@@ -78,14 +71,6 @@ func (d *Dictionary) Dehydrate(target interface{}) error {
 		if !ok {
 			return
 		}
-		handler(DehydrateOp, name, alias, v.Elem())
+		handler(z.DehydrateOp, name, alias, v.Elem())
 	})
-}
-
-func (d *Dictionary) Context() interface{} {
-	return d.ctx
-}
-
-func (d *Dictionary) WithContext(ctx interface{}) {
-	d.ctx = ctx
 }

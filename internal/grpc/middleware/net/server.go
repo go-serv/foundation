@@ -38,6 +38,15 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		}
 		//
 		out, err = mw.newResponseChain().passThrough(res)
+		if err != nil {
+			return
+		}
+		// Send response headers
+		md, err = res.Meta().Dehydrate()
+		if err != nil {
+			return
+		}
+		err = grpc.SendHeader(ctx, md)
 		return
 	}
 }

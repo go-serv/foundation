@@ -2,7 +2,7 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
-	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
+	mw_codec "github.com/go-serv/service/internal/grpc/middleware/codec"
 	"github.com/go-serv/service/internal/logger"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"

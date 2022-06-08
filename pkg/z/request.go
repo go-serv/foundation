@@ -1,8 +1,11 @@
 package z
 
+import "google.golang.org/grpc/metadata"
+
 type MetaInterface interface {
 	Dictionary() interface{}
 	Hydrate() error
+	Dehydrate() (metadata.MD, error)
 }
 
 type RequestResponseInterface interface {

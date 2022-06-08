@@ -1,7 +1,7 @@
 package net
 
 import (
-	net_mw "github.com/go-serv/service/internal/grpc/mw_group/net"
+	net_mw "github.com/go-serv/service/internal/grpc/middleware/net"
 	session_mw "github.com/go-serv/service/internal/middleware/net/session"
 	"github.com/go-serv/service/internal/server"
 	_ "github.com/go-serv/service/internal/service/net_parcel/server" // this will enable the NetParcel service

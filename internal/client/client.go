@@ -3,7 +3,7 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/service/internal/ancillary"
-	mw_codec "github.com/go-serv/service/internal/grpc/mw_group/codec"
+	mw_codec "github.com/go-serv/service/internal/grpc/middleware/codec"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
