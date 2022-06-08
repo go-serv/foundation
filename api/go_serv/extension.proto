@@ -2,7 +2,12 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package go_serv.net;
+package go_serv;
+
+extend google.protobuf.ServiceOptions {
+  string require_roles = 60000;
+}
+
 
 //
 extend google.protobuf.MethodOptions {
@@ -13,3 +18,10 @@ extend google.protobuf.MethodOptions {
   //
   bool require_session = 60105;
 }
+
+extend google.protobuf.MessageOptions {
+  // If set to true enables shared memory IPC for gRPC message transmission.
+  // Should be used only for large messages.
+  bool local_shm_ipc = 60100;
+}
+
