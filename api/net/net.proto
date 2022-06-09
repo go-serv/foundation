@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//import "net/fs.proto";
 import "go_serv/extension.proto";
+import "net/ftp.proto";
 import "net/session.proto";
 
 package go_serv.net;
@@ -12,9 +12,15 @@ service NetParcel {
     option (.go_serv.require_session) = true;
   }
   //
-  //rpc Fs_CreateDir(Fs.CreateDir.Request) returns (Fs.CreateDir.Request) { }
+  rpc FtpNewSession(Ftp.NewSession.Request) returns (Ftp.NewSession.Response) {
+    option (.go_serv.new_insecure_session) = 2;
+  }
   //
-  // rpc Fs_CreateFile(Fs.CreateFile.Request) returns (Fs.CreateFile.Response) { }
+  rpc FtpTransfer(Ftp.FileChunk.Request) returns (Ftp.FileChunk.Response) {
+    option (.go_serv.require_session) = true;
+  }
   //
-  //rpc Fs_TransferFileChunk() returns () {}
+  rpc FtpInquiry(Ftp.Inquiry.Request) returns (Ftp.Inquiry.Response) {
+    option (.go_serv.require_session) = true;
+  }
 }

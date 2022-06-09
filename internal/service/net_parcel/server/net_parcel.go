@@ -5,6 +5,7 @@ package server
 
 import (
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
+	"github.com/go-serv/service/internal/service/net_parcel/server/ftp"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -19,6 +20,7 @@ type serviceImpl struct {
 type netParcel struct {
 	z.NetworkServiceInterface
 	impl serviceImpl
+	ftp.FtpImpl
 }
 
 func (s *netParcel) Register(srv *grpc.Server) {
