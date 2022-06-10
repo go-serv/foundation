@@ -10,7 +10,7 @@ import (
 )
 
 type meta struct {
-	data metadata.MD
+	data *metadata.MD
 	dic  z.DictionaryInterface
 }
 
@@ -24,13 +24,13 @@ func (s *meta) Hydrate() error {
 
 func (s *meta) Dehydrate() (md metadata.MD, err error) {
 	if s.data == nil {
-		s.data = make(metadata.MD)
+		s.data = &metadata.MD{}
 	}
 	err = s.dic.Dehydrate(s.dic)
 	if err != nil {
 		return
 	}
-	return s.data, nil
+	return *s.data, nil
 }
 
 func (s *meta) uint64toBase64(v uint64) string {

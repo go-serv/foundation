@@ -22,7 +22,7 @@ func (mw *netMiddleware) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		}
 		md := metadata.MD{}
 		opts = append(opts, grpc.Header(&md))
-		wrappedRes = net_res.NewResponse(reply, md)
+		wrappedRes = net_res.NewResponse(reply, &md)
 		netCtx := ctx.(z.NetClientContextInterface)
 		netCtx.WithClientInvoker(invoker, cc, opts)
 		netCtx.WithRequest(wrappedReq)

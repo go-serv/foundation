@@ -36,7 +36,7 @@ func NewClientRequest(payload interface{}, m z.MetaInterface, info *clientInfo) 
 	return
 }
 
-func NewRequest(payload interface{}, md metadata.MD, info *clientInfo) (r *serverRequest, err error) {
+func NewRequest(payload interface{}, md *metadata.MD, info *clientInfo) (r *serverRequest, err error) {
 	var (
 		ok bool
 	)
