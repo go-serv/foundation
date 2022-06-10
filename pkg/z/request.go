@@ -9,6 +9,7 @@ type MetaInterface interface {
 	Dictionary() interface{}
 	Hydrate() error
 	Dehydrate() (metadata.MD, error)
+	Copy(metaInterface MetaInterface)
 }
 
 type RequestResponseInterface interface {

@@ -17,6 +17,8 @@ extend google.protobuf.MethodOptions {
   bool close_session = 60104;
   //
   bool require_session = 60105;
+
+  bool copy_meta_off = 60106;
 }
 
 extend google.protobuf.MessageOptions {

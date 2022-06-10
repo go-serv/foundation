@@ -14,6 +14,12 @@ type meta struct {
 	dic  z.DictionaryInterface
 }
 
+func (s *meta) Copy(target z.MetaInterface) {
+	src := s.dic.(*HttpDictionary)
+	dst := target.Dictionary().(*HttpDictionary)
+	dst.SessionId = src.SessionId
+}
+
 func (s *meta) Dictionary() interface{} {
 	return s.dic
 }

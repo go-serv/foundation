@@ -2,6 +2,7 @@ package net
 
 import (
 	"context"
+	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 	net_req "github.com/go-serv/service/internal/grpc/request/net"
 	net_res "github.com/go-serv/service/internal/grpc/response/net"
 	"github.com/go-serv/service/pkg/z"
@@ -34,6 +35,17 @@ func (mw *netMiddleware) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		}
 		// Response chain
 		_, err = mw.newResponseChain().passThrough(wrappedRes)
+		// Copy response metadata to the client if necessary.
+		mref := wrappedReq.MethodReflection()
+		if mref.Has(go_serv.E_CopyMetaOff) {
+			iv, _ := mref.Get(go_serv.E_CopyMetaOff)
+			v := iv.(bool)
+			if !v {
+				wrappedRes.Meta().Copy(mw.Client().Meta())
+			}
+		} else {
+			wrappedRes.Meta().Copy(mw.Client().Meta())
+		}
 		return
 	}
 }
