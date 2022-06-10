@@ -4,6 +4,7 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/service/internal/autogen/proto/net"
+	net_ctx "github.com/go-serv/service/internal/grpc/context/net"
 	srv "github.com/go-serv/service/internal/server"
 	net_srv "github.com/go-serv/service/internal/server/net"
 	np_client "github.com/go-serv/service/internal/service/net_parcel/client"
@@ -66,7 +67,8 @@ func TestSecureSession(t *testing.T) {
 			cc := j.GetValue().(net.NetParcelClient)
 			req := &net.Session_Request{}
 			req.NonceLength = nonceLen
-			res, err := cc.SecureSession(context.Background(), req)
+			ctx := net_ctx.NewClientContext(context.Background())
+			res, err := cc.SecureSession(ctx, req)
 			task.Assert(err)
 			if len(res.GetNonce()) != nonceLen {
 				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(res.GetNonce()))

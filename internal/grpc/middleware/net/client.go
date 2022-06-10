@@ -2,7 +2,6 @@ package net
 
 import (
 	"context"
-	net_ctx "github.com/go-serv/service/internal/grpc/context/net"
 	net_req "github.com/go-serv/service/internal/grpc/request/net"
 	net_res "github.com/go-serv/service/internal/grpc/response/net"
 	"github.com/go-serv/service/pkg/z"
@@ -21,12 +20,19 @@ func (mw *netMiddleware) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		if err != nil {
 			return
 		}
-		md := new(metadata.MD)
-		opts = append(opts, grpc.Header(md))
+		md := metadata.MD{}
+		opts = append(opts, grpc.Header(&md))
 		wrappedRes = net_res.NewResponse(reply, md)
-		clntCtx := net_ctx.NewClientContext(ctx, wrappedReq, wrappedRes, invoker, cc, opts)
+		netCtx := ctx.(z.NetClientContextInterface)
+		netCtx.WithClientInvoker(invoker, cc, opts)
+		netCtx.WithRequest(wrappedReq)
+		netCtx.WithResponse(wrappedRes)
 		// Request chain
-		_, err = mw.newRequestChain().passThrough(clntCtx)
+		_, err = mw.newRequestChain().passThrough(netCtx)
+		if err != nil {
+			return
+		}
+		err = wrappedRes.Meta().Hydrate()
 		if err != nil {
 			return
 		}

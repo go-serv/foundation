@@ -20,19 +20,32 @@ type srvContext struct {
 
 type clientContext struct {
 	netContext
-	responseMd *metadata.MD
-	reqMeta    z.MetaInterface
-	cc         *grpc.ClientConn
-	invoker    grpc.UnaryInvoker
-	opts       []grpc.CallOption
+	reqMeta z.MetaInterface
+	cc      *grpc.ClientConn
+	invoker grpc.UnaryInvoker
+	opts    []grpc.CallOption
 }
 
 func (ctx *netContext) Request() z.RequestInterface {
 	return ctx.req
 }
 
+func (ctx *netContext) WithRequest(req z.RequestInterface) {
+	ctx.req = req
+}
+
 func (ctx *netContext) Response() z.ResponseInterface {
 	return ctx.res
+}
+
+func (ctx *netContext) WithResponse(res z.ResponseInterface) {
+	ctx.res = res
+}
+
+func (ctx *clientContext) WithClientInvoker(invoker grpc.UnaryInvoker, cc *grpc.ClientConn, opts []grpc.CallOption) {
+	ctx.invoker = invoker
+	ctx.cc = cc
+	ctx.opts = opts
 }
 
 func (ctx *srvContext) Invoke() (res interface{}, err error) {
@@ -53,6 +66,7 @@ func (ctx *clientContext) Invoke() (res interface{}, err error) {
 	methodReflect := ctx.req.MethodReflection()
 	methodName := methodReflect.SlashFullName()
 	err = ctx.invoker(ctx, methodName, ctx.req.Payload(), ctx.res.Payload(), ctx.cc, ctx.opts...)
+	res = ctx.res.Payload()
 	return
 }
 

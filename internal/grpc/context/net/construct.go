@@ -16,13 +16,8 @@ func NewServerContext(ctx context.Context, req z.RequestInterface, handler grpc.
 	return c
 }
 
-func NewClientContext(ctx context.Context, req z.RequestInterface, res z.ResponseInterface, invoker grpc.UnaryInvoker, cc *grpc.ClientConn, opts []grpc.CallOption) *clientContext {
+func NewClientContext(ctx context.Context) *clientContext {
 	c := new(clientContext)
 	c.Context = ctx
-	c.req = req
-	c.res = res
-	c.invoker = invoker
-	c.cc = cc
-	c.opts = opts
 	return c
 }

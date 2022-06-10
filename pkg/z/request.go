@@ -1,6 +1,9 @@
 package z
 
-import "google.golang.org/grpc/metadata"
+import (
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+)
 
 type MetaInterface interface {
 	Dictionary() interface{}
@@ -27,13 +30,20 @@ type ResponseInterface interface {
 
 type ContextInterface interface {
 	Request() RequestInterface
+	WithRequest(RequestInterface)
 	Response() ResponseInterface
+	WithResponse(ResponseInterface)
 	Invoke() (interface{}, error)
 }
 
 type NetContextInterface interface {
 	ContextInterface
 	Session() SessionInterface
+}
+
+type NetClientContextInterface interface {
+	NetContextInterface
+	WithClientInvoker(grpc.UnaryInvoker, *grpc.ClientConn, []grpc.CallOption)
 }
 
 type LocalContextInterface interface {

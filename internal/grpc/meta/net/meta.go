@@ -23,6 +23,9 @@ func (s *meta) Hydrate() error {
 }
 
 func (s *meta) Dehydrate() (md metadata.MD, err error) {
+	if s.data == nil {
+		s.data = make(metadata.MD)
+	}
 	err = s.dic.Dehydrate(s.dic)
 	if err != nil {
 		return

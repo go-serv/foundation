@@ -26,7 +26,7 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		}
 		//
 		clientInfo := net_req.NewClientInfo(ctx)
-		wrappedReq, err = net_req.NewRequest(req, &md, clientInfo)
+		wrappedReq, err = net_req.NewRequest(req, md, clientInfo)
 		if err != nil {
 			return
 		}
