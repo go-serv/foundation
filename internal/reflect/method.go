@@ -6,6 +6,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoimpl"
+	"strings"
 )
 
 var (
@@ -30,6 +31,14 @@ type method struct {
 
 func (m *method) Descriptor() protoreflect.MethodDescriptor {
 	return m.desc
+}
+
+func (m *method) SlashFullName() string {
+	name := string(m.desc.FullName())
+	lastIdx := strings.LastIndex(name, ".")
+	runes := []rune(name)
+	runes[lastIdx] = '/'
+	return "/" + string(runes)
 }
 
 func (m *method) Request() z.MessageReflectionInterface {

@@ -29,6 +29,7 @@ type ServiceReflectInterface interface {
 type MethodReflectionInterface interface {
 	ReflectAccessor
 	Descriptor() protoreflect.MethodDescriptor
+	SlashFullName() string
 	Request() MessageReflectionInterface
 	Response() MessageReflectionInterface
 	FromMessage(proto.Message) MessageReflectionInterface

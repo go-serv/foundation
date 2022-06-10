@@ -17,7 +17,7 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			md         metadata.MD
 			ok         bool
 			wrappedReq z.RequestInterface
-			res        z.ResponseInterface
+			wrappedRes z.ResponseInterface
 		)
 		// Request metadata
 		md, ok = metadata.FromIncomingContext(ctx)
@@ -26,23 +26,23 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		}
 		//
 		clientInfo := net_req.NewClientInfo(ctx)
-		wrappedReq, err = net_req.NewRequest(req, md, clientInfo)
+		wrappedReq, err = net_req.NewRequest(req, &md, clientInfo)
 		if err != nil {
 			return
 		}
 		//
-		netCall := net_call.NewCall(ctx, wrappedReq, handler)
-		res, err = mw.newRequestChain().passThrough(netCall)
+		netCall := net_call.NewServerContext(ctx, wrappedReq, handler)
+		wrappedRes, err = mw.newRequestChain().passThrough(netCall)
 		if err != nil {
 			return
 		}
 		//
-		out, err = mw.newResponseChain().passThrough(res)
+		out, err = mw.newResponseChain().passThrough(wrappedRes)
 		if err != nil {
 			return
 		}
 		// Send response headers
-		md, err = res.Meta().Dehydrate()
+		md, err = wrappedRes.Meta().Dehydrate()
 		if err != nil {
 			return
 		}

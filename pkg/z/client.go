@@ -8,12 +8,15 @@ import (
 
 type ClientInterface interface {
 	CodecAwareInterface
+	MiddlewareAwareInterface
 	ServiceName() protoreflect.FullName
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	NewClient(cc grpc.ClientConnInterface)
 	WithDialOption(grpc.DialOption)
 	DialOptions() []grpc.DialOption
+	Meta() MetaInterface
+	WithMeta(MetaInterface)
 }
 
 type NetworkClientInterface interface {

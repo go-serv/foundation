@@ -7,13 +7,11 @@ import (
 	"net"
 )
 
-type HttpCommonDictionary struct {
+type HttpDictionary struct {
 	dictionary.Dictionary
-	SessionId z.SessionId `name:"gserv-session-id"`
-}
+	//
+	SessionId z.SessionId `name:"gs-session-id"`
 
-type HttpServerDictionary struct {
-	HttpCommonDictionary
 	// The Content-Type representation header is used to indicate the original media type of the resource
 	// (prior to any content encoding applied for sending).
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
@@ -33,8 +31,4 @@ type HttpServerDictionary struct {
 	// that a client used to connect to your proxy or load balancer.
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
 	ForwardedProto string `name:"x-forwarded-proto"`
-}
-
-type HttpClientDictionary struct {
-	HttpCommonDictionary
 }

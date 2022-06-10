@@ -14,7 +14,8 @@ type client struct {
 	svcName      protoreflect.FullName
 	codec        z.CodecInterface
 	codecMwGroup z.CodecMiddlewareGroupInterface
-	mwGroup      z.MiddlewareInterface
+	mw           z.MiddlewareInterface
+	meta         z.MetaInterface
 	endpoint     z.EndpointInterface
 	conn         net.Conn
 	dialOpts     []grpc.DialOption
@@ -36,6 +37,23 @@ func (s *client) WithCodec(cc z.CodecInterface) {
 
 func (s *client) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {
 	return s.codecMwGroup
+}
+
+func (c *client) Middleware() z.MiddlewareInterface {
+	return c.mw
+}
+
+func (c *client) WithMiddleware(mw z.MiddlewareInterface) {
+	c.mw = mw
+	mw.WithClient(c)
+}
+
+func (c *client) Meta() z.MetaInterface {
+	return c.meta
+}
+
+func (c *client) WithMeta(meta z.MetaInterface) {
+	c.meta = meta
 }
 
 func (c *client) Endpoint() z.EndpointInterface {

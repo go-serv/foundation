@@ -16,7 +16,8 @@ func (c *netClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fina
 	}
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()
-		conn, err := grpc.Dial(c.Endpoint().Address(), c.DialOptions()...)
+		opts := append(c.DialOptions(), grpc.WithChainUnaryInterceptor(c.Middleware().UnaryClientInterceptor()))
+		conn, err := grpc.Dial(c.Endpoint().Address(), opts...)
 		task.Assert(err)
 		v.(z.NetworkClientInterface).NewClient(conn)
 		task.Done()

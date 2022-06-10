@@ -7,6 +7,7 @@ package net
 import "github.com/go-serv/service/pkg/z"
 
 type netMiddleware struct {
+	client            z.ClientInterface
 	preStreamHandlers []z.NetPreStreamHandlerFn
 	reqHandlers       []z.NetRequestHandlerFn
 	resHandlers       []z.NetResponseHandlerFn
@@ -24,6 +25,14 @@ type requestChain struct {
 	chain
 }
 
+func (m *netMiddleware) Client() z.ClientInterface {
+	return m.client
+}
+
+func (m *netMiddleware) WithClient(client z.ClientInterface) {
+	m.client = client
+}
+
 func (m *netMiddleware) AddPreStreamHandler(h z.NetPreStreamHandlerFn) {
 	m.preStreamHandlers = append(m.preStreamHandlers, h)
 }
@@ -36,11 +45,11 @@ func (m *netMiddleware) AddResponseHandler(h z.NetResponseHandlerFn) {
 	m.resHandlers = append(m.resHandlers, h)
 }
 
-func (t *requestChain) passThrough(call z.NetContextInterface) (res z.ResponseInterface, err error) {
+func (t *requestChain) passThrough(ctx z.NetContextInterface) (res z.ResponseInterface, err error) {
 	var curr z.NetChainElementFn
 	invokeHandler := func(next z.NetChainElementFn, _ z.RequestInterface, res z.ResponseInterface) (err error) {
 		var payload interface{}
-		if payload, err = call.Invoke(); err != nil {
+		if payload, err = ctx.Invoke(); err != nil {
 			return
 		}
 		res.WithPayload(payload)
@@ -60,8 +69,8 @@ func (t *requestChain) passThrough(call z.NetContextInterface) (res z.ResponseIn
 			return curr, nil
 		}
 	}
-	_, err = curr(call.Request(), call.Response())
-	return call.Response(), err
+	_, err = curr(ctx.Request(), ctx.Response())
+	return ctx.Response(), err
 }
 
 func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, err error) {

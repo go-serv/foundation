@@ -30,7 +30,7 @@ func (s serviceImpl) SecureSession(ctx context.Context, req *proto.Session_Reque
 	// Create a new session
 	lifetime := uint16(req.GetLifetime())
 	sess := session.NewSecureSession(lifetime, nonce, encKey)
-	dic := netCtx.Response().Meta().Dictionary().(*net.HttpClientDictionary)
+	dic := netCtx.Response().Meta().Dictionary().(*net.HttpDictionary)
 	dic.SessionId = sess.Id()
 	return res, nil
 }

@@ -7,6 +7,13 @@ import (
 type MiddlewareInterface interface {
 	UnaryServerInterceptor() grpc.UnaryServerInterceptor
 	UnaryClientInterceptor() grpc.UnaryClientInterceptor
+	Client() ClientInterface
+	WithClient(ClientInterface)
+}
+
+type MiddlewareAwareInterface interface {
+	Middleware() MiddlewareInterface
+	WithMiddleware(mg MiddlewareInterface)
 }
 
 type (
