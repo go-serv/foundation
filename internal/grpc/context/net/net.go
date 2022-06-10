@@ -20,7 +20,6 @@ type srvContext struct {
 
 type clientContext struct {
 	netContext
-	reqMeta z.MetaInterface
 	cc      *grpc.ClientConn
 	invoker grpc.UnaryInvoker
 	opts    []grpc.CallOption
@@ -66,6 +65,15 @@ func (ctx *clientContext) Invoke() (res interface{}, err error) {
 	methodReflect := ctx.req.MethodReflection()
 	methodName := methodReflect.SlashFullName()
 	err = ctx.invoker(ctx, methodName, ctx.req.Payload(), ctx.res.Payload(), ctx.cc, ctx.opts...)
+	if err != nil {
+		return
+	}
+	// Response meta data
+	err = ctx.res.Meta().Hydrate()
+	if err != nil {
+		return
+	}
+	// Response payload
 	res = ctx.res.Payload()
 	return
 }

@@ -32,10 +32,6 @@ func (mw *netMiddleware) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		if err != nil {
 			return
 		}
-		err = wrappedRes.Meta().Hydrate()
-		if err != nil {
-			return
-		}
 		// Response chain
 		_, err = mw.newResponseChain().passThrough(wrappedRes)
 		return
