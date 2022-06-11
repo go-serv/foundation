@@ -11,7 +11,7 @@ func (UniqueId) Generate() UniqueId {
 }
 
 type (
-	UniqueId      uint64
-	SessionId     UniqueId
-	TransactionId UniqueId
+	UniqueId  uint64
+	SessionId UniqueId
+	TenantId  UniqueId
 )

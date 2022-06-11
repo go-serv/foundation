@@ -33,3 +33,13 @@ type LocalServerInterface interface {
 type NetworkServerInterface interface {
 	ServerInterface
 }
+
+type ServerResolverInterface interface {
+}
+
+type AccessTokenVerifierFn func(AccessTokenInterface) bool
+type NetworkServerResolverInterface interface {
+	ServerResolverInterface
+	VerifyAccessToken(fn AccessTokenVerifierFn) (bool, error)
+	FtpRootDir(func() string) (string, error)
+}
