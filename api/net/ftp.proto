@@ -37,6 +37,7 @@ message Ftp {
     message Request {
       repeated FileInfo files = 1;
       optional string target_dir = 2;
+      optional uint32 lifetime = 3;
     }
     message Response {
       uint32 max_chunk_size = 1;

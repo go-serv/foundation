@@ -37,12 +37,17 @@ func genericRegistryAsSlice[T any](in ...registry) []T {
 }
 
 type runtime struct {
+	platform     z.PlatformInterface
 	ref          z.ReflectInterface
 	localService registry
 	netServices  registry
 	localClients registry
 	netClients   registry
 	eventsMap    eventsMapTyp
+}
+
+func (r *runtime) Platform() z.PlatformInterface {
+	return r.platform
 }
 
 func (r *runtime) Reflection() z.ReflectInterface {

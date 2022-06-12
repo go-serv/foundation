@@ -1,8 +1,21 @@
 package token
 
-import "github.com/go-serv/service/pkg/z"
+import (
+	"github.com/go-serv/service/pkg/z"
+)
+
+type tokenTyp int
+
+const (
+	RbacToken tokenTyp = iota + 1
+)
+
+func (t tokenTyp) String() string {
+	return [...]string{"rbac"}[t]
+}
 
 type token struct {
+	typ       tokenTyp   `json:"type"`
 	issuedAt  int64      `json:"issued_at"`
 	notBefore int64      `json:"not_before"`
 	expireAt  int64      `json:"expire_at"`

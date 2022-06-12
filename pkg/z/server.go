@@ -32,6 +32,8 @@ type LocalServerInterface interface {
 
 type NetworkServerInterface interface {
 	ServerInterface
+	Resolver() NetworkServerResolverInterface
+	WithResolver(NetworkServerResolverInterface)
 }
 
 type ServerResolverInterface interface {

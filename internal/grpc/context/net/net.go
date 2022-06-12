@@ -15,6 +15,8 @@ type netContext struct {
 
 type srvContext struct {
 	netContext
+	server  z.NetworkServerInterface
+	sess    z.SessionInterface
 	handler grpc.UnaryHandler
 }
 
@@ -78,6 +80,18 @@ func (ctx *clientContext) Invoke() (res interface{}, err error) {
 	return
 }
 
-func (ctx *netContext) Session() z.SessionInterface {
-	return nil
+func (s *srvContext) Session() z.SessionInterface {
+	return s.sess
+}
+
+func (s *srvContext) WithSession(sess z.SessionInterface) {
+	s.sess = sess
+}
+
+func (s *srvContext) Server() z.NetworkServerInterface {
+	return s.server
+}
+
+func (s *srvContext) WithServer(srv z.NetworkServerInterface) {
+	s.server = srv
 }

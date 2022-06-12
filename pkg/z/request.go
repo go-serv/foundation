@@ -39,7 +39,14 @@ type ContextInterface interface {
 
 type NetContextInterface interface {
 	ContextInterface
+}
+
+type NetServerContextInterface interface {
+	NetContextInterface
 	Session() SessionInterface
+	WithSession(SessionInterface)
+	Server() NetworkServerInterface
+	WithServer(NetworkServerInterface)
 }
 
 type NetClientContextInterface interface {

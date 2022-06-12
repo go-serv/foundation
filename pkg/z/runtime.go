@@ -1,8 +1,16 @@
 package z
 
-import "google.golang.org/protobuf/proto"
+import (
+	"github.com/go-serv/service/pkg/z/platform"
+	"google.golang.org/protobuf/proto"
+)
+
+type PlatformInterface interface {
+	platform.FilesystemInterface
+}
 
 type RuntimeInterface interface {
+	Platform() PlatformInterface
 	RegisteredServices() []ServiceInterface
 	RegisterLocalClient(LocalClientInterface)
 	RegisterNetworkClient(NetworkClientInterface)
