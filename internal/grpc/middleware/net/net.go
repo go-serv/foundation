@@ -47,7 +47,7 @@ func (m *netMiddleware) AddResponseHandler(h z.NetResponseHandlerFn) {
 
 func (t *requestChain) passThrough(ctx z.NetContextInterface) (res z.ResponseInterface, err error) {
 	var curr z.NetChainElementFn
-	invokeHandler := func(next z.NetChainElementFn, _ z.RequestInterface, res z.ResponseInterface) (err error) {
+	invokeHandler := func(next z.NetChainElementFn, _ z.NetContextInterface, _ z.RequestInterface, res z.ResponseInterface) (err error) {
 		var payload interface{}
 		if payload, err = ctx.Invoke(); err != nil {
 			return
@@ -62,7 +62,7 @@ func (t *requestChain) passThrough(ctx z.NetContextInterface) (res z.ResponseInt
 		handler := ch[i]
 		next := curr
 		curr = func(req z.RequestInterface, res z.ResponseInterface) (el z.NetChainElementFn, err error) {
-			err = handler(next, req, res)
+			err = handler(next, ctx, req, res)
 			if err != nil {
 				return
 			}

@@ -8,8 +8,5 @@ import (
 
 func (c *client) SecureSession(ctx context.Context, in *proto.Session_Request, opts ...grpc.CallOption) (res *proto.Session_Response, err error) {
 	res, err = c.stubs.SecureSession(ctx, in, opts...)
-	if err != nil {
-		return
-	}
 	return
 }

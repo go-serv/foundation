@@ -60,6 +60,11 @@ func (tf *testFixtures) finalize() {
 //}
 
 func TestSecureSession(t *testing.T) {
+	var (
+		secSessRes    *net.Session_Response
+		ftpNewSessRes *net.Ftp_NewSession_Response
+		err           error
+	)
 	tf := setup(t)
 	getNonceTask := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		const nonceLen = 32
@@ -68,11 +73,18 @@ func TestSecureSession(t *testing.T) {
 			req := &net.Session_Request{}
 			req.NonceLength = nonceLen
 			ctx := net_ctx.NewClientContext(context.Background())
-			res, err := cc.SecureSession(ctx, req)
+			secSessRes, err = cc.SecureSession(ctx, req)
 			task.Assert(err)
-			if len(res.GetNonce()) != nonceLen {
-				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(res.GetNonce()))
+			if len(secSessRes.GetNonce()) != nonceLen {
+				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(secSessRes.GetNonce()))
 			}
+			// Start an FTP session
+			ftpNewSessReq := &net.Ftp_NewSession_Request{}
+			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Pathname: "file1.bin", Size: 1200})
+			ftpNewSessRes, err = cc.FtpNewSession(ctx, ftpNewSessReq)
+			task.Assert(err)
+			//
+			_ = ftpNewSessRes
 			task.Done()
 		}
 		return nil, run, nil

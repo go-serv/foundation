@@ -52,6 +52,8 @@ type NetServerContextInterface interface {
 type NetClientContextInterface interface {
 	NetContextInterface
 	WithClientInvoker(grpc.UnaryInvoker, *grpc.ClientConn, []grpc.CallOption)
+	Client() NetworkClientInterface
+	WithClient(NetworkClientInterface)
 }
 
 type LocalContextInterface interface {

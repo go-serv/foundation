@@ -18,7 +18,7 @@ type MiddlewareAwareInterface interface {
 
 type (
 	NetPreStreamHandlerFn func(ServiceReflectInterface, MethodReflectionInterface, MessageReflectionInterface) error
-	NetRequestHandlerFn   func(next NetChainElementFn, req RequestInterface, res ResponseInterface) error
+	NetRequestHandlerFn   func(next NetChainElementFn, ctx NetContextInterface, req RequestInterface, res ResponseInterface) error
 	NetResponseHandlerFn  func(next NetChainElementFn, res ResponseInterface) error
 	NetChainElementFn     func(RequestInterface, ResponseInterface) (NetChainElementFn, error)
 )

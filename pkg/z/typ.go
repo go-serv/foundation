@@ -2,6 +2,10 @@ package z
 
 import "math/rand"
 
+type (
+	ErrCodeType int
+)
+
 type UniqueIdInterface interface {
 	Generate() UniqueId
 }

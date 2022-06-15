@@ -19,12 +19,12 @@ type serviceImpl struct {
 
 type netParcel struct {
 	z.NetworkServiceInterface
-	impl serviceImpl
+	serviceImpl
 	ftp.FtpImpl
 }
 
 func (s *netParcel) Register(srv *grpc.Server) {
-	proto.RegisterNetParcelServer(srv, s.impl)
+	proto.RegisterNetParcelServer(srv, s)
 }
 
 func (s *netParcel) Service_OnNewSession(req z.RequestInterface) error {

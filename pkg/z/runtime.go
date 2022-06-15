@@ -1,13 +1,8 @@
 package z
 
 import (
-	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/protobuf/proto"
 )
-
-type PlatformInterface interface {
-	platform.FilesystemInterface
-}
 
 type RuntimeInterface interface {
 	Platform() PlatformInterface

@@ -5,14 +5,15 @@ package go_serv.net;
 message Ftp {
   //
   enum TransferState {
-    IN_PROGRESS = 0;
-    COMPLETED = 1;
-    SUSPENDED = 2;
-    FAILED = 3;
+    PENDING = 0;
+    IN_PROGRESS = 1;
+    COMPLETED = 2;
+    SUSPENDED = 3;
+    FAILED = 4;
   }
   message FileInfo {
-    // Relative pathname to the target dir.
-    string target_pathname = 1;
+    // A relative to the target dir pathname of file to transfer.
+    string pathname = 1;
     // File size.
     uint64 size = 2;
     // Original filename.
@@ -29,14 +30,14 @@ message Ftp {
   }
   //
   message FileRange {
-    uint64 low = 1;
-    uint64 high = 2;
+    int64 start = 1;
+    int64 end = 2;
   }
   //
   message NewSession {
     message Request {
       repeated FileInfo files = 1;
-      optional string target_dir = 2;
+      bool temp = 2;
       optional uint32 lifetime = 3;
     }
     message Response {
@@ -52,6 +53,7 @@ message Ftp {
       bytes body = 3;
     }
     message Response {
+      TransferState state = 1;
     }
   }
   //

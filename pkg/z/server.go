@@ -2,6 +2,7 @@ package z
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/grpc"
 )
 
@@ -43,5 +44,5 @@ type AccessTokenVerifierFn func(AccessTokenInterface) bool
 type NetworkServerResolverInterface interface {
 	ServerResolverInterface
 	VerifyAccessToken(fn AccessTokenVerifierFn) (bool, error)
-	FtpRootDir(func() string) (string, error)
+	FtpRootDir(func() string) (platform.Pathname, error)
 }

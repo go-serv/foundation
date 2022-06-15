@@ -22,6 +22,7 @@ type srvContext struct {
 
 type clientContext struct {
 	netContext
+	client  z.NetworkClientInterface
 	cc      *grpc.ClientConn
 	invoker grpc.UnaryInvoker
 	opts    []grpc.CallOption
@@ -43,15 +44,23 @@ func (ctx *netContext) WithResponse(res z.ResponseInterface) {
 	ctx.res = res
 }
 
+func (ctx *srvContext) Invoke() (res interface{}, err error) {
+	res, err = ctx.handler(ctx, ctx.req.Payload())
+	return
+}
+
 func (ctx *clientContext) WithClientInvoker(invoker grpc.UnaryInvoker, cc *grpc.ClientConn, opts []grpc.CallOption) {
 	ctx.invoker = invoker
 	ctx.cc = cc
 	ctx.opts = opts
 }
 
-func (ctx *srvContext) Invoke() (res interface{}, err error) {
-	res, err = ctx.handler(ctx, ctx.req.Payload())
-	return
+func (ctx *clientContext) Client() z.NetworkClientInterface {
+	return ctx.client
+}
+
+func (ctx *clientContext) WithClient(client z.NetworkClientInterface) {
+	ctx.client = client
 }
 
 // Invoke prepares metadata and calls gRPC method

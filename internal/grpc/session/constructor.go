@@ -10,6 +10,7 @@ import (
 func NewSession(lifetime uint16) *session {
 	s := new(session)
 	s.id = z.SessionId(z.UniqueId(0).Generate())
+	s.state = New
 	s.startedAt = time.Now().Unix()
 	s.expireAt = s.startedAt + int64(lifetime)
 	sessionMap.Store(s.id, s)
