@@ -45,7 +45,6 @@ func (c *client) Middleware() z.MiddlewareInterface {
 
 func (c *client) WithMiddleware(mw z.MiddlewareInterface) {
 	c.mw = mw
-	mw.WithClient(c)
 }
 
 func (c *client) Meta() z.MetaInterface {

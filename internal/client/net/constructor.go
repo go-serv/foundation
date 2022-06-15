@@ -26,13 +26,14 @@ func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *netClient 
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
 	cipher_msg.NetClientInit(c)
-	c.WithMiddleware(newDefaultMiddleware())
+	c.newDefaultMiddleware()
 	runtime.Runtime().RegisterNetworkClient(c)
 	return c
 }
 
-func newDefaultMiddleware() z.MiddlewareInterface {
+func (c *netClient) newDefaultMiddleware() {
 	mw := net_mw.NewMiddleware()
+	mw.WithClient(c)
+	c.WithMiddleware(mw)
 	session_mw.ClientInit(mw)
-	return mw
 }
