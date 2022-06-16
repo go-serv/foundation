@@ -10,6 +10,7 @@ import (
 var (
 	ErrMethodDescriptorNotFound = errors.New("")
 	ErrDescriptorNotFound       = errors.New("")
+	ErrResolverNotFound         = errors.New("runtime: resolver not found")
 )
 
 type (
@@ -18,8 +19,9 @@ type (
 )
 
 type (
-	eventsMapTyp   map[interface{}][]eventHandlerFn
-	eventHandlerFn func(...interface{}) bool
+	resolversMapTyp map[any]z.ResolverInterface
+	eventsMapTyp    map[interface{}][]eventHandlerFn
+	eventHandlerFn  func(...interface{}) bool
 )
 
 //type registryConstraints interface {
@@ -39,6 +41,7 @@ func genericRegistryAsSlice[T any](in ...registry) []T {
 type runtime struct {
 	platform     z.PlatformInterface
 	ref          z.ReflectInterface
+	resolvers    resolversMapTyp
 	localService registry
 	netServices  registry
 	localClients registry
@@ -52,6 +55,19 @@ func (r *runtime) Platform() z.PlatformInterface {
 
 func (r *runtime) Reflection() z.ReflectInterface {
 	return r.ref
+}
+
+func (r *runtime) AddResolver(key any, resolver z.ResolverInterface) {
+	r.resolvers[key] = resolver
+}
+
+func (r *runtime) Resolve(key any, args ...any) (v any, err error) {
+	resolver, ok := r.resolvers[key]
+	if !ok {
+		return nil, ErrResolverNotFound
+	}
+	v, err = resolver.Run(args...)
+	return
 }
 
 func (r *runtime) RegisterNetworkService(svc z.NetworkServiceInterface) {

@@ -34,6 +34,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		sess     z.SessionInterface
 		profiles []z.FtpUploadProfileInterface
 		zfd      platform.FileDescriptor
+		pv       any
 	)
 	plat := runtime.Runtime().Platform()
 	netCtx := ctx.(z.NetServerContextInterface)
@@ -55,10 +56,10 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		return nil, status.Error(codes.InvalidArgument, "no files to transfer")
 	}
 	//
-	profiles, err = netCtx.Server().Resolver().FtpUploadProfiles(nil)
-	if err != nil || len(profiles) == 0 {
+	if pv, err = runtime.Runtime().Resolve(z.FtpUploadProfilerResolver); err != nil {
 		return nil, status.Error(codes.FailedPrecondition, "no FTP upload profiles")
 	}
+	profiles = pv.([]z.FtpUploadProfileInterface)
 	profileIdx := req.GetUploadProfile()
 	if int(profileIdx) >= len(profiles) {
 		return nil, status.Error(codes.FailedPrecondition, "profile index out of range")

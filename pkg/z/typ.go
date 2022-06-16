@@ -19,3 +19,10 @@ type (
 	SessionId UniqueId
 	TenantId  UniqueId
 )
+
+const (
+	_ = 1 << (iota * 10)
+	KiB
+	MiB
+	GiB
+)

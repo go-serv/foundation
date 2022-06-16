@@ -3,15 +3,26 @@ package net_parcel
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/internal/ancillary/resolver"
 	"github.com/go-serv/service/internal/autogen/proto/net"
 	net_ctx "github.com/go-serv/service/internal/grpc/context/net"
+	"github.com/go-serv/service/internal/runtime"
 	srv "github.com/go-serv/service/internal/server"
 	net_srv "github.com/go-serv/service/internal/server/net"
 	np_client "github.com/go-serv/service/internal/service/net_parcel/client"
+	"github.com/go-serv/service/internal/service/net_parcel/server/ftp"
 	"github.com/go-serv/service/pkg/z"
 	"testing"
 	"time"
 )
+
+func init() {
+	ftpResolver := resolver.NewResolver(func(...any) (v any, err error) {
+		v = []z.FtpUploadProfileInterface{ftp.NewUploadProfile(".", 10_000, 0755)}
+		return
+	})
+	runtime.Runtime().AddResolver(z.FtpUploadProfilerResolver, ftpResolver)
+}
 
 const (
 	testHost = "localhost"

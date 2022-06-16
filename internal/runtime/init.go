@@ -11,10 +11,15 @@ var rt *runtime
 func init() {
 	rt = new(runtime)
 	rt.platform = platform.NewPlatform()
+	// Add the protobuf extensions
 	rt.ref = reflect.NewReflection()
-	//rt.ref.AddProtoExtension(go_serv.E_LocalShmIpc)
+	rt.ref.AddProtoExtension(go_serv.E_NewInsecureSession)
+	rt.ref.AddProtoExtension(go_serv.E_RequireSession)
+	rt.ref.AddProtoExtension(go_serv.E_OptionalSession)
+	rt.ref.AddProtoExtension(go_serv.E_CloseSession)
 	rt.ref.AddProtoExtension(go_serv.E_CopyMetaOff)
 	//
+	rt.resolvers = make(resolversMapTyp, 0)
 	rt.eventsMap = make(eventsMapTyp, 0)
 	//
 	rt.netServices = make(registry, 0)

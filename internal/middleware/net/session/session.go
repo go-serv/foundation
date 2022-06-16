@@ -10,13 +10,16 @@ import (
 )
 
 func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface, res z.ResponseInterface) (err error) {
-	if req.MethodReflection().Has(go_serv.E_RequireSession) {
-		sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
+	srvCtx := ctx.(z.NetServerContextInterface)
+	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
+	if req.MethodReflection().Bool(go_serv.E_RequireSession) {
 		sess := session.FindById(sId)
 		if sess == nil || sess.State() != session.Active || sess.State() != session.New {
 			return status.Error(codes.NotFound, "gRPC session not found or expired")
 		}
-		srvCtx := ctx.(z.NetServerContextInterface)
+		srvCtx.WithSession(sess)
+	} else if req.MethodReflection().Bool(go_serv.E_OptionalSession) {
+		sess := session.FindById(sId)
 		srvCtx.WithSession(sess)
 	}
 	_, err = next(req, res)

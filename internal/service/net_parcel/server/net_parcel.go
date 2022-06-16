@@ -26,7 +26,3 @@ type netParcel struct {
 func (s *netParcel) Register(srv *grpc.Server) {
 	proto.RegisterNetParcelServer(srv, s)
 }
-
-func (s *netParcel) Service_OnNewSession(req z.RequestInterface) error {
-	return nil
-}

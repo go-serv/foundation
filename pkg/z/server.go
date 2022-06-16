@@ -44,5 +44,4 @@ type AccessTokenVerifierFn func(AccessTokenInterface) bool
 type NetworkServerResolverInterface interface {
 	ServerResolverInterface
 	VerifyAccessToken(fn AccessTokenVerifierFn) (bool, error)
-	FtpUploadProfiles(func() []FtpUploadProfileInterface) ([]FtpUploadProfileInterface, error)
 }
