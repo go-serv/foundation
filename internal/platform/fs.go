@@ -45,6 +45,7 @@ func (f *fs) DirectoryExists(path pf.Pathname) bool {
 }
 
 func (f *fs) CreateDir(path pf.Pathname, perm uint32) (err error) {
+	err = os.MkdirAll(path.String(), os.FileMode(perm))
 	return
 }
 

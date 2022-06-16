@@ -4,11 +4,14 @@ import (
 	"github.com/go-serv/service/internal/autogen/proto/go_serv"
 	"github.com/go-serv/service/internal/platform"
 	"github.com/go-serv/service/internal/reflect"
+	"math/rand"
+	"time"
 )
 
 var rt *runtime
 
 func init() {
+	rand.Seed(time.Now().UnixNano())
 	rt = new(runtime)
 	rt.platform = platform.NewPlatform()
 	// Add the protobuf extensions

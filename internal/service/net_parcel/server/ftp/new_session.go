@@ -10,7 +10,6 @@ import (
 	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"os"
 	"strconv"
 	"time"
 )
@@ -70,15 +69,19 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	if transferTotalSize(req) > availableSpace {
 		return nil, status.Error(codes.FailedPrecondition, "out of disk space")
 	}
-	// Target directory pathname prefix in the format yyyy/mm/dd
+	// Compose a pathname prefix of the target directory in the format /yyyy/mm/dd/hh
 	now := time.Now()
-	day, month, year := now.Day(), now.Month(), now.Year()
+	hour, day, month, year := now.Hour(), now.Day(), now.Month(), now.Year()
 	dirname := profile.BaseDir().ComposePath(fmt.Sprintf("%d", year),
-		fmt.Sprintf("%2d", month),
-		fmt.Sprintf("%2d", day),
+		fmt.Sprintf("%.2d", month),
+		fmt.Sprintf("%.2d", day),
+		fmt.Sprintf("%.2d", hour),
+		platform.PathSeparator,
 	)
 	if !plat.DirectoryExists(dirname) {
-		plat.CreateDir(dirname, 0755)
+		if err = plat.CreateDir(dirname, profile.FilePerms()); err != nil {
+			return nil, status.Error(codes.FailedPrecondition, "fs: failed to create directory")
+		}
 	}
 	postfix := strconv.FormatUint(uint64(sess.Id()), 16)
 	// Add a marker to the directory pathname denoting that the directory is temporary and must be deleted
@@ -87,13 +90,13 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	if req.GetTemp() {
 		postfix += "-temp"
 	}
-	targetDir := dirname.ComposePath(postfix, string(os.PathSeparator))
-	if !dirname.IsCanonical() {
+	targetDir := dirname.ComposePath(postfix, platform.PathSeparator)
+	if !targetDir.IsCanonical() {
 		return nil, status.Error(codes.InvalidArgument, "meta characters in path names are not allowed")
 	}
-	err = plat.CreateDir(targetDir, 0755)
-	if err != nil {
-		return
+	//
+	if err = plat.CreateDir(targetDir, 0755); err != nil {
+		return nil, status.Error(codes.InvalidArgument, "mkdir")
 	}
 	//
 	ftpCtx := new(ftpContext)

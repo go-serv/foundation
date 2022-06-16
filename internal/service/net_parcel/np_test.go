@@ -18,7 +18,7 @@ import (
 
 func init() {
 	ftpResolver := memoize.NewMemoizer(func(...any) (v any, err error) {
-		v = []z.FtpUploadProfileInterface{ftp.NewUploadProfile(".", 10_000, 0755)}
+		v = []z.FtpUploadProfileInterface{ftp.NewUploadProfile("./", 10_000, 0755)}
 		return
 	})
 	runtime.Runtime().AddResolver(z.FtpUploadProfilerResolver, ftpResolver)

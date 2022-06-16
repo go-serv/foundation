@@ -23,7 +23,7 @@ type RuntimeInterface interface {
 	IsResponseMessage(msg proto.Message) (bool, error)
 	RegisterEventHandler(func(eventTyp interface{}))
 	TriggerEvent(eventTyp interface{}, extra ...interface{})
-	// AddResolver adds a value resolver by the given key.
+	// AddResolver adds a value resolver with the given key.
 	AddResolver(key any, resolver MemoizerInterface)
 	// Resolve executes the resolver handler only once and returns a value returned by it.
 	Resolve(key any, args ...any) (any, error)
