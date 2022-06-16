@@ -27,3 +27,7 @@ func (s *service) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 func (s *service) Has(key *protoimpl.ExtensionInfo) bool {
 	return s.extValues.has(key)
 }
+
+func (m *service) Bool(key *protoimpl.ExtensionInfo) bool {
+	return m.extValues.bool(key)
+}

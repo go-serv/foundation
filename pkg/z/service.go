@@ -3,6 +3,7 @@ package z
 import (
 	"crypto/md5"
 	"encoding/binary"
+	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -32,4 +33,10 @@ type NetworkServiceInterface interface {
 
 type LocalServiceInterface interface {
 	ServiceInterface
+}
+
+type FtpUploadProfileInterface interface {
+	BaseDir() platform.Pathname
+	MaxFileSize() int64
+	FilePerms() uint32
 }

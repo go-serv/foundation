@@ -49,3 +49,7 @@ func (m *message) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 func (m *message) Has(key *protoimpl.ExtensionInfo) bool {
 	return m.extValues.has(key)
 }
+
+func (m *message) Bool(key *protoimpl.ExtensionInfo) bool {
+	return m.extValues.bool(key)
+}

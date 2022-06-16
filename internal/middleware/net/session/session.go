@@ -23,9 +23,12 @@ func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, r
 	return
 }
 
-func clientSessionHandler(next z.NetChainElementFn, _ z.NetContextInterface, req z.RequestInterface, res z.ResponseInterface) (err error) {
-	if req.MethodReflection().Has(go_serv.E_RequireSession) {
-
+func clientSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface, res z.ResponseInterface) (err error) {
+	if req.MethodReflection().Bool(go_serv.E_OptionalSession) {
+		clntCtx := ctx.(z.NetClientContextInterface)
+		client := clntCtx.Client()
+		sId := client.Meta().Dictionary().(*net.HttpDictionary).SessionId
+		req.Meta().Dictionary().(*net.HttpDictionary).SessionId = sId
 	}
 	_, err = next(req, res)
 	return

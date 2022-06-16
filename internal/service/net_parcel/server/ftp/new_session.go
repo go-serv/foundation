@@ -31,9 +31,9 @@ func validatePathnames(targetDir platform.Pathname, r *proto.Ftp_NewSession_Requ
 
 func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Request) (res *proto.Ftp_NewSession_Response, err error) {
 	var (
-		sess   z.SessionInterface
-		ftpDir platform.Pathname
-		zfd    platform.FileDescriptor
+		sess     z.SessionInterface
+		profiles []z.FtpUploadProfileInterface
+		zfd      platform.FileDescriptor
 	)
 	plat := runtime.Runtime().Platform()
 	netCtx := ctx.(z.NetServerContextInterface)
@@ -46,30 +46,33 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		sess = session.NewSession(lifetime)
 		netCtx.WithSession(sess)
 	}
-	// If session context is not empty, then user is trying to call the method during the same session several times.
-	// Such calls mut be rejected.
-	sessCtx := sess.Context()
-	if sessCtx != nil {
-		return nil, status.Error(codes.FailedPrecondition, "session context is already set")
+	//
+	if sess.State() != session.New {
+		return nil, status.Error(codes.FailedPrecondition, "file transfer session is already in progress")
 	}
 	//
 	if len(req.GetFiles()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no files to transfer")
 	}
-	// Check if target directory is writable
-	ftpDir, err = netCtx.Server().Resolver().FtpRootDir(nil)
-	if err != nil {
-		return nil, status.Error(codes.FailedPrecondition, "FTP root directory is not set")
+	//
+	profiles, err = netCtx.Server().Resolver().FtpUploadProfiles(nil)
+	if err != nil || len(profiles) == 0 {
+		return nil, status.Error(codes.FailedPrecondition, "no FTP upload profiles")
 	}
+	profileIdx := req.GetUploadProfile()
+	if int(profileIdx) >= len(profiles) {
+		return nil, status.Error(codes.FailedPrecondition, "profile index out of range")
+	}
+	profile := profiles[profileIdx]
 	// Out of space check
-	availableSpace := plat.AvailableDiskSpace(ftpDir)
+	availableSpace := plat.AvailableDiskSpace(profile.BaseDir())
 	if transferTotalSize(req) > availableSpace {
 		return nil, status.Error(codes.FailedPrecondition, "out of disk space")
 	}
 	// Target directory pathname prefix in the format yyyy/mm/dd
 	now := time.Now()
 	day, month, year := now.Day(), now.Month(), now.Year()
-	dirname := ftpDir.ComposePath(fmt.Sprintf("%d", year),
+	dirname := profile.BaseDir().ComposePath(fmt.Sprintf("%d", year),
 		fmt.Sprintf("%2d", month),
 		fmt.Sprintf("%2d", day),
 	)

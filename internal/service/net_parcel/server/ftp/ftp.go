@@ -39,11 +39,19 @@ func (s ftpState) toProtoState() proto.Ftp_TransferState {
 }
 
 type fileRange struct {
-	start, end int64
+	start, end uint64
 }
 
-func (fr fileRange) isValid(data []byte) bool {
-	if fr.start > fr.end || (fr.end-fr.start) != int64(len(data)) {
+func (fileRange) New() []fileRange {
+	return make([]fileRange, 0, 1000) // with the max chunk size of 4Mb must be enough for most cases
+}
+
+func (fr fileRange) Span() uint64 {
+	return fr.end - fr.start
+}
+
+func (fr fileRange) isValid(chunk []byte) bool {
+	if fr.start > fr.end || fr.Span() != uint64(len(chunk)) {
 		return false
 	} else {
 		return true
@@ -62,14 +70,15 @@ func (fr fileRange) intersects(ranges []fileRange) bool {
 	return false
 }
 
-func (fr fileRange) spans(fileSize int64, ranges []fileRange) bool {
+func (fr fileRange) spans(fileSize uint64, ranges []fileRange) bool {
 	var (
-		totalSpan int64
+		totalSpan uint64
 	)
-	r := append(ranges, fr)
-	for i := 0; i < len(r); i++ {
-		totalSpan += r[i].end - r[i].start
+	n := len(ranges)
+	for i := 0; i < n; i++ {
+		totalSpan += ranges[i].Span()
 	}
+	totalSpan += fr.Span()
 	return totalSpan == fileSize
 }
 
@@ -84,4 +93,22 @@ type fileMap map[fileHandle]*fileMapItem
 type ftpContext struct {
 	state ftpState
 	files fileMap
+}
+
+type uploadProfile struct {
+	maxFileSize int64
+	filePerms   uint32
+	baseDir     platform.Pathname
+}
+
+func (prof uploadProfile) BaseDir() platform.Pathname {
+	return prof.baseDir
+}
+
+func (prof uploadProfile) MaxFileSize() int64 {
+	return prof.maxFileSize
+}
+
+func (prof uploadProfile) FilePerms() uint32 {
+	return prof.filePerms
 }

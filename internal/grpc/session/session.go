@@ -5,14 +5,12 @@ import (
 	"sync"
 )
 
-type state int
-
 const (
-	New          state = iota + 1
-	Active             // session context was set
-	Invalidated        // something went wrong, a subject to GC
-	Completed          // no more calls will be handled by the given session
-	ExpiredState       // marked as expired by the session manager goroutine
+	New          z.SessionState = iota + 1
+	Active                      // session context was set
+	Invalidated                 // something went wrong, a subject to GC
+	Completed                   // no more calls will be handled by the given session
+	ExpiredState                // marked as expired by the session manager goroutine
 )
 
 var sessionMap = sync.Map{}
@@ -26,8 +24,8 @@ func FindById(key z.SessionId) *session {
 }
 
 type session struct {
-	id z.SessionId
-	state
+	id        z.SessionId
+	state     z.SessionState
 	startedAt int64
 	expireAt  int64
 	encKey    []byte
@@ -39,7 +37,7 @@ func (s *session) Id() z.SessionId {
 	return s.id
 }
 
-func (s *session) State() state {
+func (s *session) State() z.SessionState {
 	return s.state
 }
 

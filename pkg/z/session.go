@@ -1,10 +1,13 @@
 package z
 
 type (
-	OnGCFn func()
+	OnGCFn       func()
+	SessionState int
 )
+
 type SessionInterface interface {
 	Id() SessionId
+	State() SessionState
 	Nonce() []byte
 	WithNonce([]byte)
 	EncKey() []byte

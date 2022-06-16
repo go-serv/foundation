@@ -10,7 +10,7 @@ import (
 
 func (FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Request) (res *proto.Ftp_FileChunk_Response, err error) {
 	var (
-		start, end int64
+		start, end uint64
 		sess       z.SessionInterface
 	)
 	netCtx := ctx.(z.NetServerContextInterface)
@@ -27,24 +27,24 @@ func (FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Request
 	}
 	//
 	item := transferCtx.files[h]
-	start = req.GetRange().GetStart()
+	start = uint64(req.GetRange().GetStart())
 	chunk := req.GetBody()
 	if req.GetRange().End > 0 {
-		end = req.GetRange().GetEnd()
+		end = uint64(req.GetRange().GetEnd())
 	} else {
-		end = start + int64(len(chunk))
+		end = start + uint64(len(chunk))
 	}
 	//
 	fr := fileRange{start, end}
 	if !fr.isValid(chunk) || fr.intersects(item.transferred) {
 		return nil, status.Error(codes.InvalidArgument, "invalid file range")
 	}
-	_, err = item.zfd.WriteAt(chunk, start)
+	_, err = item.zfd.WriteAt(chunk, int64(start))
 	if err != nil {
 		return
 	}
 	// Check if file transferring is completed.
-	if fr.spans(int64(item.info.Size), item.transferred) {
+	if fr.spans(item.info.Size, item.transferred) {
 		transferCtx.state = CompletedState
 	}
 	item.transferred = append(item.transferred, fr)

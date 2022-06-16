@@ -90,3 +90,7 @@ func (m *method) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 func (m *method) Has(key *protoimpl.ExtensionInfo) bool {
 	return m.extValues.has(key)
 }
+
+func (m *method) Bool(key *protoimpl.ExtensionInfo) bool {
+	return m.extValues.bool(key)
+}

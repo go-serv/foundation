@@ -11,14 +11,16 @@ extend google.protobuf.ServiceOptions {
 
 //
 extend google.protobuf.MethodOptions {
-  // Open a new session with specified session lifetime in seconds
-  int32 new_insecure_session = 60103;
+  // Open a new session with the specified session lifetime in seconds
+  int32 new_insecure_session = 60100;
+  // If set to true a session ID must be provided.
+  bool require_session = 60101;
+  // If set to true a session either was created before with NetParcel.SecureSession or will be created during the call
+  bool optional_session = 60102;
   // Ask server to close an opened session
-  bool close_session = 60104;
+  bool close_session = 60103;
   //
-  bool require_session = 60105;
-
-  bool copy_meta_off = 60106;
+  bool copy_meta_off = 60110;
 }
 
 extend google.protobuf.MessageOptions {

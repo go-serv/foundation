@@ -18,6 +18,7 @@ type ReflectInterface interface {
 type ReflectAccessor interface {
 	Get(key *protoimpl.ExtensionInfo) (interface{}, bool)
 	Has(key *protoimpl.ExtensionInfo) bool
+	Bool(key *protoimpl.ExtensionInfo) bool
 }
 
 type ServiceReflectInterface interface {

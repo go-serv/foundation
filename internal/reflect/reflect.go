@@ -128,3 +128,14 @@ func (m extValueMap) has(key *protoimpl.ExtensionInfo) bool {
 	}
 	return false
 }
+
+func (m extValueMap) bool(key *protoimpl.ExtensionInfo) bool {
+	v, has := m.get(key)
+	if !has {
+		return false
+	}
+	if _, isBool := v.(bool); !isBool {
+		panic(fmt.Sprintf("proto extension %s has no boolean type", key.TypeDescriptor().FullName()))
+	}
+	return v.(bool)
+}

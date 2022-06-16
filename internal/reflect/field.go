@@ -27,3 +27,7 @@ func (f *field) Get(key *protoimpl.ExtensionInfo) (interface{}, bool) {
 func (f *field) Has(key *protoimpl.ExtensionInfo) bool {
 	return f.extValues.has(key)
 }
+
+func (m *field) Bool(key *protoimpl.ExtensionInfo) bool {
+	return m.extValues.bool(key)
+}
