@@ -19,7 +19,7 @@ type (
 )
 
 type (
-	resolversMapTyp map[any]z.ResolverInterface
+	resolversMapTyp map[any]z.MemoizerInterface
 	eventsMapTyp    map[interface{}][]eventHandlerFn
 	eventHandlerFn  func(...interface{}) bool
 )
@@ -57,7 +57,7 @@ func (r *runtime) Reflection() z.ReflectInterface {
 	return r.ref
 }
 
-func (r *runtime) AddResolver(key any, resolver z.ResolverInterface) {
+func (r *runtime) AddResolver(key any, resolver z.MemoizerInterface) {
 	r.resolvers[key] = resolver
 }
 

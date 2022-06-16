@@ -17,3 +17,7 @@ type DictionaryInterface interface {
 	Hydrate(target interface{}) error
 	Dehydrate(target interface{}) error
 }
+
+type MemoizerInterface interface {
+	Run(args ...any) (v any, err error)
+}
