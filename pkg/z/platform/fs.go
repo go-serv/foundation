@@ -23,8 +23,12 @@ func (p Pathname) IsCanonical() bool {
 
 func (p Pathname) ComposePath(parts ...string) Pathname {
 	var v string
-	path := string(p)
+	path := strings.TrimRight(p.String(), PathSeparator) + PathSeparator
 	for i := 0; i < len(parts); i++ {
+		if parts[i] == PathSeparator {
+			path += PathSeparator
+			continue
+		}
 		v = strings.TrimRight(parts[i], PathSeparator)
 		v = strings.TrimLeft(v, PathSeparator)
 		if i < len(parts)-1 {

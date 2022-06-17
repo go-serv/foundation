@@ -9,8 +9,9 @@ import (
 type FtpImpl struct{}
 
 type (
-	ftpState   int
-	fileHandle z.UniqueId
+	rootDirPostfixFn func() platform.Pathname
+	ftpState         int
+	fileHandle       z.UniqueId
 )
 
 const (
@@ -96,13 +97,14 @@ type ftpContext struct {
 }
 
 type uploadProfile struct {
-	maxFileSize int64
-	filePerms   uint32
-	baseDir     platform.Pathname
+	maxFileSize      int64
+	filePerms        uint32
+	rootDir          platform.Pathname
+	rootDirPostfixFn rootDirPostfixFn
 }
 
-func (prof uploadProfile) BaseDir() platform.Pathname {
-	return prof.baseDir
+func (prof uploadProfile) RootDir() platform.Pathname {
+	return prof.rootDir.ComposePath(prof.rootDirPostfixFn().String())
 }
 
 func (prof uploadProfile) MaxFileSize() int64 {

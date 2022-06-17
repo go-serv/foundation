@@ -2,7 +2,6 @@ package ftp
 
 import (
 	"context"
-	"fmt"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/internal/grpc/session"
 	"github.com/go-serv/service/internal/runtime"
@@ -11,7 +10,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"strconv"
-	"time"
 )
 
 func transferTotalSize(r *proto.Ftp_NewSession_Request) uint64 {
@@ -65,19 +63,12 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	}
 	profile := profiles[profileIdx]
 	// Out of space check
-	availableSpace := plat.AvailableDiskSpace(profile.BaseDir())
+	availableSpace := plat.AvailableDiskSpace(profile.RootDir())
 	if transferTotalSize(req) > availableSpace {
 		return nil, status.Error(codes.FailedPrecondition, "out of disk space")
 	}
-	// Compose a pathname prefix of the target directory in the format /yyyy/mm/dd/hh
-	now := time.Now()
-	hour, day, month, year := now.Hour(), now.Day(), now.Month(), now.Year()
-	dirname := profile.BaseDir().ComposePath(fmt.Sprintf("%d", year),
-		fmt.Sprintf("%.2d", month),
-		fmt.Sprintf("%.2d", day),
-		fmt.Sprintf("%.2d", hour),
-		platform.PathSeparator,
-	)
+	//
+	dirname := profile.RootDir()
 	if !plat.DirectoryExists(dirname) {
 		if err = plat.CreateDir(dirname, profile.FilePerms()); err != nil {
 			return nil, status.Error(codes.FailedPrecondition, "fs: failed to create directory")
