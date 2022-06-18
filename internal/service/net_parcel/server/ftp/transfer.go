@@ -10,7 +10,7 @@ import (
 
 func (FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Request) (res *proto.Ftp_FileChunk_Response, err error) {
 	var (
-		start, end uint64
+		start, end int64
 		sess       z.SessionInterface
 	)
 	netCtx := ctx.(z.NetServerContextInterface)
@@ -27,12 +27,12 @@ func (FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Request
 	}
 	//
 	item := transferCtx.files[h]
-	start = uint64(req.GetRange().GetStart())
+	start = req.GetRange().GetStart()
 	chunk := req.GetBody()
 	if req.GetRange().End > 0 {
-		end = uint64(req.GetRange().GetEnd())
+		end = req.GetRange().GetEnd()
 	} else {
-		end = start + uint64(len(chunk))
+		end = start + int64(len(chunk))
 	}
 	//
 	fr := fileRange{start, end}

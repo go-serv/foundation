@@ -91,9 +91,10 @@ func TestSecureSession(t *testing.T) {
 			}
 			// Start an FTP session
 			ftpNewSessReq := &net.Ftp_NewSession_Request{}
-			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Pathname: "file1.bin", Size: 1200})
+			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Filename: "file1.bin", Size: 1200})
 			ftpNewSessRes, err = cc.FtpNewSession(ctx, ftpNewSessReq)
 			task.Assert(err)
+
 			//
 			_ = ftpNewSessRes
 			task.Done()

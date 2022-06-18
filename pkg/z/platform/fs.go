@@ -6,7 +6,8 @@ import (
 )
 
 type (
-	Pathname string
+	Pathname  string
+	UnixPerms uint32
 )
 
 var (
@@ -45,11 +46,12 @@ type FileDescriptor struct {
 
 type FilesystemInterface interface {
 	OpenFile(p Pathname, flags int, mode os.FileMode) (FileDescriptor, error)
+	//WriteFile(fd FileDescriptor, offset uint64, data []byte) error
 	CloseFile(FileDescriptor)
-	CreateZeroFile(p Pathname, size int64, perm uint32) (FileDescriptor, error)
+	CreateZeroFile(p Pathname, size int64, perm UnixPerms) (FileDescriptor, error)
 	//LockFile(*FileDescriptor) error
 	//UnlockFile(*FileDescriptor)
-	CreateDir(p Pathname, perm uint32) error
+	CreateDir(p Pathname, perms UnixPerms) error
 	DirectoryExists(Pathname) bool
 	RmDir(Pathname) error
 	AvailableDiskSpace(Pathname) uint64

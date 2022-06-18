@@ -8,20 +8,29 @@ import (
 	"sync/atomic"
 )
 
-type fs struct {
+type Filesystem struct {
 	owner          z.UniqueId
-	spaceAllocated int64
+	spaceAllocated uint64
 }
 
-func (f *fs) OpenFile(p pf.Pathname, flags int, mode os.FileMode) (fd pf.FileDescriptor, err error) {
+func (f *Filesystem) OpenFile(p pf.Pathname, flags int, mode os.FileMode) (fd pf.FileDescriptor, err error) {
 	return
 }
 
-func (f *fs) CreateZeroFile(p pf.Pathname, size int64, perm uint32) (fd pf.FileDescriptor, err error) {
+func (f *Filesystem) WriteFile(fd pf.FileDescriptor, offset int64, data []byte) (err error) {
+	var n int
+	if n, err = fd.WriteAt(data, offset); err != nil {
+		return
+	}
+	atomic.AddUint64(&f.spaceAllocated, uint64(n))
+	return
+}
+
+func (f *Filesystem) CreateZeroFile(p pf.Pathname, size int64, perms pf.UnixPerms) (fd pf.FileDescriptor, err error) {
 	var (
 		file *os.File
 	)
-	file, err = os.OpenFile(p.String(), os.O_CREATE|os.O_RDWR, os.FileMode(perm))
+	file, err = os.OpenFile(p.String(), os.O_CREATE|os.O_RDWR, os.FileMode(perms))
 	if err != nil {
 		return
 	}
@@ -31,28 +40,28 @@ func (f *fs) CreateZeroFile(p pf.Pathname, size int64, perm uint32) (fd pf.FileD
 	}
 	fd = pf.FileDescriptor{}
 	fd.File = file
-	atomic.AddInt64(&f.spaceAllocated, size)
+	atomic.AddUint64(&f.spaceAllocated, uint64(size))
 	return
 }
 
-func (f *fs) CloseFile(pf.FileDescriptor) {
+func (f *Filesystem) CloseFile(pf.FileDescriptor) {
 
 }
 
-func (f *fs) DirectoryExists(path pf.Pathname) bool {
+func (f *Filesystem) DirectoryExists(path pf.Pathname) bool {
 	_, err := os.Stat(path.String())
 	return !errors.Is(err, os.ErrNotExist)
 }
 
-func (f *fs) CreateDir(path pf.Pathname, perm uint32) (err error) {
-	err = os.MkdirAll(path.String(), os.FileMode(perm))
+func (f *Filesystem) CreateDir(path pf.Pathname, perms pf.UnixPerms) (err error) {
+	err = os.MkdirAll(path.String(), os.FileMode(perms))
 	return
 }
 
-func (f *fs) RmDir(pf.Pathname) (err error) {
+func (f *Filesystem) RmDir(pf.Pathname) (err error) {
 	return
 }
 
-func (f *fs) AvailableDiskSpace(p pf.Pathname) uint64 {
+func (f *Filesystem) AvailableDiskSpace(p pf.Pathname) uint64 {
 	return 0
 }

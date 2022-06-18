@@ -34,5 +34,5 @@ type LocalServiceInterface interface {
 type FtpUploadProfileInterface interface {
 	RootDir() platform.Pathname
 	MaxFileSize() int64
-	FilePerms() uint32
+	FilePerms() platform.UnixPerms
 }

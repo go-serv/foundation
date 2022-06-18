@@ -40,19 +40,19 @@ func (s ftpState) toProtoState() proto.Ftp_TransferState {
 }
 
 type fileRange struct {
-	start, end uint64
+	start, end int64
 }
 
 func (fileRange) New() []fileRange {
 	return make([]fileRange, 0, 1000) // with the max chunk size of 4Mb must be enough for most cases
 }
 
-func (fr fileRange) Span() uint64 {
+func (fr fileRange) Span() int64 {
 	return fr.end - fr.start
 }
 
 func (fr fileRange) isValid(chunk []byte) bool {
-	if fr.start > fr.end || fr.Span() != uint64(len(chunk)) {
+	if fr.start > fr.end || fr.Span() != int64(len(chunk)) {
 		return false
 	} else {
 		return true
@@ -71,9 +71,9 @@ func (fr fileRange) intersects(ranges []fileRange) bool {
 	return false
 }
 
-func (fr fileRange) spans(fileSize uint64, ranges []fileRange) bool {
+func (fr fileRange) spans(fileSize int64, ranges []fileRange) bool {
 	var (
-		totalSpan uint64
+		totalSpan int64
 	)
 	n := len(ranges)
 	for i := 0; i < n; i++ {
@@ -98,7 +98,7 @@ type ftpContext struct {
 
 type uploadProfile struct {
 	maxFileSize      int64
-	filePerms        uint32
+	filePerms        platform.UnixPerms
 	rootDir          platform.Pathname
 	rootDirPostfixFn rootDirPostfixFn
 }
@@ -111,6 +111,6 @@ func (prof uploadProfile) MaxFileSize() int64 {
 	return prof.maxFileSize
 }
 
-func (prof uploadProfile) FilePerms() uint32 {
+func (prof uploadProfile) FilePerms() platform.UnixPerms {
 	return prof.filePerms
 }

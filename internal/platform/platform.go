@@ -1,5 +1,5 @@
 package platform
 
 type platform struct {
-	fs
+	Filesystem
 }

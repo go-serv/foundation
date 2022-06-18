@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func NewUploadProfile(rootDir platform.Pathname, maxSize int64, perms uint32) *uploadProfile {
+func NewUploadProfile(rootDir platform.Pathname, maxSize int64, perms platform.UnixPerms) *uploadProfile {
 	prof := new(uploadProfile)
 	prof.rootDir = rootDir
 	prof.maxFileSize = maxSize

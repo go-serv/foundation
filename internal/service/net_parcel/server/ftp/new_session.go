@@ -16,15 +16,15 @@ func transferTotalSize(r *proto.Ftp_NewSession_Request) uint64 {
 	return 0
 }
 
-func validatePathnames(targetDir platform.Pathname, r *proto.Ftp_NewSession_Request) bool {
-	for _, info := range r.GetFiles() {
-		p := targetDir.ComposePath(info.GetPathname())
-		if !p.IsCanonical() {
-			return false
-		}
-	}
-	return true
-}
+//func validatePathnames(targetDir platform.Pathname, r *proto.Ftp_NewSession_Request) bool {
+//	for _, info := range r.GetFiles() {
+//		p := targetDir.ComposePath(info.GetPathname())
+//		if !p.IsCanonical() {
+//			return false
+//		}
+//	}
+//	return true
+//}
 
 func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Request) (res *proto.Ftp_NewSession_Response, err error) {
 	var (
@@ -101,8 +101,8 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		fd.Info = info
 		res.Descriptors = append(res.Descriptors, fd)
 		//
-		zfpath := targetDir.ComposePath(info.GetPathname())
-		zfd, err = plat.CreateZeroFile(zfpath, int64(info.Size), 0755)
+		zfpath := targetDir.ComposePath(info.GetFilename())
+		zfd, err = plat.CreateZeroFile(zfpath, int64(info.Size), profile.FilePerms())
 		if err != nil {
 			return nil, status.Error(codes.FailedPrecondition, "failed to create file")
 		}

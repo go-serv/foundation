@@ -11,17 +11,24 @@ message Ftp {
     SUSPENDED = 3;
     FAILED = 4;
   }
+  enum PostProcessing {
+    UNTAR = 0;
+    GZIP_DECOMPRESS_UNTAR = 1;
+    BZIP2_DECOMPRESS_UNTAR = 2;
+  }
   message FileInfo {
-    // A relative to the target dir pathname of file to transfer.
-    string pathname = 1;
+    //
+    string filename = 1;
     // File size.
-    uint64 size = 2;
+    int64 size = 2;
     // Original filename.
     string original_filename = 3;
     // Absolute pathname of the file on client side, optional for the Web browser clients.
     optional string abs_pathname = 4;
     // File MIME type. Empty if can't be determined.
     optional string mime_type = 5;
+    //
+    optional PostProcessing post_process = 6;
   }
   //
   message FileDescriptor {
@@ -30,8 +37,8 @@ message Ftp {
   }
   //
   message FileRange {
-    uint64 start = 1;
-    uint64 end = 2;
+    int64 start = 1;
+    int64 end = 2;
   }
   //
   message NewSession {
