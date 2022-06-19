@@ -9,6 +9,7 @@ import (
 	net_srv "github.com/go-serv/service/internal/server/net"
 	np_client "github.com/go-serv/service/internal/service/net_parcel/client"
 	"github.com/go-serv/service/internal/service/net_parcel/server/ftp"
+	"github.com/go-serv/service/pkg/y/netparcel"
 	"github.com/go-serv/service/pkg/z"
 	"testing"
 	"time"
@@ -78,7 +79,7 @@ func TestSecureSession(t *testing.T) {
 	getNonceTask := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		const nonceLen = 32
 		run := func(task job.TaskInterface) {
-			cc := j.GetValue().(np_client.NetParcelClientInterface)
+			cc := j.GetValue().(netparcel.NetParcelClientInterface)
 			req := &net.Session_Request{}
 			req.NonceLength = nonceLen
 			secSessRes, err = cc.SecureSession(req)
