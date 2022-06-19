@@ -1,6 +1,19 @@
 package z
 
-import "reflect"
+import (
+	"io"
+	"reflect"
+)
+
+type NetReaderInterface interface {
+	ReadString() (string, error)
+}
+
+type NetWriterInterface interface {
+	io.WriteCloser
+	WriteString(string) error
+	Bytes() []byte
+}
 
 type (
 	DictionaryTypeHandlerFn func(op DictionaryOp, name, alias string, value reflect.Value)

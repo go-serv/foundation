@@ -20,7 +20,7 @@ type client struct {
 	stubs net.NetParcelClient
 }
 
-func (c *client) NewClient(cc grpc.ClientConnInterface) {
+func (c *client) OnConnect(cc grpc.ClientConnInterface) {
 	c.stubs = net.NewNetParcelClient(cc)
 	c.MaxChunkSize = z.GrpcMaxMessageSize
 	c.SecureSessionOptions.c = c

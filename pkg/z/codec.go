@@ -1,7 +1,7 @@
 package z
 
 import (
-	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/ancillary/net"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"
@@ -14,8 +14,8 @@ func (f HeaderFlags32Type) Has(chkFlag HeaderFlags32Type) bool {
 }
 
 type DataFrameInterface interface {
-	Parse([]byte, func(netr *ancillary.NetReader) error) error
-	ParseHook(*ancillary.NetReader) error
+	Parse([]byte, func(netr *net.NetReader) error) error
+	ParseHook(*net.NetReader) error
 	HeaderFlags() HeaderFlags32Type
 	WithHeaderFlag(HeaderFlags32Type)
 	Compose(header []byte) ([]byte, error)

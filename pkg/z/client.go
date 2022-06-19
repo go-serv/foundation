@@ -12,7 +12,7 @@ type ClientInterface interface {
 	ServiceName() protoreflect.FullName
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
-	NewClient(cc grpc.ClientConnInterface)
+	OnConnect(cc grpc.ClientConnInterface)
 	WithDialOption(grpc.DialOption)
 	DialOptions() []grpc.DialOption
 	Meta() MetaInterface

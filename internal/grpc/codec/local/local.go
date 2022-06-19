@@ -1,45 +1,45 @@
 package net
 
 import (
-	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/ancillary/net"
 	cc "github.com/go-serv/service/internal/grpc/codec"
+	"github.com/go-serv/service/pkg/z"
 )
 
 const (
-	SharedMem_IPC i.HeaderFlags32Type = 1 << iota
+	SharedMem_IPC z.HeaderFlags32Type = 1 << iota
 )
 
 type codec struct {
-	i.CodecInterface
+	z.CodecInterface
 }
 
 type dataFrame struct {
-	i.DataFrameInterface
+	z.DataFrameInterface
 	shmObjName   string
 	shmBlockSize uint32
 	shmDataSize  uint32
 }
 
-func (c *codec) NewDataFrame() i.DataFrameInterface {
+func (c *codec) NewDataFrame() z.DataFrameInterface {
 	df := new(dataFrame)
 	df.DataFrameInterface = cc.NewDataFrame()
 	return df
 }
 
-func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) error {
-	return df.DataFrameInterface.Parse(b, func(netr *ancillary.NetReader) (err error) {
+func (df *dataFrame) Parse(b []byte, hook func(*net.NetReader) error) error {
+	return df.DataFrameInterface.Parse(b, func(netr *net.NetReader) (err error) {
 		// Do nothing unless the shared memory IPC flag is set
 		if df.HeaderFlags().Has(SharedMem_IPC) {
 			df.shmObjName, err = netr.ReadString()
 			if err != nil {
 				return
 			}
-			df.shmBlockSize, err = ancillary.GenericNetReader[uint32](netr)
+			df.shmBlockSize, err = net.GenericNetReader[uint32](netr)
 			if err != nil {
 				return
 			}
-			df.shmDataSize, err = ancillary.GenericNetReader[uint32](netr)
+			df.shmDataSize, err = net.GenericNetReader[uint32](netr)
 			if err != nil {
 				return
 			}
@@ -51,13 +51,13 @@ func (df *dataFrame) Parse(b []byte, hook func(*ancillary.NetReader) error) erro
 func (df *dataFrame) Compose([]byte) (out []byte, err error) {
 	var header []byte
 	if df.HeaderFlags().Has(SharedMem_IPC) {
-		netw := ancillary.NewNetWriter()
+		netw := net.NewWriter()
 		netw.WriteString(df.shmObjName)
-		err = ancillary.GenericNetWriter[uint32](netw, df.shmBlockSize)
+		err = net.GenericNetWriter[uint32](netw, df.shmBlockSize)
 		if err != nil {
 			return
 		}
-		err = ancillary.GenericNetWriter[uint32](netw, df.shmDataSize)
+		err = net.GenericNetWriter[uint32](netw, df.shmDataSize)
 		if err != nil {
 			return
 		}

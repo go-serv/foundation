@@ -1,8 +1,9 @@
-package ancillary
+package net
 
 import (
 	"bytes"
 	"encoding/binary"
+	"github.com/go-serv/service/internal/ancillary"
 	"io"
 	"reflect"
 )
@@ -33,7 +34,7 @@ func (r *NetReader) ReadString() (string, error) {
 		return "", err
 	}
 	if sl > uint32(len(r.buf)) {
-		return "", Error_IO_OutOfRange
+		return "", ancillary.Error_IO_OutOfRange
 	} else {
 		s := make([]byte, sl)
 		r.offset += int(sl)
@@ -45,7 +46,7 @@ func (r *NetReader) ReadString() (string, error) {
 
 func (r *NetReader) ReadBytes(n int) ([]byte, error) {
 	if n > len(r.buf) {
-		return nil, Error_IO_OutOfRange
+		return nil, ancillary.Error_IO_OutOfRange
 	} else {
 		out := r.buf[0:n]
 		r.buf = r.buf[n:]

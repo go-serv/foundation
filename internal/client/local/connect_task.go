@@ -18,7 +18,7 @@ func (c *localClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fi
 		//addr := "@/tmp/." + c.Endpoint().Address()
 		conn, err := grpc.Dial(addr, c.DialOptions()...)
 		task.Assert(err)
-		v.(z.ClientInterface).NewClient(conn)
+		v.(z.ClientInterface).OnConnect(conn)
 		task.Done()
 	}
 	return init, run, nil

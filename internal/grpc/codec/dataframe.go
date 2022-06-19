@@ -2,7 +2,7 @@ package codec
 
 import (
 	"bytes"
-	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/ancillary/net"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,22 +19,22 @@ var (
 type dataFrame struct {
 	hdrFlags z.HeaderFlags32Type
 	payload  []byte
-	netw     *ancillary.NetWriter
-	netr     *ancillary.NetReader
+	netw     *net.NetWriter
+	netr     *net.NetReader
 }
 
 func (df *dataFrame) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func (df *dataFrame) ParseHook(*ancillary.NetReader) error {
+func (df *dataFrame) ParseHook(*net.NetReader) error {
 	return nil
 }
 
-func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) error) error {
+func (df *dataFrame) Parse(b []byte, hookFn func(netr *net.NetReader) error) error {
 	// Check for header magic word
 	{
-		df.netr = ancillary.NewNetReader(b)
+		df.netr = net.NewReader(b)
 		hdr, err := df.netr.ReadBytes(magicWordLen)
 		if err != nil {
 			return errorHeaderParserFailed
@@ -45,7 +45,7 @@ func (df *dataFrame) Parse(b []byte, hookFn func(netr *ancillary.NetReader) erro
 	}
 	// Store 32-bit header flags
 	{
-		flags, err := ancillary.GenericNetReader[uint32](df.netr)
+		flags, err := net.GenericNetReader[uint32](df.netr)
 		if err != nil {
 			return errorHeaderParserFailed
 		}
@@ -85,7 +85,7 @@ func (df *dataFrame) Compose(header []byte) (out []byte, err error) {
 		return
 	}
 	// Header
-	if err = ancillary.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
+	if err = net.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
 		return
 	}
 	// Write header data

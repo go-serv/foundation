@@ -67,7 +67,7 @@ func (c *client) DialOptions() []grpc.DialOption {
 	return c.dialOpts
 }
 
-func (c *client) NewClient(cc grpc.ClientConnInterface) {
+func (c *client) OnConnect(cc grpc.ClientConnInterface) {
 	c.MethodMustBeImplemented.Panic()
 }
 

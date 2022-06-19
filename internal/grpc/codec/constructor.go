@@ -1,12 +1,12 @@
 package codec
 
 import (
-	"github.com/go-serv/service/internal/ancillary"
+	"github.com/go-serv/service/internal/ancillary/net"
 )
 
 func NewDataFrame() *dataFrame {
 	df := new(dataFrame)
-	df.netw = ancillary.NewNetWriter()
+	df.netw = net.NewWriter()
 	return df
 }
 
