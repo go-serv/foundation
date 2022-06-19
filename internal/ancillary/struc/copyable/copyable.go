@@ -2,9 +2,9 @@ package copyable
 
 import "reflect"
 
-type Copyable struct{}
+type Shallow struct{}
 
-func (Copyable) Merge(dst any, src any) {
+func (Shallow) Merge(dst any, src any) {
 	dstv := reflect.Indirect(reflect.ValueOf(dst))
 	srcv := reflect.Indirect(reflect.ValueOf(src))
 	if dstv.Type() != srcv.Type() {

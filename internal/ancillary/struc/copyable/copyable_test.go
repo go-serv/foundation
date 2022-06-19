@@ -3,7 +3,7 @@ package copyable
 import "testing"
 
 type A struct {
-	Copyable
+	Shallow
 	One     string
 	Num     int
 	BoolVal bool
@@ -20,7 +20,7 @@ func TestMerge(t *testing.T) {
 	b := &A{}
 	b.Num = 1
 	b.BoolVal = true
-	Copyable{}.Merge(a, b)
+	Shallow{}.Merge(a, b)
 	if !a.BoolVal || a.One != "one" || a.Num != 1 {
 		t.Fatal("merge failed")
 	}
@@ -33,5 +33,5 @@ func TestWrongType(t *testing.T) {
 		}
 	}()
 	a := &A{}
-	Copyable{}.Merge(a, struct{ a int }{0})
+	Shallow{}.Merge(a, struct{ a int }{0})
 }

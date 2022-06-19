@@ -12,8 +12,8 @@ func NewClient(e z.EndpointInterface) *client {
 	return c
 }
 
-func NewClientJob(e z.EndpointInterface) job.JobInterface {
-	c := NewClient(e)
+func NewClientJob(endpoint z.EndpointInterface) job.JobInterface {
+	c := NewClient(endpoint)
 	cj := job.NewJob(c)
 	cj.AddOneshotTask(c.ConnectTask)
 	return cj

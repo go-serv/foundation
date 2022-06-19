@@ -1,11 +1,54 @@
 package client
 
 import (
-	"context"
+	"github.com/go-serv/service/internal/ancillary/struc/copyable"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"google.golang.org/grpc"
+	"github.com/go-serv/service/internal/grpc/call"
+	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/service/pkg/z/platform"
+	"io"
+	"os"
 )
 
-func (c *client) FtpTransfer(ctx context.Context, in *proto.Ftp_FileChunk_Request, opts ...grpc.CallOption) (*proto.Ftp_FileChunk_Response, error) {
-	return c.stubs.FtpTransfer(ctx, in)
+type FtpTransferOptions struct {
+	copyable.Shallow
+	call.NetOptions
+	c              *client
+	MaxChunkSize   int
+	BandwidthLimit int
+}
+
+func (f FtpTransferOptions) FtpTransferFileByPathname(path platform.Pathname) (err error) {
+	var (
+		file *os.File
+	)
+	if file, err = os.OpenFile(path.String(), os.O_RDONLY, os.FileMode(0444)); err != nil {
+		return
+	}
+	return f.FtpTransferFile(file)
+}
+
+func (f FtpTransferOptions) FtpTransferFile(reader io.Reader) (err error) {
+	var (
+		nRead, off int
+	)
+	buf := make([]byte, 0, z.GrpcMaxMessageSize)
+	for {
+		nRead, err = reader.Read(buf)
+		switch err {
+		case io.EOF:
+			break
+		case nil:
+			req := &proto.Ftp_FileChunk_Request{}
+			req.Body = buf[0:nRead]
+			req.Range = &proto.Ftp_FileRange{Start: int64(off), End: int64(off + nRead)}
+			if _, err = f.c.stubs.FtpTransfer(f.PrepareContext(), req); err != nil {
+				return
+			}
+			off += nRead
+		default:
+			return
+		}
+	}
+	return
 }

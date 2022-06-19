@@ -1,11 +1,18 @@
 package client
 
 import (
-	"context"
+	"github.com/go-serv/service/internal/ancillary/struc/copyable"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"google.golang.org/grpc"
+	"github.com/go-serv/service/internal/grpc/call"
 )
 
-func (c *client) FtpNewSession(ctx context.Context, in *proto.Ftp_NewSession_Request, opts ...grpc.CallOption) (*proto.Ftp_NewSession_Response, error) {
-	return c.stubs.FtpNewSession(ctx, in)
+type FtpNewSessionOptions struct {
+	copyable.Shallow
+	call.NetOptions
+	c *client
+}
+
+func (f FtpNewSessionOptions) FtpNewSession(in *proto.Ftp_NewSession_Request) (*proto.Ftp_NewSession_Response, error) {
+	ctx := f.PrepareContext()
+	return f.c.stubs.FtpNewSession(ctx, in)
 }

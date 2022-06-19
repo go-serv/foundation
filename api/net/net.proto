@@ -9,7 +9,7 @@ package go_serv.net;
 service NetParcel {
   // Creates a new session
   rpc SecureSession(Session.Request) returns (Session.Response) { }
-  //
+  //..
   rpc FtpNewSession(Ftp.NewSession.Request) returns (Ftp.NewSession.Response) {
     option (.go_serv.optional_session) = true;
   }

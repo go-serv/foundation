@@ -1,11 +1,9 @@
 package net_parcel
 
 import (
-	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/service/internal/ancillary/memoize"
 	"github.com/go-serv/service/internal/autogen/proto/net"
-	net_ctx "github.com/go-serv/service/internal/grpc/context/net"
 	"github.com/go-serv/service/internal/runtime"
 	srv "github.com/go-serv/service/internal/server"
 	net_srv "github.com/go-serv/service/internal/server/net"
@@ -80,11 +78,10 @@ func TestSecureSession(t *testing.T) {
 	getNonceTask := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		const nonceLen = 32
 		run := func(task job.TaskInterface) {
-			cc := j.GetValue().(net.NetParcelClient)
+			cc := j.GetValue().(np_client.NetParcelClientInterface)
 			req := &net.Session_Request{}
 			req.NonceLength = nonceLen
-			ctx := net_ctx.NewClientContext(context.Background())
-			secSessRes, err = cc.SecureSession(ctx, req)
+			secSessRes, err = cc.SecureSession(req)
 			task.Assert(err)
 			if len(secSessRes.GetNonce()) != nonceLen {
 				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(secSessRes.GetNonce()))
@@ -92,9 +89,8 @@ func TestSecureSession(t *testing.T) {
 			// Start an FTP session
 			ftpNewSessReq := &net.Ftp_NewSession_Request{}
 			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Filename: "file1.bin", Size: 1200})
-			ftpNewSessRes, err = cc.FtpNewSession(ctx, ftpNewSessReq)
+			ftpNewSessRes, err = cc.FtpNewSession(ftpNewSessReq)
 			task.Assert(err)
-
 			//
 			_ = ftpNewSessRes
 			task.Done()

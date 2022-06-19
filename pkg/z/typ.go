@@ -26,3 +26,13 @@ const (
 	MiB
 	GiB
 )
+
+const (
+	KB = 1000
+	MB = 1000 * KB
+	GB = 1000 * MB
+)
+
+const (
+	GrpcMaxMessageSize = 4 * MB
+)
