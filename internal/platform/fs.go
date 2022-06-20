@@ -9,28 +9,34 @@ import (
 )
 
 type Filesystem struct {
-	owner          z.UniqueId
-	spaceAllocated uint64
+	owner     z.UniqueId
+	spaceUsed int64
 }
 
 func (f *Filesystem) OpenFile(p pf.Pathname, flags int, mode os.FileMode) (fd pf.FileDescriptor, err error) {
 	return
 }
 
-func (f *Filesystem) WriteFile(fd pf.FileDescriptor, offset int64, data []byte) (err error) {
+func (f *Filesystem) Write(fd *os.File, data []byte) (err error) {
+	var n int
+	if n, err = fd.Write(data); err != nil {
+		return
+	}
+	atomic.AddInt64(&f.spaceUsed, int64(n))
+	return
+}
+
+func (f *Filesystem) WriteAt(fd *os.File, offset int64, data []byte) (err error) {
 	var n int
 	if n, err = fd.WriteAt(data, offset); err != nil {
 		return
 	}
-	atomic.AddUint64(&f.spaceAllocated, uint64(n))
+	atomic.AddInt64(&f.spaceUsed, int64(n))
 	return
 }
 
-func (f *Filesystem) CreateZeroFile(p pf.Pathname, size int64, perms pf.UnixPerms) (fd pf.FileDescriptor, err error) {
-	var (
-		file *os.File
-	)
-	file, err = os.OpenFile(p.String(), os.O_CREATE|os.O_RDWR, os.FileMode(perms))
+func (f *Filesystem) CreateZeroFile(p pf.Pathname, size int64, perms pf.UnixPerms) (fd *os.File, err error) {
+	fd, err = os.OpenFile(p.String(), os.O_CREATE|os.O_RDWR, os.FileMode(perms))
 	if err != nil {
 		return
 	}
@@ -38,9 +44,7 @@ func (f *Filesystem) CreateZeroFile(p pf.Pathname, size int64, perms pf.UnixPerm
 	if err != nil {
 		return
 	}
-	fd = pf.FileDescriptor{}
-	fd.File = file
-	atomic.AddUint64(&f.spaceAllocated, uint64(size))
+	atomic.AddInt64(&f.spaceUsed, int64(size))
 	return
 }
 

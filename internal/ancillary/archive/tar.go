@@ -3,7 +3,6 @@ package archive
 import (
 	"archive/tar"
 	"bytes"
-	"github.com/go-serv/service/pkg/z/platform"
 	"io"
 	"io/fs"
 	"os"
@@ -22,15 +21,15 @@ func (t *ttar) handleHeader(hdr *tar.Header) (err error) {
 	case tar.TypeDir:
 		err = t.fs.CreateDir(pathname, t.fsPerms)
 	case tar.TypeReg:
-		var fd platform.FileDescriptor
-		if fd, err = t.fs.OpenFile(pathname, os.O_CREATE|os.O_WRONLY, os.FileMode(t.fsPerms)); err != nil {
+		var fd *os.File
+		if fd, err = os.OpenFile(pathname.String(), os.O_CREATE|os.O_WRONLY, os.FileMode(t.fsPerms)); err != nil {
 			return
 		}
 		var buf bytes.Buffer
 		if _, err = io.Copy(&buf, t.tarReader); err != nil {
 			return
 		}
-		err = t.fs.WriteFile(fd, 0, buf.Bytes())
+		err = t.fs.Write(fd, buf.Bytes())
 	}
 	return
 }
@@ -44,18 +43,14 @@ func (t *ttar) handleRegularFile(path string, info fs.FileInfo) (err error) {
 		Size: info.Size(),
 		Mode: int64(t.fsPerms),
 	}
-	//
 	if err = t.tarWriter.WriteHeader(hdr); err != nil {
-		return err
+		return
 	}
-	//
-	file, err = os.ReadFile(path)
-	if err != nil {
-		return err
+	if file, err = os.ReadFile(path); err != nil {
+		return
 	}
-	//
 	if _, err = t.tarWriter.Write(file); err != nil {
-		return err
+		return
 	}
 	return
 }
@@ -89,8 +84,6 @@ func (t *ttar) Run() (err error) {
 				return
 			}
 		}
-	default:
-		panic("archive: uninitialized use")
 	}
 	return
 }

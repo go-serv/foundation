@@ -22,6 +22,15 @@ func (p Pathname) IsCanonical() bool {
 	return true
 }
 
+func (p Pathname) FileExists() bool {
+	_, err := os.Stat(p.String())
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
 func (p Pathname) ComposePath(parts ...string) Pathname {
 	var v string
 	path := strings.TrimRight(p.String(), PathSeparator) + PathSeparator
@@ -46,9 +55,10 @@ type FileDescriptor struct {
 
 type FilesystemInterface interface {
 	OpenFile(p Pathname, flags int, mode os.FileMode) (FileDescriptor, error)
-	//WriteFile(fd FileDescriptor, offset uint64, data []byte) error
+	Write(fd *os.File, data []byte) error
+	WriteAt(fd *os.File, off int64, data []byte) error
 	CloseFile(FileDescriptor)
-	CreateZeroFile(p Pathname, size int64, perm UnixPerms) (FileDescriptor, error)
+	CreateZeroFile(p Pathname, size int64, perm UnixPerms) (*os.File, error)
 	//LockFile(*FileDescriptor) error
 	//UnlockFile(*FileDescriptor)
 	CreateDir(p Pathname, perms UnixPerms) error

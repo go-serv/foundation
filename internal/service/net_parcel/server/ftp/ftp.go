@@ -4,6 +4,7 @@ import (
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/pkg/z"
 	"github.com/go-serv/service/pkg/z/platform"
+	"os"
 )
 
 type FtpImpl struct{}
@@ -85,7 +86,7 @@ func (fr fileRange) spans(fileSize int64, ranges []fileRange) bool {
 
 type fileMapItem struct {
 	info        *proto.Ftp_FileInfo
-	zfd         platform.FileDescriptor
+	zfd         *os.File
 	transferred []fileRange
 }
 

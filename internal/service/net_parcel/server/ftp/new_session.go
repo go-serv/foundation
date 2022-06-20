@@ -9,6 +9,7 @@ import (
 	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"os"
 	"strconv"
 )
 
@@ -30,7 +31,6 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	var (
 		sess     z.SessionInterface
 		profiles []z.FtpUploadProfileInterface
-		zfd      platform.FileDescriptor
 		pv       any
 	)
 	plat := runtime.Runtime().Platform()
@@ -102,8 +102,8 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		res.Descriptors = append(res.Descriptors, fd)
 		//
 		zfpath := targetDir.ComposePath(info.GetFilename())
-		zfd, err = plat.CreateZeroFile(zfpath, int64(info.Size), profile.FilePerms())
-		if err != nil {
+		var zfd *os.File
+		if zfd, err = plat.CreateZeroFile(zfpath, int64(info.Size), profile.FilePerms()); err != nil {
 			return nil, status.Error(codes.FailedPrecondition, "failed to create file")
 		}
 		ftpCtx.files[fileHandle(uv)] = &fileMapItem{

@@ -5,6 +5,10 @@ import (
 	"reflect"
 )
 
+type RunnableInterface interface {
+	Run() error
+}
+
 type NetReaderInterface interface {
 	ReadString() (string, error)
 }
