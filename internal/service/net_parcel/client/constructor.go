@@ -9,11 +9,14 @@ import (
 func NewClient(e z.EndpointInterface) *client {
 	c := new(client)
 	c.NetworkClientInterface = net_client.NewClient(serviceName, e)
-	c.FtpNewSessionOptions.TimeoutMs = 3000
 	return c
 }
 
-func WithFtpSessionLifetime(c *client, lifetime uint32) {
+func WithNewFtpSessionTimeout(c *client, tmMs int) {
+	c.FtpNewSessionOptions.TimeoutMs = tmMs
+}
+
+func WithNewFtpSessionLifetime(c *client, lifetime uint32) {
 	lv := new(uint32)
 	*lv = lifetime
 	c.FtpNewSessionOptions.Lifetime = lv
