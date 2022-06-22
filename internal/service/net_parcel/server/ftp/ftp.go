@@ -7,17 +7,22 @@ import (
 	"os"
 )
 
-type FtpImpl struct{}
+type FtpImpl struct {
+	postActions postActionMap
+}
 
 type (
-	rootDirPostfixFn func() platform.Pathname
-	ftpState         int
-	fileHandle       z.UniqueId
+	rootDirPostfixFn    func() platform.Pathname
+	ftpState            int
+	fileHandle          z.UniqueId
+	postActionHandlerFn func(platform.Pathname) error
+	postActionMap       map[string]postActionHandlerFn
 )
 
 const (
 	PendingState ftpState = iota + 1
-	InProgressState
+	TransferInProgressState
+	PostProcessingInProgressState
 	SuspendedState
 	CompletedState
 	FailedState
@@ -27,8 +32,10 @@ func (s ftpState) toProtoState() proto.Ftp_TransferState {
 	switch s {
 	case PendingState:
 		return proto.Ftp_PENDING
-	case InProgressState:
-		return proto.Ftp_IN_PROGRESS
+	case TransferInProgressState:
+		return proto.Ftp_TRANSFER_IN_PROGRESS
+	case PostProcessingInProgressState:
+		return proto.Ftp_POST_PROCESSING_IN_PROGRESS
 	case SuspendedState:
 		return proto.Ftp_SUSPENDED
 	case CompletedState:
@@ -73,21 +80,19 @@ func (fr fileRange) intersects(ranges []fileRange) bool {
 }
 
 func (fr fileRange) spans(fileSize int64, ranges []fileRange) bool {
-	var (
-		totalSpan int64
-	)
-	n := len(ranges)
-	for i := 0; i < n; i++ {
+	var totalSpan int64
+	for i := 0; i < len(ranges); i++ {
 		totalSpan += ranges[i].Span()
 	}
-	totalSpan += fr.Span()
 	return totalSpan == fileSize
 }
 
 type fileMapItem struct {
-	info        *proto.Ftp_FileInfo
-	zfd         *os.File
-	transferred []fileRange
+	info              *proto.Ftp_FileInfo
+	zfd               *os.File
+	chunksTransferred []fileRange
+	completedFlag     bool
+	postActionFlag    bool
 }
 
 type fileMap map[fileHandle]*fileMapItem

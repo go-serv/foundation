@@ -6,15 +6,11 @@ message Ftp {
   //
   enum TransferState {
     PENDING = 0;
-    IN_PROGRESS = 1;
-    COMPLETED = 2;
-    SUSPENDED = 3;
-    FAILED = 4;
-  }
-  enum PostProcessing {
-    UNTAR = 0;
-    GZIP_DECOMPRESS_UNTAR = 1;
-    BZIP2_DECOMPRESS_UNTAR = 2;
+    TRANSFER_IN_PROGRESS = 1;
+    POST_PROCESSING_IN_PROGRESS = 2;
+    COMPLETED = 3;
+    SUSPENDED = 4;
+    FAILED = 5;
   }
   message FileInfo {
     //
@@ -25,8 +21,9 @@ message Ftp {
     optional string abs_path = 3;
     // File MIME type. Empty if can't be determined.
     optional string mime_type = 4;
-    //
-    optional PostProcessing post_process = 6;
+    // If set to true will invoke a registered post action handler.
+    // The action handlers are being mapped by file extensions.
+    optional bool post_action = 6;
   }
   //
   message FileDescriptor {

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"github.com/go-serv/service/internal/ancillary/struc/copyable"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/internal/grpc/call"
@@ -18,7 +19,6 @@ type FtpTransferOptions struct {
 	c            *client
 	MaxChunkSize int
 	BitrateLimit int
-	Temp         bool
 }
 
 type transferDir struct {
@@ -76,16 +76,30 @@ func (f FtpTransferOptions) FtpTransferDir(target platform.Pathname, recursive b
 	return
 }
 
-func (f FtpTransferOptions) FtpTransferFile(path platform.Pathname) (err error) {
+func (f FtpTransferOptions) FtpTransferFile(path platform.Pathname, temp bool, postAction bool) (err error) {
 	var (
 		file *os.File
+		info os.FileInfo
 		res  *proto.Ftp_NewSession_Response
 	)
-	if file, err = os.OpenFile(path.String(), os.O_RDWR, os.FileMode(0754)); err != nil {
+	if file, err = os.OpenFile(path.String(), os.O_RDONLY, os.FileMode(0444)); err != nil {
 		return
 	}
 	req := &proto.Ftp_NewSession_Request{}
-	req.Temp = f.Temp
+	req.Temp = temp
+	if info, err = file.Stat(); err != nil {
+		return
+	}
+	if info.IsDir() || !info.Mode().IsRegular() {
+		return errors.New("ftp transfer: not a regular file")
+	}
+	pav := new(bool)
+	*pav = postAction
+	req.Files = append(req.Files, &proto.Ftp_FileInfo{
+		RelPath:    filepath.Base(file.Name()),
+		Size:       info.Size(),
+		PostAction: pav,
+	})
 	if res, err = f.c.stubs.FtpNewSession(f.PrepareContext(), req); err != nil {
 		return
 	}
@@ -95,19 +109,20 @@ func (f FtpTransferOptions) FtpTransferFile(path platform.Pathname) (err error) 
 func (f FtpTransferOptions) transferFile(reader io.Reader, fh uint64) (err error) {
 	var (
 		nRead, off int
+		res        *proto.Ftp_FileChunk_Response
 	)
 	buf := make([]byte, z.GrpcMaxMessageSize)
 	for {
 		nRead, err = reader.Read(buf)
 		switch err {
 		case io.EOF:
-			break
+			goto fin_transfer
 		case nil:
 			req := &proto.Ftp_FileChunk_Request{}
 			req.Body = buf[0:nRead]
 			req.FileHandle = fh
 			req.Range = &proto.Ftp_FileRange{Start: int64(off), End: int64(off + nRead)}
-			if _, err = f.c.stubs.FtpTransfer(f.PrepareContext(), req); err != nil {
+			if res, err = f.c.stubs.FtpTransfer(f.PrepareContext(), req); err != nil {
 				return
 			}
 			off += nRead
@@ -115,5 +130,9 @@ func (f FtpTransferOptions) transferFile(reader io.Reader, fh uint64) (err error
 			return
 		}
 	}
-	return
+fin_transfer:
+	if res.State != proto.Ftp_COMPLETED {
+		return errors.New("not completed")
+	}
+	return nil
 }

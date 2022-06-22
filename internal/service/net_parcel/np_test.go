@@ -73,9 +73,8 @@ func (tf *testFixtures) finalize() {
 
 func TestSecureSession(t *testing.T) {
 	var (
-		secSessRes    *net.Session_Response
-		ftpNewSessRes *net.Ftp_NewSession_Response
-		err           error
+		secSessRes *net.Session_Response
+		err        error
 	)
 	tf := setup(t)
 	getNonceTask := func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
@@ -91,14 +90,10 @@ func TestSecureSession(t *testing.T) {
 			}
 			cwd, _ := os.Getwd()
 			tarball := platform.Pathname("").ComposePath(cwd, "..", "..", "..", "testsuite", "fixtures", "tarball.tar.gz")
-			// Start an FTP session
-			ftpNewSessReq := &net.Ftp_NewSession_Request{}
-			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Filename: "file1.bin", Size: 1200})
-			ftpNewSessRes, err = cc.FtpNewSession(ftpNewSessReq)
-			task.Assert(err)
-			//
-			_ = ftpNewSessRes
-			cc.FtpTransferFileByPathname(tarball)
+			err = cc.FtpTransferFile(tarball, false, false)
+			if err != nil {
+				t.Fatalf("file transfer failed with %v", err)
+			}
 			task.Done()
 		}
 		return nil, run, nil

@@ -73,7 +73,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	}
 	postfix := strconv.FormatUint(uint64(sess.Id()), 16)
 	// Add a marker to the directory pathname denoting that the directory is temporary and must be deleted
-	// along with the transferred files, once the session is expired. It's up to a service to move transferred files to
+	// along with the chunksTransferred files, once the session is expired. It's up to a service to move chunksTransferred files to
 	// another location.
 	if req.GetTemp() {
 		postfix += "-temp"
@@ -97,19 +97,30 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		fd.Handle = uint64(uv)
 		fd.Info = info
 		res.Descriptors = append(res.Descriptors, fd)
+		// Create relative path directories if necessary
+		var zfpath, relpath platform.Pathname
+		relpath = platform.Pathname(info.GetRelPath()).Normalize()
+		if !relpath.IsFilename() {
+			zfbase := targetDir.ComposePath(relpath.Dirname().String())
+			if !zfbase.DirExists() {
+				if err = plat.CreateDir(zfbase, profile.FilePerms()); err != nil {
+					return
+				}
+			}
+		}
 		//
-		zfpath := targetDir.ComposePath(info.GetFilename())
+		zfpath = targetDir.ComposePath(relpath.String())
 		var zfd *os.File
-		if zfd, err = plat.CreateZeroFile(zfpath, int64(info.Size), profile.FilePerms()); err != nil {
+		if zfd, err = plat.CreateZeroFile(zfpath, info.Size, profile.FilePerms()); err != nil {
 			return nil, status.Error(codes.FailedPrecondition, "failed to create file")
 		}
 		ftpCtx.files[fileHandle(uv)] = &fileMapItem{
-			info:        info,
-			zfd:         zfd,
-			transferred: make([]fileRange, 0, 1000), // with max chunk size of 4Mb must be enough for most cases
+			info:              info,
+			zfd:               zfd,
+			chunksTransferred: make([]fileRange, 0, 1000), // with max chunk size of 4Mb must be enough for most cases
 		}
 	}
-	ftpCtx.state = InProgressState
+	ftpCtx.state = TransferInProgressState
 	sess.WithContext(ftpCtx)
 	return
 }

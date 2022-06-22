@@ -2,6 +2,8 @@ package platform
 
 import (
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -18,6 +20,48 @@ func (p Pathname) String() string {
 	return string(p)
 }
 
+func (p Pathname) Normalize() Pathname {
+	out := p.String()
+	if os.PathSeparator == '\\' && os.PathListSeparator == ';' {
+		out = strings.ReplaceAll(out, "/", PathSeparator)
+	} else { // assume a Unix platform
+		out = strings.ReplaceAll(out, "\\", PathSeparator)
+	}
+	return Pathname(out)
+}
+
+func (p Pathname) IsFilename() bool {
+	return !strings.ContainsRune(p.String(), os.PathSeparator)
+}
+
+func (p Pathname) IsRelPath() bool {
+	return !p.IsFilename() && !p.IsAbsPath()
+}
+
+func (p Pathname) IsAbsPath() bool {
+	if os.PathSeparator == '\\' && os.PathListSeparator == ';' {
+		match, _ := regexp.MatchString("^[0-9a-zA-Z\\s_-]+:", p.String())
+		return match
+	} else {
+		var first rune
+		for _, c := range p.String() {
+			first = c
+			break
+		}
+		return first == os.PathSeparator
+	}
+}
+
+func (p Pathname) Dirname() Pathname {
+	dirname := filepath.Dir(p.String())
+	return Pathname(dirname)
+}
+
+func (p Pathname) Filename() Pathname {
+	filename := filepath.Base(p.String())
+	return Pathname(filename)
+}
+
 func (p Pathname) IsCanonical() bool {
 	return true
 }
@@ -29,6 +73,19 @@ func (p Pathname) FileExists() bool {
 	} else {
 		return true
 	}
+}
+
+func (p Pathname) DirExists() bool {
+	info, err := os.Stat(p.String())
+	if err != nil {
+		return false
+	} else {
+		return info.IsDir()
+	}
+}
+
+func (p Pathname) Ext() string {
+	return filepath.Ext(p.String())
 }
 
 func (p Pathname) ComposePath(parts ...string) Pathname {
