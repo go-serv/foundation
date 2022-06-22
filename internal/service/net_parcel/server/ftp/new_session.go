@@ -44,15 +44,12 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		sess = session.NewSession(lifetime)
 		netCtx.WithSession(sess)
 	}
-	//
 	if sess.State() != session.New {
 		return nil, status.Error(codes.FailedPrecondition, "file transfer session is already in progress")
 	}
-	//
 	if len(req.GetFiles()) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no files to transfer")
 	}
-	//
 	if pv, err = runtime.Runtime().Resolve(z.FtpUploadProfilerResolver); err != nil {
 		return nil, status.Error(codes.FailedPrecondition, "no FTP upload profiles")
 	}
@@ -112,6 +109,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 			transferred: make([]fileRange, 0, 1000), // with max chunk size of 4Mb must be enough for most cases
 		}
 	}
+	ftpCtx.state = InProgressState
 	sess.WithContext(ftpCtx)
 	return
 }

@@ -11,6 +11,8 @@ import (
 	"github.com/go-serv/service/internal/service/net_parcel/server/ftp"
 	"github.com/go-serv/service/pkg/y/netparcel"
 	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/service/pkg/z/platform"
+	"os"
 	"testing"
 	"time"
 )
@@ -87,6 +89,8 @@ func TestSecureSession(t *testing.T) {
 			if len(secSessRes.GetNonce()) != nonceLen {
 				t.Fatalf("expected nonce length %d, got %d", nonceLen, len(secSessRes.GetNonce()))
 			}
+			cwd, _ := os.Getwd()
+			tarball := platform.Pathname("").ComposePath(cwd, "..", "..", "..", "testsuite", "fixtures", "tarball.tar.gz")
 			// Start an FTP session
 			ftpNewSessReq := &net.Ftp_NewSession_Request{}
 			ftpNewSessReq.Files = append(ftpNewSessReq.Files, &net.Ftp_FileInfo{Filename: "file1.bin", Size: 1200})
@@ -94,6 +98,7 @@ func TestSecureSession(t *testing.T) {
 			task.Assert(err)
 			//
 			_ = ftpNewSessRes
+			cc.FtpTransferFileByPathname(tarball)
 			task.Done()
 		}
 		return nil, run, nil

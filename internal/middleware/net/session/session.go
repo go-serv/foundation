@@ -14,7 +14,7 @@ func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, r
 	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
 	if req.MethodReflection().Bool(go_serv.E_RequireSession) {
 		sess := session.FindById(sId)
-		if sess == nil || sess.State() != session.Active || sess.State() != session.New {
+		if sess == nil || (sess.State() != session.Active && sess.State() != session.New) {
 			return status.Error(codes.NotFound, "gRPC session not found or expired")
 		}
 		srvCtx.WithSession(sess)

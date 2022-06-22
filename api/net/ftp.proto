@@ -18,15 +18,13 @@ message Ftp {
   }
   message FileInfo {
     //
-    string filename = 1;
+    string rel_path = 1;
     // File size.
     int64 size = 2;
-    // Original filename.
-    string original_filename = 3;
     // Absolute pathname of the file on client side, optional for the Web browser clients.
-    optional string abs_pathname = 4;
+    optional string abs_path = 3;
     // File MIME type. Empty if can't be determined.
-    optional string mime_type = 5;
+    optional string mime_type = 4;
     //
     optional PostProcessing post_process = 6;
   }
