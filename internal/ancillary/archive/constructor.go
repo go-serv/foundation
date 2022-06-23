@@ -28,13 +28,14 @@ func NewTar(target platform.Pathname, comp ancillary.CompressorType, opts ancill
 	return un, nil
 }
 
-func NewUntar(target platform.Pathname, comp ancillary.CompressorType, opts ancillary.ArchiveOptions) (*ttar, error) {
+func NewUntar(fs platform.FilesystemInterface, target platform.Pathname, comp ancillary.CompressorType, opts ancillary.ArchiveOptions) (*ttar, error) {
 	var (
 		fd       *os.File
 		err      error
 		gzReader *gzip.Reader
 	)
 	un := new(ttar)
+	un.fs = fs
 	un.target = target
 	un.ArchiveOptions = opts
 	if fd, err = os.OpenFile(target.String(), os.O_RDONLY, os.FileMode(0444)); err != nil {

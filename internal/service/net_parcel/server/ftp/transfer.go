@@ -54,7 +54,7 @@ func (ftp FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Req
 			if handler, has := ftp.PostActions[ext]; has {
 				transferCtx.state = PostProcessingInProgressState
 				//go func() {
-				if err = handler(path); err != nil {
+				if err = handler(netCtx, path); err != nil {
 					transferCtx.state = FailedState
 				} else {
 					item.completedFlag = true

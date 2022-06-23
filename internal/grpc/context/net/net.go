@@ -9,8 +9,17 @@ import (
 
 type netContext struct {
 	context.Context
-	req z.RequestInterface
-	res z.ResponseInterface
+	req      z.RequestInterface
+	res      z.ResponseInterface
+	tenantId z.TenantId
+}
+
+func (ctx *netContext) Tenant() z.TenantId {
+	return ctx.tenantId
+}
+
+func (ctx *netContext) WithTenant(id z.TenantId) {
+	ctx.tenantId = id
 }
 
 type srvContext struct {

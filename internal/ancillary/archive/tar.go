@@ -21,10 +21,10 @@ func (t *ttar) handleHeader(hdr *tar.Header) (err error) {
 	pathname := t.basedir.ComposePath(hdr.Name).Normalize()
 	switch hdr.Typeflag {
 	case tar.TypeDir:
-		err = t.fs.CreateDir(pathname, t.fsPerms)
+		err = t.fs.CreateDir(pathname, platform.UnixPerms(hdr.Mode))
 	case tar.TypeReg:
 		var fd *os.File
-		if fd, err = os.OpenFile(pathname.String(), os.O_CREATE|os.O_WRONLY, os.FileMode(t.fsPerms)); err != nil {
+		if fd, err = os.OpenFile(pathname.String(), os.O_CREATE|os.O_WRONLY, os.FileMode(hdr.Mode)); err != nil {
 			return
 		}
 		var buf bytes.Buffer

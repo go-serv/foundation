@@ -13,7 +13,7 @@ var rt *runtime
 func init() {
 	rand.Seed(time.Now().UnixNano())
 	rt = new(runtime)
-	rt.platform = platform.NewPlatform()
+	rt.platform = platform.NewPlatform(0)
 	// Add the protobuf extensions
 	rt.ref = reflect.NewReflection()
 	rt.ref.AddProtoExtension(go_serv.E_NewInsecureSession)

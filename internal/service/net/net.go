@@ -4,7 +4,8 @@ import "github.com/go-serv/service/pkg/z"
 
 type netService struct {
 	z.ServiceInterface
-	encKey []byte
+	tenantId z.TenantId
+	encKey   []byte
 }
 
 func (b *netService) Service_OnNewSession(req z.RequestInterface) error {

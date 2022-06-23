@@ -66,7 +66,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	}
 	//
 	dirname := profile.RootDir()
-	if !plat.DirectoryExists(dirname) {
+	if !dirname.DirExists() {
 		if err = plat.CreateDir(dirname, profile.FilePerms()); err != nil {
 			return nil, status.Error(codes.FailedPrecondition, "fs: failed to create directory")
 		}
