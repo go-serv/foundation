@@ -3,12 +3,12 @@ package ftp
 import (
 	"context"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
+	grpc_err "github.com/go-serv/service/internal/grpc/error"
 	"github.com/go-serv/service/internal/grpc/session"
 	"github.com/go-serv/service/internal/runtime"
 	"github.com/go-serv/service/pkg/z"
 	"github.com/go-serv/service/pkg/z/platform"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"os"
 	"strconv"
 )
@@ -16,16 +16,6 @@ import (
 func transferTotalSize(r *proto.Ftp_NewSession_Request) uint64 {
 	return 0
 }
-
-//func validatePathnames(targetDir platform.Pathname, r *proto.Ftp_NewSession_Request) bool {
-//	for _, info := range r.GetFiles() {
-//		p := targetDir.ComposePath(info.GetPathname())
-//		if !p.IsCanonical() {
-//			return false
-//		}
-//	}
-//	return true
-//}
 
 func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Request) (res *proto.Ftp_NewSession_Response, err error) {
 	var (
@@ -39,36 +29,36 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	if sess == nil { // Create an insecure session
 		lifetime := uint16(req.GetLifetime())
 		if lifetime == 0 {
-			return nil, status.Error(codes.InvalidArgument, "session lifetime must be specified")
+			return nil, grpc_err.New(z.ErrSeverityLow, codes.InvalidArgument, "session lifetime must be specified")
 		}
 		sess = session.NewSession(lifetime)
 		netCtx.WithSession(sess)
 	}
 	if sess.State() != session.New {
-		return nil, status.Error(codes.FailedPrecondition, "file transfer session is already in progress")
+		return nil, grpc_err.New(z.ErrSeverityLow, codes.FailedPrecondition, "file transfer session is already in progress")
 	}
 	if len(req.GetFiles()) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "no files to transfer")
+		return nil, grpc_err.New(z.ErrSeverityLow, codes.InvalidArgument, "no files to transfer")
 	}
 	if pv, err = runtime.Runtime().Resolve(z.FtpUploadProfilerResolver); err != nil {
-		return nil, status.Error(codes.FailedPrecondition, "no FTP upload profiles")
+		return nil, grpc_err.New(z.ErrSeverityLow, codes.FailedPrecondition, "no FTP upload profiles")
 	}
 	profiles = pv.([]z.FtpUploadProfileInterface)
 	profileIdx := req.GetUploadProfile()
 	if int(profileIdx) >= len(profiles) {
-		return nil, status.Error(codes.FailedPrecondition, "profile index out of range")
+		return nil, grpc_err.New(z.ErrSeverityLow, codes.FailedPrecondition, "profile index out of range")
 	}
 	profile := profiles[profileIdx]
 	// Out of space check
 	availableSpace := plat.AvailableDiskSpace(profile.RootDir())
 	if transferTotalSize(req) > availableSpace {
-		return nil, status.Error(codes.FailedPrecondition, "out of disk space")
+		return nil, grpc_err.New(z.ErrSeverityCritical, codes.FailedPrecondition, "out of disk space")
 	}
 	//
 	dirname := profile.RootDir()
 	if !dirname.DirExists() {
 		if err = plat.CreateDir(dirname, profile.FilePerms()); err != nil {
-			return nil, status.Error(codes.FailedPrecondition, "fs: failed to create directory")
+			return nil, grpc_err.New(z.ErrSeverityHigh, codes.FailedPrecondition, err.Error())
 		}
 	}
 	postfix := strconv.FormatUint(uint64(sess.Id()), 16)
@@ -80,11 +70,11 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	}
 	targetDir := dirname.ComposePath(postfix, platform.PathSeparator)
 	if !targetDir.IsCanonical() {
-		return nil, status.Error(codes.InvalidArgument, "meta characters in path names are not allowed")
+		return nil, grpc_err.New(z.ErrSeverityLow, codes.InvalidArgument, "meta characters in path names are not allowed")
 	}
 	//
-	if err = plat.CreateDir(targetDir, 0755); err != nil {
-		return nil, status.Error(codes.InvalidArgument, "mkdir")
+	if err = plat.CreateDir(targetDir, profile.FilePerms()); err != nil {
+		return nil, grpc_err.New(z.ErrSeverityHigh, codes.FailedPrecondition, err.Error())
 	}
 	//
 	ftpCtx := new(ftpContext)
@@ -112,12 +102,12 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		zfpath = targetDir.ComposePath(relpath.String())
 		var zfd *os.File
 		if zfd, err = plat.CreateZeroFile(zfpath, info.Size, profile.FilePerms()); err != nil {
-			return nil, status.Error(codes.FailedPrecondition, "failed to create file")
+			return nil, grpc_err.New(z.ErrSeverityHigh, codes.FailedPrecondition, err.Error())
 		}
 		ftpCtx.files[fileHandle(uv)] = &fileMapItem{
 			info:              info,
 			zfd:               zfd,
-			chunksTransferred: make([]fileRange, 0, 1000), // with max chunk size of 4Mb must be enough for most cases
+			chunksTransferred: fileRange{}.New(),
 		}
 	}
 	ftpCtx.state = TransferInProgressState

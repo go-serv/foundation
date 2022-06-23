@@ -84,7 +84,7 @@ func (f *filesystem) Remove(target pf.Pathname) (err error) {
 	if info, err = os.Stat(target.String()); err != nil {
 		return
 	}
-	// Calculate the total size of disk space that will be fred if target to be removed is a directory.
+	// Calculate the total size of disk space that will be freed if target to be removed is a directory.
 	switch m := info.Mode(); true {
 	case m.IsDir():
 		walker := NewWalker(nil, func(path string, info os.FileInfo) error {
@@ -104,10 +104,6 @@ func (f *filesystem) Remove(target pf.Pathname) (err error) {
 
 func (f *filesystem) CreateDir(path pf.Pathname, perms pf.UnixPerms) (err error) {
 	err = os.MkdirAll(path.String(), os.FileMode(perms))
-	return
-}
-
-func (f *filesystem) RemoveDir(pf.Pathname) (err error) {
 	return
 }
 

@@ -15,9 +15,17 @@ func (UniqueId) Generate() UniqueId {
 }
 
 type (
-	UniqueId  uint64
-	SessionId UniqueId
-	TenantId  UniqueId
+	UniqueId           uint64
+	SessionId          UniqueId
+	TenantId           UniqueId
+	ErrorSeverityLevel int
+)
+
+const (
+	ErrSeverityLow ErrorSeverityLevel = iota + 1
+	ErrSeverityMedium
+	ErrSeverityHigh
+	ErrSeverityCritical
 )
 
 const (
