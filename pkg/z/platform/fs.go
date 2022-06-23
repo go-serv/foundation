@@ -84,6 +84,20 @@ func (p Pathname) DirExists() bool {
 	}
 }
 
+func (p Pathname) MultiExt() string {
+	filename := p.Filename()
+	parts := strings.Split(filename.String(), ".")
+	l := len(parts)
+	switch l {
+	case 0:
+		return ""
+	case 2:
+		return "." + parts[1]
+	default:
+		return "." + parts[l-2] + "." + parts[l-1]
+	}
+}
+
 func (p Pathname) Ext() string {
 	return filepath.Ext(p.String())
 }

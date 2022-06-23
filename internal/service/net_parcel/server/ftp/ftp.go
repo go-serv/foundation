@@ -2,21 +2,21 @@ package ftp
 
 import (
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
+	"github.com/go-serv/service/pkg/y/netparcel"
 	"github.com/go-serv/service/pkg/z"
 	"github.com/go-serv/service/pkg/z/platform"
 	"os"
 )
 
 type FtpImpl struct {
-	postActions postActionMap
+	PostActions postActionMap
 }
 
 type (
-	rootDirPostfixFn    func() platform.Pathname
-	ftpState            int
-	fileHandle          z.UniqueId
-	postActionHandlerFn func(platform.Pathname) error
-	postActionMap       map[string]postActionHandlerFn
+	rootDirPostfixFn func() platform.Pathname
+	ftpState         int
+	fileHandle       z.UniqueId
+	postActionMap    map[string]netparcel.FtpPostActionHandlerFn
 )
 
 const (
@@ -92,7 +92,6 @@ type fileMapItem struct {
 	zfd               *os.File
 	chunksTransferred []fileRange
 	completedFlag     bool
-	postActionFlag    bool
 }
 
 type fileMap map[fileHandle]*fileMapItem

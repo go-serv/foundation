@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/go-serv/service/internal/ancillary/struc/copyable"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"github.com/go-serv/service/internal/grpc/call"
+	client2 "github.com/go-serv/service/internal/grpc/client"
 	"github.com/go-serv/service/pkg/z"
 	"github.com/go-serv/service/pkg/z/platform"
 	"io"
@@ -15,7 +15,7 @@ import (
 
 type FtpTransferOptions struct {
 	copyable.Shallow
-	call.NetOptions
+	client2.NetOptions
 	c            *client
 	MaxChunkSize int
 	BitrateLimit int

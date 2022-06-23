@@ -2,7 +2,7 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
-	net_client "github.com/go-serv/service/internal/client/net"
+	net_client "github.com/go-serv/service/internal/grpc/client/net"
 	"github.com/go-serv/service/pkg/z"
 )
 

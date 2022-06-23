@@ -3,6 +3,7 @@ package archive
 import (
 	"archive/tar"
 	"bytes"
+	"github.com/go-serv/service/pkg/z/platform"
 	"io"
 	"io/fs"
 	"os"
@@ -13,10 +14,11 @@ type ttar struct {
 	archive
 	tarReader *tar.Reader
 	tarWriter *tar.Writer
+	basedir   platform.Pathname
 }
 
 func (t *ttar) handleHeader(hdr *tar.Header) (err error) {
-	pathname := t.target.ComposePath(hdr.Name)
+	pathname := t.basedir.ComposePath(hdr.Name).Normalize()
 	switch hdr.Typeflag {
 	case tar.TypeDir:
 		err = t.fs.CreateDir(pathname, t.fsPerms)
@@ -74,14 +76,18 @@ func (t *ttar) Run() (err error) {
 		err = filepath.Walk(t.target.String(), t.walkFn)
 	case t.tarReader != nil:
 		var hdr *tar.Header
+		t.basedir = t.target.Dirname()
 		for {
 			hdr, err = t.tarReader.Next()
-			if err == io.EOF {
-				err = t.handleHeader(hdr)
-				break
-			}
-			if err != nil {
-				return
+			switch err {
+			case io.EOF:
+				return nil
+			case nil:
+				if err = t.handleHeader(hdr); err != nil {
+					return
+				}
+			default:
+				return err
 			}
 		}
 	}

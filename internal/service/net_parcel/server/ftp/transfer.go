@@ -48,18 +48,18 @@ func (ftp FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Req
 	// Check if file transfer has been completed.
 	if fr.spans(item.info.Size, item.chunksTransferred) {
 		// Call a post action handler if necessary.
-		if item.postActionFlag {
+		if item.info.GetPostAction() {
 			path := platform.Pathname(item.zfd.Name())
-			ext := path.Ext()
-			if handler, has := ftp.postActions[ext]; has {
+			ext := path.MultiExt()
+			if handler, has := ftp.PostActions[ext]; has {
 				transferCtx.state = PostProcessingInProgressState
-				go func() {
-					if err = handler(path); err != nil {
-						transferCtx.state = FailedState
-					} else {
-						item.completedFlag = true
-					}
-				}()
+				//go func() {
+				if err = handler(path); err != nil {
+					transferCtx.state = FailedState
+				} else {
+					item.completedFlag = true
+				}
+				//}()
 			}
 		} else {
 			item.completedFlag = true

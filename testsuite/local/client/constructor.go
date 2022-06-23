@@ -3,7 +3,7 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/go-serv/service/internal"
-	"github.com/go-serv/service/internal/client/local"
+	"github.com/go-serv/service/internal/grpc/client/local"
 )
 
 func NewClient(e i.EndpointInterface) *client {

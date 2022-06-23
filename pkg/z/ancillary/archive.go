@@ -1,5 +1,7 @@
 package ancillary
 
+import "github.com/go-serv/service/pkg/z/platform"
+
 type CompressorType int
 
 const (
@@ -7,6 +9,7 @@ const (
 )
 
 type ArchiveOptions struct {
+	PlatformOwner   platform.FilesystemInterface
 	GzipMultistream bool
 	GzipLevel       int
 }

@@ -3,12 +3,12 @@ package client
 import (
 	"github.com/go-serv/service/internal/ancillary/struc/copyable"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"github.com/go-serv/service/internal/grpc/call"
+	client2 "github.com/go-serv/service/internal/grpc/client"
 )
 
 type FtpNewSessionOptions struct {
 	copyable.Shallow
-	call.NetOptions
+	client2.NetOptions
 	c        *client
 	Lifetime *uint32
 }

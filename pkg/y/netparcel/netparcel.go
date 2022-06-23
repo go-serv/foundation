@@ -6,11 +6,16 @@ import (
 )
 
 type (
-	SessionRequest        = proto.Session_Request
-	SessionResponse       = proto.Session_Response
-	FtpNewSessionRequest  = proto.Ftp_NewSession_Request
-	FtpNewSessionResponse = proto.Ftp_NewSession_Response
+	SessionRequest         = proto.Session_Request
+	SessionResponse        = proto.Session_Response
+	FtpNewSessionRequest   = proto.Ftp_NewSession_Request
+	FtpNewSessionResponse  = proto.Ftp_NewSession_Response
+	FtpPostActionHandlerFn func(pathname platform.Pathname) error
 )
+
+type NetParcelServiceInterface interface {
+	RegisterFtpPostActionHandler(fn FtpPostActionHandlerFn, fileExt string)
+}
 
 type NetParcelClientInterface interface {
 	SecureSession(*SessionRequest) (*SessionResponse, error)

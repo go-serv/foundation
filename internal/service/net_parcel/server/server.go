@@ -6,7 +6,9 @@ package server
 import (
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	"github.com/go-serv/service/internal/service/net_parcel/server/ftp"
+	"github.com/go-serv/service/pkg/y/netparcel"
 	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/service/pkg/z/ancillary"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -21,8 +23,13 @@ type netParcel struct {
 	z.NetworkServiceInterface
 	serviceImpl
 	ftp.FtpImpl
+	ancillary.ArchiveOptions
 }
 
 func (s *netParcel) Register(srv *grpc.Server) {
 	proto.RegisterNetParcelServer(srv, s)
+}
+
+func (s *netParcel) RegisterFtpPostActionHandler(fn netparcel.FtpPostActionHandlerFn, fileExt string) {
+	s.FtpImpl.PostActions[fileExt] = fn
 }

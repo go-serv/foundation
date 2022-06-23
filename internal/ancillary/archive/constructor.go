@@ -1,6 +1,7 @@
 package archive
 
 import (
+	"archive/tar"
 	"compress/gzip"
 	"github.com/go-serv/service/pkg/z/ancillary"
 	"github.com/go-serv/service/pkg/z/platform"
@@ -29,8 +30,9 @@ func NewTar(target platform.Pathname, comp ancillary.CompressorType, opts ancill
 
 func NewUntar(target platform.Pathname, comp ancillary.CompressorType, opts ancillary.ArchiveOptions) (*ttar, error) {
 	var (
-		fd  *os.File
-		err error
+		fd       *os.File
+		err      error
+		gzReader *gzip.Reader
 	)
 	un := new(ttar)
 	un.target = target
@@ -40,10 +42,11 @@ func NewUntar(target platform.Pathname, comp ancillary.CompressorType, opts anci
 	}
 	switch comp {
 	case ancillary.GzipCompressor:
-		if un.compReader, err = gzip.NewReader(fd); err != nil {
+		if gzReader, err = gzip.NewReader(fd); err != nil {
 			return nil, err
 		}
-		un.compReader.(*gzip.Reader).Multistream(un.GzipMultistream)
+		gzReader.Multistream(un.GzipMultistream)
+		un.tarReader = tar.NewReader(gzReader)
 	}
 	return un, nil
 }

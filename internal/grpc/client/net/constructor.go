@@ -1,7 +1,7 @@
 package net
 
 import (
-	"github.com/go-serv/service/internal/client"
+	"github.com/go-serv/service/internal/grpc/client"
 	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
 	net_mw "github.com/go-serv/service/internal/grpc/middleware/net"

@@ -90,7 +90,7 @@ func TestSecureSession(t *testing.T) {
 			}
 			cwd, _ := os.Getwd()
 			tarball := platform.Pathname("").ComposePath(cwd, "..", "..", "..", "testsuite", "fixtures", "tarball.tar.gz")
-			err = cc.FtpTransferFile(tarball, false, false)
+			err = cc.FtpTransferFile(tarball, false, true)
 			if err != nil {
 				t.Fatalf("file transfer failed with %v", err)
 			}
