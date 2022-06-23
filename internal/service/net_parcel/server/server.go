@@ -15,15 +15,16 @@ import (
 
 var Name = protoreflect.FullName(proto.NetParcel_ServiceDesc.ServiceName)
 
-type serviceImpl struct {
+type serviceUnimpl struct {
 	proto.UnimplementedNetParcelServer
 }
 
 type netParcel struct {
 	z.NetworkServiceInterface
-	serviceImpl
-	ftp.FtpImpl
 	ancillary.ArchiveOptions
+	ftp.FtpImpl
+	sessionImpl
+	serviceUnimpl
 }
 
 func (s *netParcel) Register(srv *grpc.Server) {

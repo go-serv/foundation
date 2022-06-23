@@ -7,6 +7,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (FtpImpl) FtpInquiry(context.Context, *proto.Ftp_Inquiry_Request) (*proto.Ftp_Inquiry_Response, error) {
+func (FtpImpl) FtpInquiry(ctx context.Context, req *proto.Ftp_Inquiry_Request) (res *proto.Ftp_Inquiry_Response, err error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FtpInquiry not implemented")
 }
