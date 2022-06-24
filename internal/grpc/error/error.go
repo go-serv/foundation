@@ -6,8 +6,9 @@ import (
 )
 
 type error struct {
-	level  z.ErrorSeverityLevel
-	status *status.Status
+	level     z.ErrorSeverityLevel
+	status    *status.Status
+	createdAt int64
 }
 
 func (e error) Error() string {
