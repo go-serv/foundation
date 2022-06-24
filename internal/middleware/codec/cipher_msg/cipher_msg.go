@@ -9,13 +9,13 @@ import (
 func NetServiceInit(netSvc z.NetworkServiceInterface) {
 	unmarshalHandler := func(next z.MwChainElement, in []byte, mdReflect z.MethodReflectionInterface, msgReflect z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out, _ = enc.Decrypt(in)
+		out, _ = enc.Decrypt(in, nil)
 		_, err = next(out)
 		return
 	}
 	marshalHandler := func(next z.MwChainElement, in []byte, mdReflect z.MethodReflectionInterface, msgReflect z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out = enc.Encrypt(in)
+		out = enc.Encrypt(in, nil)
 		_, err = next(out)
 		return
 	}
@@ -27,13 +27,13 @@ func NetClientInit(cc z.NetworkClientInterface) {
 	netSvc := cc.NetService()
 	marshalHandler := func(next z.MwChainElement, in []byte, mdReflect z.MethodReflectionInterface, msgReflect z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out = enc.Encrypt(in)
+		out = enc.Encrypt(in, nil)
 		_, err = next(out)
 		return
 	}
 	unmarshalHandler := func(next z.MwChainElement, in []byte, mdReflect z.MethodReflectionInterface, msgReflect z.MessageReflectionInterface, df z.DataFrameInterface) (out []byte, err error) {
 		enc, _ := aes.NewCipher(netSvc.EncriptionKey(), []byte{0x1, 0x2, 0x3, 0x4})
-		out, _ = enc.Decrypt(in)
+		out, _ = enc.Decrypt(in, nil)
 		_, err = next(out)
 		return
 	}

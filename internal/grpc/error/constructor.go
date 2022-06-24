@@ -11,7 +11,11 @@ import (
 func New(severity z.ErrorSeverityLevel, code codes.Code, msg string, args ...any) *error {
 	err := new(error)
 	err.level = severity
-	err.status = status.New(code, fmt.Sprintf(msg, args))
+	if len(args) > 0 {
+		err.status = status.New(code, fmt.Sprintf(msg, args))
+	} else {
+		err.status = status.New(code, msg)
+	}
 	err.createdAt = time.Now().Unix()
 	return err
 }

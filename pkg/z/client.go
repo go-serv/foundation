@@ -2,6 +2,7 @@ package z
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/go-serv/service/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -22,6 +23,8 @@ type ClientInterface interface {
 type NetworkClientInterface interface {
 	ClientInterface
 	NetService() NetworkServiceInterface
+	BlockCipher() crypto.AEAD_CypherInterface
+	WithBlockCipher(crypto.AEAD_CypherInterface)
 }
 
 type LocalClientInterface interface {

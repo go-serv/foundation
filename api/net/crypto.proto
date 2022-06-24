@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go_serv.net;
 
-message PubKeyExchange {
+message Crypto_PubKeyExchange {
   message Psk { // Pre-shared key
   }
   message ECDH { // Elliptic-curve Diffie-Hellman
@@ -16,6 +16,6 @@ message PubKeyExchange {
   }
 }
 
-message AEAD_Cipher {
-  message AES { }
+enum Crypto_AEADCipher {
+  AES_GCM = 0; // AES in Galois/Counter Mode
 }

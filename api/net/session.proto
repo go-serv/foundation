@@ -9,14 +9,12 @@ message Session {
   message Request {
     uint32 lifetime = 1; // Session lifetime in seconds
     oneof key_exch_algo {
-      PubKeyExchange.DiffieHellman dh = 10;
-      PubKeyExchange.ECDH ecdh = 11;
-      PubKeyExchange.Rsa rsa = 12;
-      PubKeyExchange.Psk psk = 13;
+      Crypto_PubKeyExchange.DiffieHellman dh = 10;
+      Crypto_PubKeyExchange.ECDH ecdh = 11;
+      Crypto_PubKeyExchange.Rsa rsa = 12;
+      Crypto_PubKeyExchange.Psk psk = 13;
     };
-    oneof stream_cipher_algo {
-      AEAD_Cipher.AES aes = 20;
-    };
+    Crypto_AEADCipher block_cypher = 20;
     uint32 nonce_length = 30;
   }
   message Response {
