@@ -4,7 +4,7 @@ import (
 	"github.com/go-serv/service/pkg/z"
 )
 
-type headerFlags z.HeaderFlags32Type
+type headerFlags z.HeaderFlagsType
 
 const (
 	Encryption headerFlags = 1 << iota

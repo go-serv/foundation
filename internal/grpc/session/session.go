@@ -2,6 +2,7 @@ package session
 
 import (
 	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/service/pkg/z/ancillary/crypto"
 	"sync"
 )
 
@@ -24,13 +25,13 @@ func FindById(key z.SessionId) *session {
 }
 
 type session struct {
-	id        z.SessionId
-	state     z.SessionState
-	startedAt int64
-	expireAt  int64
-	encKey    []byte
-	nonce     []byte
-	ctx       interface{}
+	id          z.SessionId
+	state       z.SessionState
+	startedAt   int64
+	expireAt    int64
+	blockCipher crypto.AEAD_CipherInterface
+	nonce       []byte
+	ctx         interface{}
 }
 
 func (s *session) Id() z.SessionId {
@@ -41,12 +42,12 @@ func (s *session) State() z.SessionState {
 	return s.state
 }
 
-func (s *session) EncKey() []byte {
-	return s.encKey
+func (s *session) BlockCipher() crypto.AEAD_CipherInterface {
+	return s.blockCipher
 }
 
-func (s *session) WithEncKey(key []byte) {
-	s.encKey = key
+func (s *session) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
+	s.blockCipher = cipher
 }
 
 func (s *session) Nonce() []byte {

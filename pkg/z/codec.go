@@ -1,38 +1,42 @@
 package z
 
 import (
-	"github.com/go-serv/service/internal/ancillary/net"
+	"github.com/go-serv/service/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"
 )
 
-type HeaderFlags32Type uint32
+type HeaderFlagsType uint64
+type HeaderType uint64
 
-func (f HeaderFlags32Type) Has(chkFlag HeaderFlags32Type) bool {
+func (f HeaderFlagsType) Has(chkFlag HeaderFlagsType) bool {
 	return f&chkFlag != 0
 }
 
 type DataFrameInterface interface {
-	Parse([]byte, func(netr *net.NetReader) error) error
-	ParseHook(*net.NetReader) error
-	HeaderFlags() HeaderFlags32Type
-	WithHeaderFlag(HeaderFlags32Type)
-	Compose(header []byte) ([]byte, error)
+	Parse(wire []byte) error
+	//HeaderFlags() HeaderFlagsType
+	//WithHeaderFlag(HeaderFlagsType)
+	Compose() ([]byte, error)
+	ProtoMessage() proto.Message
+	WithProtoMessage(msg proto.Message)
+	WithBlockCipher(cipher crypto.AEAD_CipherInterface)
+	Decrypt() error
 	Payload() []byte
-	WithPayload([]byte)
-	AttachData(b []byte)
+	Marshal() ([]byte, error)
+	Unmarshal([]byte) error
 }
 
-type LocalDataFrameInterface interface {
-	DataFrameInterface
-	SharedMemObjectName() string
-	WithSharedMemObjectName(string)
-	SharedMemBlockSize() uint32
-	WithSharedMemBlockSize(uint32)
-	SharedMemDataSize() uint32
-	WithSharedMemDataSize(uint32)
-}
+//type LocalDataFrameInterface interface {
+//	DataFrameInterface
+//	SharedMemObjectName() string
+//	WithSharedMemObjectName(string)
+//	SharedMemBlockSize() uint32
+//	WithSharedMemBlockSize(uint32)
+//	SharedMemDataSize() uint32
+//	WithSharedMemDataSize(uint32)
+//}
 
 type CodecMwTaskUnHandler func(next MwChainElement, in []byte, method MethodReflectionInterface, msg MessageReflectionInterface, df DataFrameInterface) ([]byte, error)
 type CodecMwTaskMarshalHandler func(next MwChainElement, in []byte, method MethodReflectionInterface, msg MessageReflectionInterface, df DataFrameInterface) ([]byte, error)
@@ -56,13 +60,12 @@ type CodecMiddlewareGroupInterface interface {
 
 type CodecInterface interface {
 	encoding.Codec
-	PureUnmarshal(wire []byte, m proto.Message) error
-	PureMarshal(m proto.Message) ([]byte, error)
-	NewDataFrame() DataFrameInterface
+	//PureUnmarshal(wire []byte, m proto.Message) error
+	//PureMarshal(m proto.Message) ([]byte, error)
+	//NewDataFrame() DataFrameInterface
 }
 
 type CodecAwareInterface interface {
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
-	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
 }

@@ -23,8 +23,8 @@ type ClientInterface interface {
 type NetworkClientInterface interface {
 	ClientInterface
 	NetService() NetworkServiceInterface
-	BlockCipher() crypto.AEAD_CypherInterface
-	WithBlockCipher(crypto.AEAD_CypherInterface)
+	BlockCipher() crypto.AEAD_CipherInterface
+	WithBlockCipher(crypto.AEAD_CipherInterface)
 }
 
 type LocalClientInterface interface {

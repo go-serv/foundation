@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/go-serv/service/internal/ancillary"
-	mw_codec "github.com/go-serv/service/internal/grpc/middleware/codec"
 	_ "github.com/go-serv/service/internal/logger"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
@@ -37,7 +36,6 @@ func (s *service) Codec() z.CodecInterface {
 
 func (s *service) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
-	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
 }
 
 func (s *service) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {

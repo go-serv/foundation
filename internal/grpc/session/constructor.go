@@ -16,10 +16,3 @@ func NewSession(lifetime uint16) *session {
 	sessionMap.Store(s.id, s)
 	return s
 }
-
-func NewSecureSession(lifetime uint16, nonce []byte, encKey []byte) *session {
-	s := NewSession(lifetime)
-	s.nonce = nonce
-	s.encKey = encKey
-	return s
-}

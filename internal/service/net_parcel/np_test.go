@@ -83,6 +83,7 @@ func TestSecureSession(t *testing.T) {
 			cc := j.GetValue().(netparcel.NetParcelClientInterface)
 			req := &net.Session_Request{}
 			req.NonceLength = nonceLen
+			req.Lifetime = 3600
 			secSessRes, err = cc.SecureSession(req)
 			task.Assert(err)
 			if len(secSessRes.GetNonce()) != nonceLen {

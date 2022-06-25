@@ -2,51 +2,57 @@ package net
 
 import (
 	"context"
-	net_call "github.com/go-serv/service/internal/grpc/context/net"
-	net_req "github.com/go-serv/service/internal/grpc/request/net"
+	net_call "github.com/go-serv/service/internal/grpc/callctx/net"
+	"github.com/go-serv/service/internal/grpc/codec"
+	"github.com/go-serv/service/internal/grpc/msg/request"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
+	return func(ctx context.Context, v interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
 		var (
-			md         metadata.MD
-			ok         bool
-			wrappedReq z.RequestInterface
-			wrappedRes z.ResponseInterface
+			md  metadata.MD
+			ok  bool
+			req z.RequestInterface
+			df  z.DataFrameInterface
 		)
-		// Request metadata
-		md, ok = metadata.FromIncomingContext(ctx)
-		if !ok {
+		// Retrieve request metadata.
+		if md, ok = metadata.FromIncomingContext(ctx); !ok {
 			return nil, status.Error(codes.Internal, "failed to retrieve request metadata")
 		}
 		//
-		clientInfo := net_req.NewClientInfo(ctx)
-		wrappedReq, err = net_req.NewRequest(req, &md, clientInfo)
-		if err != nil {
+		if df, err = codec.NewDataFrame(v); err != nil {
 			return
 		}
 		//
-		netCall := net_call.NewServerContext(ctx, wrappedReq, handler)
-		wrappedRes, err = mw.newRequestChain().passThrough(netCall)
-		if err != nil {
+		clientInfo := request.NewClientInfo(ctx)
+		if req, err = request.NewRequest(df, &md, clientInfo); err != nil {
 			return
 		}
 		//
-		out, err = mw.newResponseChain().passThrough(wrappedRes)
-		if err != nil {
+		srvCxt := net_call.NewServerContext(ctx, req, handler)
+		srvCxt.WithInput(v.(proto.Message))
+		if err = mw.newRequestChain().passThrough(srvCxt); err != nil {
+			return
+		}
+		//
+		if err = mw.newResponseChain().passThrough(srvCxt); err != nil {
 			return
 		}
 		// Send response headers
-		md, err = wrappedRes.Meta().Dehydrate()
-		if err != nil {
+		if md, err = srvCxt.Response().Meta().Dehydrate(); err != nil {
 			return
 		}
-		err = grpc.SendHeader(ctx, md)
+		if err = grpc.SendHeader(ctx, md); err != nil {
+			return
+		}
+		//
+		out = srvCxt.Response().DataFrame()
 		return
 	}
 }

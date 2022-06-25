@@ -3,9 +3,10 @@ package codec
 import (
 	"bytes"
 	"github.com/go-serv/service/internal/ancillary/net"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/service/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const magicWordLen = 8
@@ -16,92 +17,149 @@ var (
 	errorHeaderParserFailed = status.Error(codes.Internal, "failed to parse data frame header")
 )
 
+type (
+	protoMsgType uint8
+)
+
+const (
+	EncryptedMessage protoMsgType = iota + 1
+)
+
 type dataFrame struct {
-	hdrFlags z.HeaderFlags32Type
-	payload  []byte
-	netw     *net.NetWriter
-	netr     *net.NetReader
+	proto.Message
+	cipher          crypto.AEAD_CipherInterface
+	hdrMsgType      protoMsgType
+	hdrFlags        uint8
+	hdrReserved8_A  uint8
+	hdrReserved16_B uint16
+	hdrReserved24_C uint32
+	payload         []byte
+	netw            *net.NetWriter
+	netr            *net.NetReader
 }
 
 func (df *dataFrame) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func (df *dataFrame) ParseHook(*net.NetReader) error {
-	return nil
+func (df *dataFrame) Unmarshal(data []byte) error {
+	return UnmarshalOptions.Unmarshal(data, df.Message)
 }
 
-func (df *dataFrame) Parse(b []byte, hookFn func(netr *net.NetReader) error) error {
-	// Check for header magic word
-	{
-		df.netr = net.NewReader(b)
-		hdr, err := df.netr.ReadBytes(magicWordLen)
-		if err != nil {
-			return errorHeaderParserFailed
-		}
-		if bytes.Compare(hdr, dfMagicWord[:]) != 0 {
-			return errorHeaderParserFailed
-		}
+func (df *dataFrame) Marshal() ([]byte, error) {
+	return MarshalOptions.Marshal(df.Message)
+}
+
+func (df *dataFrame) Parse(wire []byte) (err error) {
+	var (
+		mw     []byte
+		header uint64
+	)
+	df.netr = net.NewReader(wire)
+	// Check for the data frame magic word. If there is no such, then we have an ordinary proto message.
+	if mw, err = df.netr.ReadBytes(magicWordLen); err != nil {
+		return df.Unmarshal(wire)
 	}
-	// Store 32-bit header flags
-	{
-		flags, err := net.GenericNetReader[uint32](df.netr)
-		if err != nil {
-			return errorHeaderParserFailed
-		}
-		df.hdrFlags = z.HeaderFlags32Type(flags)
+	if bytes.Compare(mw, dfMagicWord[:]) != 0 {
+		return df.Unmarshal(wire)
 	}
-	// Invoke parser hook
-	if hookFn != nil {
-		if err := hookFn(df.netr); err != nil {
-			return err
-		}
+	//
+	if header, err = net.GenericNetReader[uint64](df.netr); err != nil {
+		return err
 	}
+	df.hdrMsgType = protoMsgType(header & 0xff)
+	df.hdrFlags = uint8(header >> 8)
 	df.payload = df.netr.Flush()
-	return nil
+	return
 }
 
-func (df *dataFrame) HeaderFlags() z.HeaderFlags32Type {
+func (df *dataFrame) packHeader() uint64 {
+	header := uint64(df.hdrReserved24_C)<<40 |
+		uint64(df.hdrReserved16_B)<<24 |
+		uint64(df.hdrReserved8_A)<<16 |
+		uint64(df.hdrFlags)<<8 |
+		uint64(df.hdrMsgType)
+	return header
+}
+
+func (df *dataFrame) unpackHeader(hdr uint64) {
+	df.hdrMsgType = protoMsgType(hdr)
+	df.hdrFlags = uint8(hdr >> 8)
+	df.hdrReserved8_A = uint8(hdr >> 16)
+	df.hdrReserved16_B = uint16(hdr >> 24)
+	df.hdrReserved24_C = uint32(hdr >> 40)
+}
+
+func (df *dataFrame) headerBytes(hdr uint64) (b []byte, err error) {
+	w := net.NewWriter()
+	if err = net.GenericNetWriter[uint64](w, hdr); err != nil {
+		return
+	}
+	return w.Bytes(), nil
+}
+
+func (df *dataFrame) HeaderFlags() uint8 {
 	return df.hdrFlags
 }
 
-func (df *dataFrame) WithHeaderFlag(f z.HeaderFlags32Type) {
+func (df *dataFrame) WithHeaderFlag(f uint8) {
 	df.hdrFlags |= f
 }
 
-// AttachData attaches data to the data frame payload.
-func (df *dataFrame) AttachData(in []byte) {
-	l1 := len(df.payload)
-	l2 := len(in)
-	buf := make([]byte, l1+l2)
-	_ = copy(buf, df.payload)
-	_ = copy(buf[l1:], in)
-	df.payload = buf
-}
-
-func (df *dataFrame) Compose(header []byte) (out []byte, err error) {
-	// Magic word
+func (df *dataFrame) Compose() (out []byte, err error) {
+	if df.hdrMsgType == 0 {
+		return df.Marshal()
+	}
+	// Write the data frame magic word.
 	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
 		return
 	}
-	// Header
-	if err = net.GenericNetWriter[uint32](df.netw, uint32(df.hdrFlags)); err != nil {
+	// Write data frame header.
+	header := df.packHeader()
+	if err = net.GenericNetWriter[uint64](df.netw, header); err != nil {
 		return
 	}
-	// Write header data
-	df.netw.Write(header)
-	// Payload
-	if _, err = df.netw.Write(df.payload); err != nil {
+	if out, err = MarshalOptions.Marshal(df.Message); err != nil {
 		return
 	}
+	// Encrypt payload.
+	if df.cipher != nil {
+		var hdrBytes []byte
+		if hdrBytes, err = df.headerBytes(header); err != nil {
+			return
+		}
+		out = df.cipher.Encrypt(out, hdrBytes)
+	}
+	df.netw.Write(out)
 	out = df.netw.Bytes()
+	return
+}
+
+func (df *dataFrame) ProtoMessage() proto.Message {
+	return df.Message
+}
+
+func (df *dataFrame) WithProtoMessage(msg proto.Message) {
+	df.Message = msg
+}
+
+func (df *dataFrame) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
+	df.cipher = cipher
+	df.hdrMsgType = EncryptedMessage
+}
+
+func (df *dataFrame) Decrypt() (err error) {
+	var out, hdrBytes []byte
+	if hdrBytes, err = df.headerBytes(df.packHeader()); err != nil {
+		return
+	}
+	if out, err = df.cipher.Decrypt(df.payload, hdrBytes); err != nil {
+		return
+	}
+	err = df.Unmarshal(out)
 	return
 }
 
 func (df *dataFrame) Payload() []byte {
 	return df.payload
-}
-
-func (df *dataFrame) WithPayload(b []byte) {
-	df.payload = b
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	SharedMem_IPC z.HeaderFlags32Type = 1 << iota
+	SharedMem_IPC z.HeaderFlagsType = 1 << iota
 )
 
 type codec struct {

@@ -1,6 +1,6 @@
 package crypto
 
-type AEAD_CypherInterface interface {
+type AEAD_CipherInterface interface {
 	WithNonce([]byte) error
 	Encrypt(in []byte, additional []byte) []byte
 	Decrypt(in []byte, additional []byte) (out []byte, err error)

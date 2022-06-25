@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "go_serv/extension.proto";
 import "net/crypto.proto";
 
 package go_serv.net;
@@ -18,8 +19,8 @@ message Session {
     uint32 nonce_length = 30;
   }
   message Response {
-    sfixed64 id = 1;
-    bytes nonce = 2;
-    optional bytes pub_key = 3; // Server's public key
+    option (.go_serv.enc_off) = true;
+    bytes nonce = 1;
+    optional bytes pub_key = 2; // Server's public key
   }
 }

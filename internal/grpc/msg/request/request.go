@@ -1,4 +1,4 @@
-package net
+package request
 
 import (
 	"github.com/go-serv/service/pkg/z"
@@ -10,7 +10,7 @@ type clientInfo struct {
 }
 
 type request struct {
-	payload       interface{}
+	df            z.DataFrameInterface
 	meta          z.MetaInterface
 	methodReflect z.MethodReflectionInterface
 	msgReflect    z.MessageReflectionInterface
@@ -29,18 +29,14 @@ func (r *request) Meta() z.MetaInterface {
 	return r.meta
 }
 
-func (r *request) Payload() interface{} {
-	return r.payload
-}
-
-func (r *request) WithPayload(payload interface{}) {
-	r.payload = payload
-}
-
 func (r *request) MethodReflection() z.MethodReflectionInterface {
 	return r.methodReflect
 }
 
 func (r *request) MessageReflection() z.MessageReflectionInterface {
 	return r.msgReflect
+}
+
+func (r *request) DataFrame() z.DataFrameInterface {
+	return r.df
 }

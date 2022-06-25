@@ -3,6 +3,7 @@ package z
 import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 type MetaInterface interface {
@@ -13,8 +14,7 @@ type MetaInterface interface {
 }
 
 type RequestResponseInterface interface {
-	Payload() interface{}
-	WithPayload(interface{})
+	DataFrame() DataFrameInterface
 	Meta() MetaInterface
 	MethodReflection() MethodReflectionInterface
 	MessageReflection() MessageReflectionInterface
@@ -30,11 +30,16 @@ type ResponseInterface interface {
 }
 
 type ContextInterface interface {
+	WithInput(proto.Message) error
+	WithOutput(proto.Message) error
+	MethodReflection() MethodReflectionInterface
+	InputReflection() MessageReflectionInterface
+	OutputReflection() MessageReflectionInterface
 	Request() RequestInterface
 	WithRequest(RequestInterface)
 	Response() ResponseInterface
 	WithResponse(ResponseInterface)
-	Invoke() (interface{}, error)
+	Invoke() error
 }
 
 type NetContextInterface interface {

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface, res z.ResponseInterface) (err error) {
+func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	srvCtx := ctx.(z.NetServerContextInterface)
 	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
 	if req.MethodReflection().Bool(go_serv.E_RequireSession) {
@@ -22,17 +22,17 @@ func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, r
 		sess := session.FindById(sId)
 		srvCtx.WithSession(sess)
 	}
-	_, err = next(req, res)
+	_, err = next(req, nil)
 	return
 }
 
-func clientSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface, res z.ResponseInterface) (err error) {
+func clientSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	if req.MethodReflection().Bool(go_serv.E_OptionalSession) {
 		clntCtx := ctx.(z.NetClientContextInterface)
 		client := clntCtx.Client()
 		sId := client.Meta().Dictionary().(*net.HttpDictionary).SessionId
 		req.Meta().Dictionary().(*net.HttpDictionary).SessionId = sId
 	}
-	_, err = next(req, res)
+	_, err = next(req, nil)
 	return
 }

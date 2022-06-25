@@ -5,7 +5,7 @@ import (
 	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
 	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
 	net_mw "github.com/go-serv/service/internal/grpc/middleware/net"
-	"github.com/go-serv/service/internal/middleware/codec/cipher_msg"
+	enc_mw "github.com/go-serv/service/internal/middleware/net/enc_msg"
 	session_mw "github.com/go-serv/service/internal/middleware/net/session"
 	"github.com/go-serv/service/internal/runtime"
 	net_service "github.com/go-serv/service/internal/service/net"
@@ -25,7 +25,6 @@ func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *netClient 
 	c.WithCodec(codec)
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
-	cipher_msg.NetClientInit(c)
 	c.newDefaultMiddleware()
 	runtime.Runtime().RegisterNetworkClient(c)
 	return c
@@ -36,4 +35,5 @@ func (c *netClient) newDefaultMiddleware() {
 	mw.WithClient(c)
 	c.WithMiddleware(mw)
 	session_mw.ClientInit(mw)
+	enc_mw.ClientInit(mw)
 }

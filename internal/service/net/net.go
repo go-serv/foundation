@@ -1,6 +1,8 @@
 package net
 
-import "github.com/go-serv/service/pkg/z"
+import (
+	"github.com/go-serv/service/pkg/z"
+)
 
 type netService struct {
 	z.ServiceInterface

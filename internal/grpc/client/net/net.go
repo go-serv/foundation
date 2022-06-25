@@ -9,17 +9,17 @@ type netClient struct {
 	z.ClientInterface
 	svc         z.NetworkServiceInterface
 	insecure    bool
-	blockCipher crypto.AEAD_CypherInterface
+	blockCipher crypto.AEAD_CipherInterface
 }
 
 func (c *netClient) NetService() z.NetworkServiceInterface {
 	return c.svc
 }
 
-func (c *netClient) BlockCipher() crypto.AEAD_CypherInterface {
+func (c *netClient) BlockCipher() crypto.AEAD_CipherInterface {
 	return c.blockCipher
 }
 
-func (c *netClient) WithBlockCipher(cipher crypto.AEAD_CypherInterface) {
+func (c *netClient) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
 	c.blockCipher = cipher
 }

@@ -2,7 +2,6 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
-	mw_codec "github.com/go-serv/service/internal/grpc/middleware/codec"
 	"github.com/go-serv/service/internal/logger"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
@@ -83,7 +82,6 @@ func (c *server) Codec() z.CodecInterface {
 
 func (s *server) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
-	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
 }
 
 func (s *server) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {

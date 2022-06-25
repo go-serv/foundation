@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/rand"
+	"github.com/go-serv/service/internal/ancillary/crypto/aes"
 	"github.com/go-serv/service/internal/ancillary/crypto/dh_key"
 	proto "github.com/go-serv/service/internal/autogen/proto/net"
 	grpc_err "github.com/go-serv/service/internal/grpc/error"
@@ -37,8 +38,9 @@ func (s sessionImpl) diffieHellmanKeyExchange(req *proto.Session_Request) (serve
 func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Request) (res *proto.Session_Response, err error) {
 	var (
 		nonce, encKey, serverPubKey []byte
+		cipher                      crypto.AEAD_CipherInterface
 	)
-	netCtx := ctx.(z.NetContextInterface)
+	netCtx := ctx.(z.NetServerContextInterface)
 	res = &proto.Session_Response{}
 	// Create a nonce with the given length.
 	if req.GetNonceLength() > NonceMaxLength {
@@ -54,8 +56,6 @@ func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Reque
 		return nil, grpc_err.New(z.ErrSeverityHigh, codes.FailedPrecondition, err.Error())
 	}
 	res.Nonce = nonce
-	t := req.GetKeyExchAlgo()
-	_ = t
 	// Public key exchange.
 	switch req.GetKeyExchAlgo().(type) {
 	case *proto.Session_Request_Dh:
@@ -73,12 +73,21 @@ func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Reque
 	}
 	// Create a new session.
 	lifetime := uint16(req.GetLifetime())
-	sess := session.NewSecureSession(lifetime, nonce, encKey)
+	sess := session.NewSession(lifetime)
 	dic := netCtx.Response().Meta().Dictionary().(*net.HttpDictionary)
 	dic.SessionId = sess.Id()
-	// Send server's public key to the client if necessary.
+	netCtx.WithSession(sess)
+	// Send back server's public key to the client if necessary.
 	if len(serverPubKey) > 0 {
 		res.PubKey = serverPubKey
+	}
+	// Init block cipher.
+	switch req.GetBlockCypher() {
+	case proto.Crypto_AEADCipher_AES_GCM:
+		if cipher, err = aes.NewCipher(encKey, nonce); err != nil {
+			return
+		}
+		sess.WithBlockCipher(cipher)
 	}
 	return res, nil
 }

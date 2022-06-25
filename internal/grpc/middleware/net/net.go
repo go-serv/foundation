@@ -4,7 +4,9 @@
 // Response handlers chain: gRPC call -> response -> h1 -> h2 -> codec middleware -> m2 -> m1 -> unmarshaler -> wire data
 package net
 
-import "github.com/go-serv/service/pkg/z"
+import (
+	"github.com/go-serv/service/pkg/z"
+)
 
 type netMiddleware struct {
 	client            z.ClientInterface
@@ -45,15 +47,10 @@ func (m *netMiddleware) AddResponseHandler(h z.NetResponseHandlerFn) {
 	m.resHandlers = append(m.resHandlers, h)
 }
 
-func (t *requestChain) passThrough(ctx z.NetContextInterface) (res z.ResponseInterface, err error) {
+func (t *requestChain) passThrough(ctx z.NetContextInterface) (err error) {
 	var curr z.NetChainElementFn
-	invokeHandler := func(next z.NetChainElementFn, _ z.NetContextInterface, _ z.RequestInterface, res z.ResponseInterface) (err error) {
-		var payload interface{}
-		if payload, err = ctx.Invoke(); err != nil {
-			return
-		}
-		res.WithPayload(payload)
-		return
+	invokeHandler := func(next z.NetChainElementFn, _ z.NetContextInterface, _ z.RequestInterface) error {
+		return ctx.Invoke()
 	}
 	// Build a middleware chain so that the first added handler will be called first.
 	ch := append(t.mw.reqHandlers, invokeHandler)
@@ -61,23 +58,21 @@ func (t *requestChain) passThrough(ctx z.NetContextInterface) (res z.ResponseInt
 	for i := l1 - 1; i >= 0; i-- {
 		handler := ch[i]
 		next := curr
-		curr = func(req z.RequestInterface, res z.ResponseInterface) (el z.NetChainElementFn, err error) {
-			err = handler(next, ctx, req, res)
-			if err != nil {
+		curr = func(req z.RequestInterface, _ z.ResponseInterface) (el z.NetChainElementFn, err error) {
+			if err = handler(next, ctx, req); err != nil {
 				return
 			}
 			return curr, nil
 		}
 	}
-	_, err = curr(ctx.Request(), ctx.Response())
-	return ctx.Response(), err
+	_, err = curr(ctx.Request(), nil)
+	return
 }
 
-func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, err error) {
+func (t *responseChain) passThrough(ctx z.NetContextInterface) (err error) {
 	var curr z.NetChainElementFn
-	tailCall := func(_ z.NetChainElementFn, res z.ResponseInterface) (err error) {
-		out = res.Payload()
-		return
+	tailCall := func(_ z.NetChainElementFn, _ z.NetContextInterface, res z.ResponseInterface) error {
+		return nil
 	}
 	//
 	ch := append([]z.NetResponseHandlerFn{tailCall}, t.mw.resHandlers...)
@@ -86,13 +81,12 @@ func (t *responseChain) passThrough(res z.ResponseInterface) (out interface{}, e
 		handler := ch[i]
 		next := curr
 		curr = func(_ z.RequestInterface, res z.ResponseInterface) (z.NetChainElementFn, error) {
-			err = handler(next, res)
-			if err != nil {
+			if err = handler(next, ctx, res); err != nil {
 				return nil, err
 			}
 			return curr, nil
 		}
 	}
-	_, err = curr(nil, res)
+	_, err = curr(nil, ctx.Response())
 	return
 }

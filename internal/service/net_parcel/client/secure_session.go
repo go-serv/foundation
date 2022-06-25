@@ -19,7 +19,7 @@ func (s SecureSessionOptions) SecureSession(in *proto.Session_Request) (res *pro
 	var (
 		pubKeyExch  crypto.PubKeyExchangeInterface
 		encKey      []byte
-		blockCipher crypto.AEAD_CypherInterface
+		blockCipher crypto.AEAD_CipherInterface
 	)
 	ctx := s.PrepareContext()
 	// Public key exchange. Default to the Diffie-Hellman algorithm.

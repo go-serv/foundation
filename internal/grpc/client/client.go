@@ -3,7 +3,6 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/service/internal/ancillary"
-	mw_codec "github.com/go-serv/service/internal/grpc/middleware/codec"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -11,14 +10,13 @@ import (
 )
 
 type client struct {
-	svcName      protoreflect.FullName
-	codec        z.CodecInterface
-	codecMwGroup z.CodecMiddlewareGroupInterface
-	mw           z.MiddlewareInterface
-	meta         z.MetaInterface
-	endpoint     z.EndpointInterface
-	conn         net.Conn
-	dialOpts     []grpc.DialOption
+	svcName  protoreflect.FullName
+	codec    z.CodecInterface
+	mw       z.MiddlewareInterface
+	meta     z.MetaInterface
+	endpoint z.EndpointInterface
+	conn     net.Conn
+	dialOpts []grpc.DialOption
 	ancillary.MethodMustBeImplemented
 }
 
@@ -32,11 +30,6 @@ func (c *client) Codec() z.CodecInterface {
 
 func (s *client) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
-	s.codecMwGroup = mw_codec.NewCodecMiddlewareGroup(cc)
-}
-
-func (s *client) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {
-	return s.codecMwGroup
 }
 
 func (c *client) Middleware() z.MiddlewareInterface {

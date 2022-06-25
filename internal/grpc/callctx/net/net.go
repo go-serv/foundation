@@ -1,14 +1,15 @@
 package net
 
 import (
-	"context"
+	"github.com/go-serv/service/internal/grpc/callctx"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 type netContext struct {
-	context.Context
+	callctx.CallCtx
 	req      z.RequestInterface
 	res      z.ResponseInterface
 	tenantId z.TenantId
@@ -53,8 +54,13 @@ func (ctx *netContext) WithResponse(res z.ResponseInterface) {
 	ctx.res = res
 }
 
-func (ctx *srvContext) Invoke() (res interface{}, err error) {
-	res, err = ctx.handler(ctx, ctx.req.Payload())
+func (ctx *srvContext) Invoke() (err error) {
+	var v any
+	if v, err = ctx.handler(ctx, ctx.req.DataFrame().ProtoMessage()); err != nil {
+		return
+	}
+	ctx.res.DataFrame().WithProtoMessage(v.(proto.Message))
+	ctx.WithOutput(v.(proto.Message))
 	return
 }
 
@@ -73,28 +79,29 @@ func (ctx *clientContext) WithClient(client z.NetworkClientInterface) {
 }
 
 // Invoke prepares metadata and calls gRPC method
-func (ctx *clientContext) Invoke() (res interface{}, err error) {
+func (ctx *clientContext) Invoke() (err error) {
 	var (
 		md metadata.MD
 	)
-	md, err = ctx.req.Meta().Dehydrate()
-	if err != nil {
+	if md, err = ctx.req.Meta().Dehydrate(); err != nil {
 		return
 	}
 	ctx.Context = metadata.NewOutgoingContext(ctx.Context, md)
 	methodReflect := ctx.req.MethodReflection()
 	methodName := methodReflect.SlashFullName()
-	err = ctx.invoker(ctx, methodName, ctx.req.Payload(), ctx.res.Payload(), ctx.cc, ctx.opts...)
-	if err != nil {
+	if err = ctx.invoker(
+		ctx,
+		methodName,
+		ctx.req.DataFrame(),
+		ctx.res.DataFrame(),
+		ctx.cc,
+		ctx.opts...); err != nil {
 		return
 	}
-	// Response meta data
-	err = ctx.res.Meta().Hydrate()
-	if err != nil {
+	// Response meta data.
+	if err = ctx.res.Meta().Hydrate(); err != nil {
 		return
 	}
-	// Response payload
-	res = ctx.res.Payload()
 	return
 }
 

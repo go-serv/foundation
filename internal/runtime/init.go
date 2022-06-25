@@ -21,6 +21,7 @@ func init() {
 	rt.ref.AddProtoExtension(go_serv.E_OptionalSession)
 	rt.ref.AddProtoExtension(go_serv.E_CloseSession)
 	rt.ref.AddProtoExtension(go_serv.E_CopyMetaOff)
+	rt.ref.AddProtoExtension(go_serv.E_EncOff)
 	//
 	rt.resolvers = make(resolversMapTyp, 0)
 	rt.eventsMap = make(eventsMapTyp, 0)
