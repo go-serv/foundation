@@ -11,8 +11,9 @@ func serverReqHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z
 	if sess != nil && sess.BlockCipher() != nil && srvCtx.InputReflection().Bool(go_serv.E_EncOff) != true {
 		df := srvCtx.Request().DataFrame()
 		df.WithBlockCipher(sess.BlockCipher())
-		err = df.Decrypt()
-		return
+		if err = df.Decrypt(); err != nil {
+			return
+		}
 	}
 	_, err = next(req, nil)
 	return

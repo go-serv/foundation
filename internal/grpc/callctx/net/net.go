@@ -2,10 +2,10 @@ package net
 
 import (
 	"github.com/go-serv/service/internal/grpc/callctx"
+	"github.com/go-serv/service/internal/grpc/codec"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/proto"
 )
 
 type netContext struct {
@@ -55,12 +55,18 @@ func (ctx *netContext) WithResponse(res z.ResponseInterface) {
 }
 
 func (ctx *srvContext) Invoke() (err error) {
-	var v any
+	var (
+		v  any
+		df z.DataFrameInterface
+	)
 	if v, err = ctx.handler(ctx, ctx.req.DataFrame().ProtoMessage()); err != nil {
 		return
 	}
-	ctx.res.DataFrame().WithProtoMessage(v.(proto.Message))
-	ctx.WithOutput(v.(proto.Message))
+	if df, err = codec.NewDataFrame(v); err != nil {
+		return
+	}
+	ctx.res.WithDataFrame(df)
+	ctx.WithOutput(df.ProtoMessage())
 	return
 }
 

@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"reflect"
+	"unsafe"
 )
 
 func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
@@ -21,12 +23,18 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			req z.RequestInterface
 			df  z.DataFrameInterface
 		)
+
+		ptr1 := (*reflect.SliceHeader)(unsafe.Pointer(reflect.ValueOf(v).Elem().FieldByName("unknownFields").Addr().Pointer()))
+		_ = ptr1
 		// Retrieve request metadata.
 		if md, ok = metadata.FromIncomingContext(ctx); !ok {
 			return nil, status.Error(codes.Internal, "failed to retrieve request metadata")
 		}
 		//
-		if df, err = codec.NewDataFrame(v); err != nil {
+		if df, err = codec.LoadDataFrameFromPtrPool(v.(proto.Message)); err != nil {
+			return
+		}
+		if err = df.RemoveFromPtrPool(); err != nil {
 			return
 		}
 		//
@@ -40,7 +48,7 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		if err = mw.newRequestChain().passThrough(srvCxt); err != nil {
 			return
 		}
-		//
+		//srvCxt.WithOutput(srvCxt.Response().DataFrame().ProtoMessage())
 		if err = mw.newResponseChain().passThrough(srvCxt); err != nil {
 			return
 		}

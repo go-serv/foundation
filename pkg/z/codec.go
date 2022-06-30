@@ -26,6 +26,7 @@ type DataFrameInterface interface {
 	Payload() []byte
 	Marshal() ([]byte, error)
 	Unmarshal([]byte) error
+	RemoveFromPtrPool() error
 }
 
 //type LocalDataFrameInterface interface {

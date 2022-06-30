@@ -1,9 +1,9 @@
 package codec
 
 import (
+	"errors"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/protobuf/proto"
-	"reflect"
 )
 
 var (
@@ -21,20 +21,29 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 		df z.DataFrameInterface
 	)
 	if df, ok = v.(z.DataFrameInterface); !ok {
-		return nil, nil
+		return nil, errors.New("not a dataframe")
 	}
 	return df.Compose()
 }
 
 func (c *codec) Unmarshal(wire []byte, v interface{}) (err error) {
 	var (
-		df z.DataFrameInterface
+		df *dataFrame
 	)
 	if df, err = NewDataFrame(v); err != nil {
 		return
 	}
-	reflect.ValueOf(v).Elem().Set(reflect.ValueOf(df).Elem())
-	return df.Parse(wire)
+	//v.(proto.Message).ProtoReflect().SetUnknown(protoreflect.RawFields{})
+	// Map the incoming proto message to its data frame.
+	if err = df.Parse(wire); err != nil {
+		return
+	}
+	if err = df.addToPtrPool(); err != nil {
+		return
+	}
+	//ptr1 := (*reflect.SliceHeader)(unsafe.Pointer(reflect.ValueOf(v).Elem().FieldByName("unknownFields").Addr().Pointer()))
+	//ptr1.Data = uintptr(reflect.ValueOf(df).Elem().UnsafePointer())
+	return
 }
 
 func (c *codec) Name() string {

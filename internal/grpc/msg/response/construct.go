@@ -8,8 +8,10 @@ import (
 
 func NewResponse(v interface{}, md *metadata.MD) (res *response, err error) {
 	res = new(response)
-	if res.df, err = codec.NewDataFrame(v); err != nil {
-		return
+	if v != nil {
+		if res.df, err = codec.NewDataFrame(v); err != nil {
+			return
+		}
 	}
 	res.meta = net.NewMeta(md)
 	return

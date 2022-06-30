@@ -26,6 +26,7 @@ type RequestInterface interface {
 
 type ResponseInterface interface {
 	RequestResponseInterface
+	WithDataFrame(DataFrameInterface)
 	ToGrpcResponse() interface{}
 }
 

@@ -42,11 +42,13 @@ func (mw *netMiddleware) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		netCtx.WithRequest(req)
 		netCtx.WithResponse(res)
 		// Request chain.
-		//reqp.(proto.Message).ProtoReflect().
-		//reflect.ValueOf(reqp).Elem().Set(reflect.ValueOf(dfReq.ProtoMessage()).Elem())
 		if err = mw.newRequestChain().passThrough(netCtx); err != nil {
 			return
 		}
+		if dfRes, err = codec.LoadDataFrameFromPtrPool(resp.(proto.Message)); err != nil {
+			return
+		}
+		netCtx.Response().WithDataFrame(dfRes)
 		// Response chain.
 		err = mw.newResponseChain().passThrough(netCtx)
 		// Copy response metadata to the client if necessary.
