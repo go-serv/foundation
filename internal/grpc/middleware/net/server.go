@@ -23,7 +23,7 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		}
 		//
 		clientInfo := request.NewClientInfo(ctx)
-		if req, err = request.NewRequest(ifreq.(z.DataFrameInterface), &md, clientInfo); err != nil {
+		if req, err = request.NewServerRequest(ifreq.(z.DataFrameInterface), &md, clientInfo); err != nil {
 			return
 		}
 		//

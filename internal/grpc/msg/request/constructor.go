@@ -3,7 +3,6 @@ package request
 import (
 	"context"
 	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
-	"github.com/go-serv/service/internal/runtime"
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -15,29 +14,21 @@ func NewClientRequest(df z.DataFrameInterface, m z.MetaInterface, info *clientIn
 	r.df = df
 	r.meta = m
 	r.clientInfo = info
-	reflect := runtime.Runtime().Reflection()
-	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.Interface().(proto.Message)); err != nil {
-		return
-	}
-	r.msgReflect = r.methodReflect.FromMessage(df.Interface().(proto.Message))
+	r.Populate(df.Interface().(proto.Message))
 	return
 }
 
-func NewRequest(df z.DataFrameInterface, md *metadata.MD, info *clientInfo) (r *serverRequest, err error) {
+func NewServerRequest(df z.DataFrameInterface, md *metadata.MD, info *clientInfo) (r *serverRequest, err error) {
 	r = new(serverRequest)
 	r.df = df
 	r.clientInfo = info
-	// Meta
 	r.meta = meta_net.NewMeta(md)
+	if err = r.Populate(df.Interface().(proto.Message)); err != nil {
+		return
+	}
 	if err = r.meta.Hydrate(); err != nil {
 		return
 	}
-	// Reflection
-	reflect := runtime.Runtime().Reflection()
-	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.Interface().(proto.Message)); err != nil {
-		return
-	}
-	r.msgReflect = r.methodReflect.FromMessage(df.Interface().(proto.Message))
 	return
 }
 

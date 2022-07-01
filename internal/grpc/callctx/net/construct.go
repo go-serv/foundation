@@ -17,8 +17,8 @@ func NewServerContext(ctx context.Context, req z.RequestInterface, handler grpc.
 	return srvctx
 }
 
-func NewClientContext(ctx context.Context) *clientContext {
-	c := new(clientContext)
+func NewClientContext(ctx context.Context) *clientCtx {
+	c := new(clientCtx)
 	c.Context = ctx
 	return c
 }

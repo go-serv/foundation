@@ -1,6 +1,7 @@
 package request
 
 import (
+	"github.com/go-serv/service/internal/grpc/msg"
 	"github.com/go-serv/service/pkg/z"
 	"net"
 )
@@ -10,11 +11,10 @@ type clientInfo struct {
 }
 
 type request struct {
-	df            z.DataFrameInterface
-	meta          z.MetaInterface
-	methodReflect z.MethodReflectionInterface
-	msgReflect    z.MessageReflectionInterface
-	clientInfo    *clientInfo
+	msg.Reflection
+	df         z.DataFrameInterface
+	meta       z.MetaInterface
+	clientInfo *clientInfo
 }
 
 type serverRequest struct {
@@ -27,14 +27,6 @@ type clientRequest struct {
 
 func (r *request) Meta() z.MetaInterface {
 	return r.meta
-}
-
-func (r *request) MethodReflection() z.MethodReflectionInterface {
-	return r.methodReflect
-}
-
-func (r *request) MessageReflection() z.MessageReflectionInterface {
-	return r.msgReflect
 }
 
 func (r *request) DataFrame() z.DataFrameInterface {

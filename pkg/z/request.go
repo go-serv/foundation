@@ -18,6 +18,7 @@ type RequestResponseInterface interface {
 	Meta() MetaInterface
 	MethodReflection() MethodReflectionInterface
 	MessageReflection() MessageReflectionInterface
+	Populate(proto.Message) error
 }
 
 type RequestInterface interface {
@@ -27,15 +28,9 @@ type RequestInterface interface {
 type ResponseInterface interface {
 	RequestResponseInterface
 	WithDataFrame(DataFrameInterface)
-	Populate(proto.Message) error
 }
 
 type ContextInterface interface {
-	WithInput(proto.Message) error
-	WithOutput(proto.Message) error
-	MethodReflection() MethodReflectionInterface
-	InputReflection() MessageReflectionInterface
-	OutputReflection() MessageReflectionInterface
 	Request() RequestInterface
 	WithRequest(RequestInterface)
 	Response() ResponseInterface
