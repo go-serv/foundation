@@ -15,18 +15,16 @@ func (f HeaderFlagsType) Has(chkFlag HeaderFlagsType) bool {
 }
 
 type DataFrameInterface interface {
+	encoding.MessageWrapper
 	Parse(wire []byte) error
 	//HeaderFlags() HeaderFlagsType
 	//WithHeaderFlag(HeaderFlagsType)
 	Compose() ([]byte, error)
-	ProtoMessage() proto.Message
-	WithProtoMessage(msg proto.Message)
 	WithBlockCipher(cipher crypto.AEAD_CipherInterface)
 	Decrypt() error
 	Payload() []byte
 	Marshal() ([]byte, error)
 	Unmarshal([]byte) error
-	RemoveFromPtrPool() error
 }
 
 //type LocalDataFrameInterface interface {

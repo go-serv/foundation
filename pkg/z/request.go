@@ -27,7 +27,7 @@ type RequestInterface interface {
 type ResponseInterface interface {
 	RequestResponseInterface
 	WithDataFrame(DataFrameInterface)
-	ToGrpcResponse() interface{}
+	Populate(proto.Message) error
 }
 
 type ContextInterface interface {

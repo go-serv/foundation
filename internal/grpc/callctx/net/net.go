@@ -6,6 +6,7 @@ import (
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 type netContext struct {
@@ -56,17 +57,14 @@ func (ctx *netContext) WithResponse(res z.ResponseInterface) {
 
 func (ctx *srvContext) Invoke() (err error) {
 	var (
-		v  any
-		df z.DataFrameInterface
+		ifreplay any
 	)
-	if v, err = ctx.handler(ctx, ctx.req.DataFrame().ProtoMessage()); err != nil {
+	if ifreplay, err = ctx.handler(ctx, ctx.req.DataFrame().Interface()); err != nil {
 		return
 	}
-	if df, err = codec.NewDataFrame(v); err != nil {
-		return
-	}
-	ctx.res.WithDataFrame(df)
-	ctx.WithOutput(df.ProtoMessage())
+	msg := ifreplay.(proto.Message)
+	ctx.res.WithDataFrame(codec.NewDataFrame(msg))
+	err = ctx.res.Populate(msg)
 	return
 }
 

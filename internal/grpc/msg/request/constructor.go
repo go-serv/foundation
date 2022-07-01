@@ -7,6 +7,7 @@ import (
 	"github.com/go-serv/service/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/protobuf/proto"
 )
 
 func NewClientRequest(df z.DataFrameInterface, m z.MetaInterface, info *clientInfo) (r *clientRequest, err error) {
@@ -15,10 +16,10 @@ func NewClientRequest(df z.DataFrameInterface, m z.MetaInterface, info *clientIn
 	r.meta = m
 	r.clientInfo = info
 	reflect := runtime.Runtime().Reflection()
-	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.ProtoMessage()); err != nil {
+	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.Interface().(proto.Message)); err != nil {
 		return
 	}
-	r.msgReflect = r.methodReflect.FromMessage(df.ProtoMessage())
+	r.msgReflect = r.methodReflect.FromMessage(df.Interface().(proto.Message))
 	return
 }
 
@@ -33,10 +34,10 @@ func NewRequest(df z.DataFrameInterface, md *metadata.MD, info *clientInfo) (r *
 	}
 	// Reflection
 	reflect := runtime.Runtime().Reflection()
-	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.ProtoMessage()); err != nil {
+	if r.methodReflect, err = reflect.MethodReflectionFromMessage(df.Interface().(proto.Message)); err != nil {
 		return
 	}
-	r.msgReflect = r.methodReflect.FromMessage(df.ProtoMessage())
+	r.msgReflect = r.methodReflect.FromMessage(df.Interface().(proto.Message))
 	return
 }
 

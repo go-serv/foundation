@@ -1,5 +1,7 @@
 package codec
 
+import "github.com/go-serv/service/internal/autogen/proto/net"
+
 func init() {
-	dataFramePtrPool = make(dataFramePtrPoolTyp, ptrPoolSize)
+	net.RegisterMessageWrapper(MessageWrapperHandler())
 }

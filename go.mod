@@ -3,6 +3,7 @@ module github.com/go-serv/service
 go 1.18
 
 replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop/go-work
+replace google.golang.org/grpc => /home/pihpah/go/src/github.com/go-serv/grpc-go
 
 require (
 	github.com/AgentCoop/go-work v0.0.2 // indirect

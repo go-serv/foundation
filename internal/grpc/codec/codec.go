@@ -28,21 +28,15 @@ func (c *codec) Marshal(v interface{}) ([]byte, error) {
 
 func (c *codec) Unmarshal(wire []byte, v interface{}) (err error) {
 	var (
-		df *dataFrame
+		ok bool
+		df z.DataFrameInterface
 	)
-	if df, err = NewDataFrame(v); err != nil {
-		return
+	if df, ok = v.(z.DataFrameInterface); !ok {
+		return errors.New("expected interface z.Dataframe")
 	}
-	//v.(proto.Message).ProtoReflect().SetUnknown(protoreflect.RawFields{})
-	// Map the incoming proto message to its data frame.
 	if err = df.Parse(wire); err != nil {
 		return
 	}
-	if err = df.addToPtrPool(); err != nil {
-		return
-	}
-	//ptr1 := (*reflect.SliceHeader)(unsafe.Pointer(reflect.ValueOf(v).Elem().FieldByName("unknownFields").Addr().Pointer()))
-	//ptr1.Data = uintptr(reflect.ValueOf(df).Elem().UnsafePointer())
 	return
 }
 

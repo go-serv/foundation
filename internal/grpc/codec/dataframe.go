@@ -2,18 +2,12 @@ package codec
 
 import (
 	"bytes"
-	"errors"
 	"github.com/go-serv/service/internal/ancillary/net"
 	"github.com/go-serv/service/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"hash/fnv"
-	"math/rand"
-	"reflect"
-	"runtime"
-	"sync/atomic"
-	"unsafe"
 )
 
 const magicWordLen = 8
@@ -22,17 +16,6 @@ var (
 	// head -c 8 /dev/urandom | hexdump -C
 	dfMagicWord             = [magicWordLen]byte{0xd6, 0x2f, 0x7b, 0x92, 0x24, 0xfb, 0x37, 0x9c}
 	errorHeaderParserFailed = status.Error(codes.Internal, "failed to parse data frame header")
-	dataFramePtrPool        dataFramePtrPoolTyp
-)
-
-const ptrPoolSize = 1000
-
-type (
-	dataFramePtrPoolTyp  []dataFramePtrPoolItem
-	dataFramePtrPoolItem struct {
-		df    *dataFrame
-		inuse uint32
-	}
 )
 
 type (
@@ -56,54 +39,11 @@ type dataFrame struct {
 	netr            *net.NetReader
 }
 
-func LoadDataFrameFromPtrPool(msg proto.Message) (df *dataFrame, err error) {
-	ptr1 := (*reflect.SliceHeader)(unsafe.Pointer(reflect.ValueOf(msg).Elem().FieldByName("unknownFields").Addr().Pointer()))
-	idx := uint(ptr1.Data)
-	if df = dataFramePtrPool[idx].df; df == nil {
-		return nil, errors.New("")
+func MessageWrapperHandler() encoding.MessageWrapperHandler {
+	return func(v interface{}) encoding.MessageWrapper {
+		df := NewDataFrame(v.(proto.Message))
+		return df
 	}
-	return dataFramePtrPool[idx].df, nil
-}
-
-func (df dataFrame) ptrPoolIndex(msg proto.Message) (idx uint, err error) {
-	protoPtr := uint64(reflect.ValueOf(msg).Elem().Field(0).Addr().Pointer())
-	nw := net.NewWriter()
-	if err = net.GenericNetWriter[uint64](nw, protoPtr); err != nil {
-		return
-	}
-	fnv := fnv.New64a()
-	if _, err = fnv.Write(nw.Bytes()); err != nil {
-		return
-	}
-	hash := fnv.Sum64()
-	return uint(hash % ptrPoolSize), nil
-}
-
-func (df *dataFrame) addToPtrPool() (err error) {
-	//var idx uint
-	//if idx, err = df.ptrPoolIndex(df.ProtoMessage()); err != nil {
-	//	return
-	//}
-	randIdx := rand.Intn(ptrPoolSize)
-	ptr1 := (*reflect.SliceHeader)(unsafe.Pointer(reflect.ValueOf(df.ProtoMessage()).Elem().FieldByName("unknownFields").Addr().Pointer()))
-	ptr1.Data = uintptr(randIdx)
-	for {
-		if atomic.CompareAndSwapUint32(&dataFramePtrPool[randIdx].inuse, 0, 1) {
-			dataFramePtrPool[randIdx].df = df
-			return
-		} else {
-			runtime.Gosched()
-		}
-	}
-}
-
-func (df *dataFrame) RemoveFromPtrPool() (err error) {
-	var idx uint
-	if idx, err = df.ptrPoolIndex(df.ProtoMessage()); err != nil {
-		return
-	}
-	atomic.StoreUint32(&dataFramePtrPool[idx].inuse, 0)
-	return
 }
 
 func (df *dataFrame) Write(p []byte) (n int, err error) {
@@ -203,12 +143,8 @@ func (df *dataFrame) Compose() (out []byte, err error) {
 	return
 }
 
-func (df *dataFrame) ProtoMessage() proto.Message {
+func (df *dataFrame) Interface() interface{} {
 	return df.Message
-}
-
-func (df *dataFrame) WithProtoMessage(msg proto.Message) {
-	df.Message = msg
 }
 
 func (df *dataFrame) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
