@@ -5,7 +5,7 @@ import "net/crypto.proto";
 
 package go_serv.net;
 
-//
+//..
 message Session {
   message Request {
     uint32 lifetime = 1; // Session lifetime in seconds

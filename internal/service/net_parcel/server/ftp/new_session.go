@@ -63,7 +63,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 	}
 	postfix := strconv.FormatUint(uint64(sess.Id()), 16)
 	// Add a marker to the directory pathname denoting that the directory is temporary and must be deleted
-	// along with the chunksTransferred files, once the session is expired. It's up to a service to move chunksTransferred files to
+	// along with the chunksTransferred files, once the session is expired. It's up to a service to move transferred files to
 	// another location.
 	if req.GetTemp() {
 		postfix += "-temp"

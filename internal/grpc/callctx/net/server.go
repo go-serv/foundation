@@ -15,13 +15,11 @@ type srvContext struct {
 }
 
 func (ctx *srvContext) Invoke() (err error) {
-	var (
-		ifreplay any
-	)
-	if ifreplay, err = ctx.handler(ctx, ctx.req.DataFrame().Interface()); err != nil {
+	var v any
+	if v, err = ctx.handler(ctx, ctx.req.DataFrame().Interface()); err != nil {
 		return
 	}
-	msg := ifreplay.(proto.Message)
+	msg := v.(proto.Message)
 	ctx.res.WithDataFrame(codec.NewDataFrame(msg))
 	err = ctx.res.Populate(msg)
 	return
