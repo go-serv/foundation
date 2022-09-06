@@ -2,8 +2,8 @@ package codec
 
 import (
 	"bytes"
-	"github.com/go-serv/service/internal/ancillary/net"
-	"github.com/go-serv/service/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/internal/ancillary/net"
+	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/status"

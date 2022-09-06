@@ -1,11 +1,10 @@
 package client
 
 import (
-	"github.com/go-serv/service/pkg/z"
-	"google.golang.org/protobuf/reflect/protoreflect"
+	"github.com/go-serv/foundation/pkg/z"
 )
 
-func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *client {
+func NewClient(svcName string, e z.EndpointInterface) *client {
 	c := new(client)
 	c.svcName = svcName
 	c.endpoint = e

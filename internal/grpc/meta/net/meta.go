@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"reflect"
 )

@@ -1,24 +1,22 @@
 package net
 
 import (
-	"github.com/go-serv/service/internal/grpc/client"
-	net_cc "github.com/go-serv/service/internal/grpc/codec/net"
-	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
-	net_mw "github.com/go-serv/service/internal/grpc/middleware/net"
-	enc_mw "github.com/go-serv/service/internal/middleware/net/enc_msg"
-	session_mw "github.com/go-serv/service/internal/middleware/net/session"
-	"github.com/go-serv/service/internal/runtime"
-	net_service "github.com/go-serv/service/internal/service/net"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/grpc/client"
+	net_cc "github.com/go-serv/foundation/internal/grpc/codec/net"
+	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
+	net_mw "github.com/go-serv/foundation/internal/grpc/middleware/net"
+	enc_mw "github.com/go-serv/foundation/internal/middleware/net/enc_msg"
+	session_mw "github.com/go-serv/foundation/internal/middleware/net/session"
+	"github.com/go-serv/foundation/internal/runtime"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *netClient {
+func NewClient(svcName string, e z.EndpointInterface) *netClient {
 	c := new(netClient)
 	c.insecure = true
 	c.ClientInterface = client.NewClient(svcName, e)
-	c.svc = net_service.NewNetworkService(svcName)
+	//c.svc = net_service.NewNetworkService(svcName, nil, []z.EndpointInterface{e}, nil)
 	c.WithMeta(meta_net.NewMeta(nil))
 	// Set client codec
 	codec := net_cc.NewOrRegistered(string(svcName))
@@ -26,7 +24,7 @@ func NewClient(svcName protoreflect.FullName, e z.EndpointInterface) *netClient 
 	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
 	c.newDefaultMiddleware()
-	runtime.Runtime().RegisterNetworkClient(c)
+	runtime.Runtime().RegisterClient(c)
 	return c
 }
 

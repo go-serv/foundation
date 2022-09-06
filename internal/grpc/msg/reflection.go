@@ -1,8 +1,8 @@
 package msg
 
 import (
-	"github.com/go-serv/service/internal/runtime"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/service"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -12,7 +12,7 @@ type Reflection struct {
 }
 
 func (ref *Reflection) Populate(msg proto.Message) (err error) {
-	reflect := runtime.Runtime().Reflection()
+	reflect := service.Reflection()
 	if ref.method, err = reflect.MethodReflectionFromMessage(msg); err != nil {
 		return
 	}

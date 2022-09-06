@@ -1,6 +1,6 @@
 package local
 
-import "github.com/go-serv/service/pkg/z"
+import "github.com/go-serv/foundation/pkg/z"
 
 type localClient struct {
 	z.ClientInterface

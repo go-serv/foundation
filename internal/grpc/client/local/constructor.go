@@ -1,11 +1,11 @@
 package local
 
 import (
-	"github.com/go-serv/service/internal/grpc/client"
-	local_cc "github.com/go-serv/service/internal/grpc/codec/local"
-	mw_shmem "github.com/go-serv/service/internal/middleware/codec/shm_ipc"
-	"github.com/go-serv/service/internal/runtime"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/grpc/client"
+	local_cc "github.com/go-serv/foundation/internal/grpc/codec/local"
+	mw_shmem "github.com/go-serv/foundation/internal/middleware/codec/shm_ipc"
+	"github.com/go-serv/foundation/internal/runtime"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

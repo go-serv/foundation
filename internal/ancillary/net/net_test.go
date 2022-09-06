@@ -2,7 +2,7 @@ package net_test
 
 import (
 	"bytes"
-	"github.com/go-serv/service/internal/ancillary/net"
+	"github.com/go-serv/foundation/internal/ancillary/net"
 	"io"
 	"testing"
 )

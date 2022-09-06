@@ -1,6 +1,6 @@
 package session
 
-import "github.com/go-serv/service/pkg/z"
+import "github.com/go-serv/foundation/pkg/z"
 
 func ServerInit(mw z.NetMiddlewareInterface) {
 	mw.AddRequestHandler(serverSessionHandler)

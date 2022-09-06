@@ -1,11 +1,9 @@
 package service
 
 import (
-	"github.com/go-serv/service/internal/ancillary"
-	_ "github.com/go-serv/service/internal/logger"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/ancillary"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type State int
@@ -19,15 +17,38 @@ const (
 )
 
 type service struct {
-	name         protoreflect.FullName
-	codec        z.CodecInterface
-	codecMwGroup z.CodecMiddlewareGroupInterface
-	State        State
+	name      string
+	codec     z.CodecInterface
+	app       z.AppInterface
+	cfg       z.ServiceCfgInterface
+	endpoints []z.EndpointInterface
+	state     State
+	mwGroup   z.MiddlewareInterface
 	ancillary.MethodMustBeImplemented
 }
 
-func (s *service) Name() protoreflect.FullName {
+func Reflection() z.ReflectInterface {
+	return ref
+}
+
+func (s *service) Name() string {
 	return s.name
+}
+
+func (s *service) State() State {
+	return s.state
+}
+
+func (s *service) Endpoints() []z.EndpointInterface {
+	return s.endpoints
+}
+
+func (s *service) App() z.AppInterface {
+	return s.app
+}
+
+func (s *service) BindApp(app z.AppInterface) {
+	s.app = app
 }
 
 func (s *service) Codec() z.CodecInterface {
@@ -37,15 +58,14 @@ func (s *service) Codec() z.CodecInterface {
 func (s *service) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
 }
-
-func (s *service) CodecMiddlewareGroup() z.CodecMiddlewareGroupInterface {
-	return s.codecMwGroup
+func (s *service) MiddlewareGroup() z.MiddlewareInterface {
+	return s.mwGroup
 }
 
-func (s service) Service_State() State {
-	return s.State
+func (s *service) WithMiddlewareGroup(mw z.MiddlewareInterface) {
+	s.mwGroup = mw
 }
 
-func (b service) Register(srv *grpc.Server) {
-	b.MethodMustBeImplemented.Panic()
+func (s *service) Register(srv *grpc.Server) {
+	s.MethodMustBeImplemented.Panic()
 }

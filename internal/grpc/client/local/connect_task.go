@@ -2,7 +2,7 @@ package local
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -15,7 +15,7 @@ func (c *localClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fi
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()
 		addr := "unix-abstract://" + c.Endpoint().Address()
-		//addr := "@/tmp/." + c.Endpoint().Address()
+		//addr := "@/tmp/." + c.endpoint().Address()
 		conn, err := grpc.Dial(addr, c.DialOptions()...)
 		task.Assert(err)
 		v.(z.ClientInterface).OnConnect(conn)

@@ -2,15 +2,14 @@ package z
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/service/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type ClientInterface interface {
 	CodecAwareInterface
 	MiddlewareAwareInterface
-	ServiceName() protoreflect.FullName
+	ServiceName() string
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	OnConnect(cc grpc.ClientConnInterface)

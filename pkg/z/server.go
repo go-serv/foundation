@@ -7,10 +7,13 @@ import (
 
 type EndpointInterface interface {
 	Address() string
-	Listen() error
 	ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	GrpcServer() *grpc.Server
-	WithServer(ServerInterface)
+	BindGrpcServer(*grpc.Server)
+	GrpcServerOptions() []grpc.ServerOption
+	WithGrpcServerOptions(opts ...grpc.ServerOption)
+	Service() ServiceInterface
+	BindService(ServiceInterface)
 }
 
 type ServerInterface interface {

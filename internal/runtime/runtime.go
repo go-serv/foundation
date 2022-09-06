@@ -1,134 +1,107 @@
 package runtime
 
 import (
-	"errors"
 	"fmt"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/service"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-var (
-	ErrMethodDescriptorNotFound = errors.New("")
-	ErrDescriptorNotFound       = errors.New("")
-	ErrResolverNotFound         = errors.New("runtime: resolver not found")
-)
+//var (
+//	ErrMethodDescriptorNotFound = errors.New("")
+//	ErrDescriptorNotFound       = errors.New("")
+//	ErrResolverNotFound         = errors.New("runtime: resolver not found")
+//)
 
-type (
-	registryKey string
-	registry    map[registryKey]interface{}
-)
-
-type (
-	resolversMapTyp map[any]z.MemoizerInterface
-	eventsMapTyp    map[interface{}][]eventHandlerFn
-	eventHandlerFn  func(...interface{}) bool
-)
+//type (
+//	registryKey string
+//	registry    map[registryKey]interface{}
+//)
+//
+//type (
+//	resolversMapTyp map[any]z.MemoizerInterface
+//	eventsMapTyp    map[interface{}][]eventHandlerFn
+//	eventHandlerFn  func(...interface{}) bool
+//)
 
 //type registryConstraints interface {
 //	i.LocalServiceInterface | i.NetworkServiceInterface | i.LocalClientInterface | i.NetworkClientInterface
 //}
 
-func genericRegistryAsSlice[T any](in ...registry) []T {
-	out := make([]T, 0)
-	for _, reg := range in {
-		for _, item := range reg {
-			out = append(out, item.(T))
-		}
-	}
-	return out
-}
+//func genericRegistryAsSlice[T any](in ...registry) []T {
+//	out := make([]T, 0)
+//	for _, reg := range in {
+//		for _, item := range reg {
+//			out = append(out, item.(T))
+//		}
+//	}
+//	return out
+//}
+
+type (
+	resolversMapTyp map[any]z.MemoizerInterface
+	eventsMapTyp    map[interface{}][]z.EventHandlerFn
+)
 
 type runtime struct {
-	platform     z.PlatformInterface
-	ref          z.ReflectInterface
-	resolvers    resolversMapTyp
-	localService registry
-	netServices  registry
-	localClients registry
-	netClients   registry
-	eventsMap    eventsMapTyp
-}
-
-func (r *runtime) Platform() z.PlatformInterface {
-	return r.platform
-}
-
-func (r *runtime) Reflection() z.ReflectInterface {
-	return r.ref
-}
-
-func (r *runtime) AddResolver(key any, resolver z.MemoizerInterface) {
-	r.resolvers[key] = resolver
-}
-
-func (r *runtime) Resolve(key any, args ...any) (v any, err error) {
-	resolver, ok := r.resolvers[key]
-	if !ok {
-		return nil, ErrResolverNotFound
-	}
-	v, err = resolver.Run(args...)
-	return
-}
-
-func (r *runtime) RegisterNetworkService(svc z.NetworkServiceInterface) {
-	k := registryKey(svc.Name())
-	if _, ok := r.netServices[k]; ok {
-		panic(fmt.Sprintf("network service '%s' already registered", svc.Name()))
-	}
-	r.netServices[k] = svc
-}
-
-// RegisterLocalService registers a local service either by its client or by itself
-func (r *runtime) RegisterLocalService(svc z.LocalServiceInterface) {
-	k := registryKey(svc.Name())
-	r.localService[k] = svc
-}
-
-func (r *runtime) RegisterNetworkClient(c z.NetworkClientInterface) {
-	k := registryKey(c.ServiceName())
-	if _, ok := r.netClients[k]; ok {
-		panic(fmt.Sprintf("A network client for '%s' already registered", c.ServiceName()))
-	}
-	r.netClients[k] = c
-}
-
-func (r *runtime) RegisterLocalClient(c z.LocalClientInterface) {
-	k := registryKey(c.ServiceName())
-	if _, ok := r.localClients[k]; ok {
-		//panic(fmt.Sprintf("A local client for '%s' already registered", c.ServiceName()))
-	}
-	r.localClients[k] = c
-}
-
-func (r *runtime) RegisteredServices() []z.ServiceInterface {
-	return genericRegistryAsSlice[z.ServiceInterface](r.netServices, r.localService)
-}
-
-func (r *runtime) NetworkServices() []z.NetworkServiceInterface {
-	return genericRegistryAsSlice[z.NetworkServiceInterface](r.netServices)
-}
-
-func (r *runtime) NetworkClients() []z.NetworkClientInterface {
-	return genericRegistryAsSlice[z.NetworkClientInterface](r.netClients)
-}
-
-func (r *runtime) LocalService() z.LocalServiceInterface {
-	for _, v := range r.localService {
-		return v.(z.LocalServiceInterface)
-	}
-	return nil
-}
-
-func (r *runtime) LocalClients() []z.LocalClientInterface {
-	return genericRegistryAsSlice[z.LocalClientInterface](r.localClients)
+	platform  z.PlatformInterface
+	services  map[string]z.ServiceInterface
+	clients   map[string]z.ClientInterface
+	resolvers resolversMapTyp
+	eventsMap eventsMapTyp
 }
 
 func Runtime() *runtime {
 	return rt
 }
 
+func (r *runtime) RegisterService(svc z.ServiceInterface) {
+	r.services[svc.Name()] = svc
+}
+
+func (r *runtime) Services() []z.ServiceInterface {
+	out := make([]z.ServiceInterface, len(r.services))
+	i := 0
+	for _, svc := range r.services {
+		out[i] = svc
+		i++
+	}
+	return out
+}
+
+func (r *runtime) RegisterEventHandler(eventType any, h z.EventHandlerFn) {
+	if _, has := r.eventsMap[eventType]; !has {
+		r.eventsMap[eventType] = make([]z.EventHandlerFn, 0)
+	}
+	r.eventsMap[eventType] = append(r.eventsMap[eventType], h)
+}
+
+func (r *runtime) TriggerEvent(event any, extraArgs ...any) {
+	if handlers, has := r.eventsMap[event]; has {
+		for i := 0; i < len(handlers); i++ {
+			if stop := handlers[i](extraArgs...); stop {
+				return
+			}
+		}
+	}
+}
+
+func (r *runtime) RegisterResolver(key any, resolver z.MemoizerInterface) {
+	r.resolvers[key] = resolver
+}
+
+func (r *runtime) Resolve(key any, args ...any) (v any, err error) {
+	if resolver, ok := r.resolvers[key]; ok {
+		v, err = resolver.Run(args...)
+	} else {
+		return nil, ErrResolverNotFound
+	}
+	return
+}
+
 func (r *runtime) IsRequestMessage(msg proto.Message) (bool, error) {
-	m, err := r.Reflection().MethodReflectionFromMessage(msg)
+	m, err := service.Reflection().MethodReflectionFromMessage(msg)
 	if err != nil {
 		return false, err
 	}
@@ -141,13 +114,13 @@ func (r *runtime) IsResponseMessage(msg proto.Message) (bool, error) {
 }
 
 func (r *runtime) ClientByMessage(msg proto.Message) (z.ClientInterface, error) {
-	sf, err := r.Reflection().ServiceReflectionFromMessage(msg)
+	sf, err := service.Reflection().ServiceReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range genericRegistryAsSlice[interface{}](r.localClients, r.netClients) {
-		client := v.(z.ClientInterface)
-		if client.ServiceName() == sf.Descriptor().FullName() {
+	for _, client := range r.clients {
+		name := protoreflect.FullName(client.ServiceName())
+		if name == sf.Descriptor().FullName() {
 			return client, nil
 		}
 	}
@@ -155,35 +128,28 @@ func (r *runtime) ClientByMessage(msg proto.Message) (z.ClientInterface, error) 
 }
 
 func (r *runtime) ServiceByMessage(msg proto.Message) (z.ServiceInterface, error) {
-	sf, err := r.Reflection().ServiceReflectionFromMessage(msg)
+	sf, err := service.Reflection().ServiceReflectionFromMessage(msg)
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range genericRegistryAsSlice[interface{}](r.localService, r.netServices) {
-		svc := v.(z.ServiceInterface)
-		if svc.Name() == sf.Descriptor().FullName() {
+	for _, svc := range r.services {
+		name := protoreflect.FullName(svc.Name())
+		if name == sf.Descriptor().FullName() {
 			return svc, nil
 		}
 	}
 	return nil, ErrMethodDescriptorNotFound
 }
 
-func (r *runtime) RegisterEventHandler(event interface{}, h eventHandlerFn) {
-	if _, has := r.eventsMap[event]; !has {
-		r.eventsMap[event] = make([]eventHandlerFn, 0)
-	}
-	r.eventsMap[event] = append(r.eventsMap[event], h)
+//
+func (r *runtime) Platform() z.PlatformInterface {
+	return r.platform
 }
 
-func (r *runtime) TriggerEvent(event interface{}, extra ...interface{}) {
-	handlers, has := r.eventsMap[event]
-	if !has {
-		return
+func (r *runtime) RegisterClient(c z.NetworkClientInterface) {
+	k := c.ServiceName()
+	if _, ok := r.clients[k]; ok {
+		panic(fmt.Sprintf("a client for '%s' is already registered", c.ServiceName()))
 	}
-	for i := 0; i < len(handlers); i++ {
-		stop := handlers[i](extra...)
-		if stop {
-			return
-		}
-	}
+	r.clients[k] = c
 }

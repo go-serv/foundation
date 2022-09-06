@@ -1,10 +1,10 @@
 package session
 
 import (
-	"github.com/go-serv/service/internal/autogen/proto/go_serv"
-	"github.com/go-serv/service/internal/grpc/meta/net"
-	"github.com/go-serv/service/internal/grpc/session"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/autogen/proto/go_serv"
+	"github.com/go-serv/foundation/internal/grpc/meta/net"
+	"github.com/go-serv/foundation/internal/grpc/session"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

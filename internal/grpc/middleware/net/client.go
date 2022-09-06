@@ -2,10 +2,10 @@ package net
 
 import (
 	"context"
-	"github.com/go-serv/service/internal/autogen/proto/go_serv"
-	net_req "github.com/go-serv/service/internal/grpc/msg/request"
-	net_res "github.com/go-serv/service/internal/grpc/msg/response"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/autogen/proto/go_serv"
+	net_req "github.com/go-serv/foundation/internal/grpc/msg/request"
+	net_res "github.com/go-serv/foundation/internal/grpc/msg/response"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

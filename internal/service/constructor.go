@@ -1,18 +1,18 @@
 package service
 
-import (
-	"fmt"
-	"google.golang.org/protobuf/reflect/protoreflect"
-)
+import "github.com/go-serv/foundation/pkg/z"
 
-func NewBaseService(name protoreflect.FullName) *service {
-	if name.IsValid() != true {
-		panic(fmt.Sprintf("invalid service name '%s'", name))
-	}
+func NewService(name string, cfg z.ServiceCfgInterface, endpoints []z.EndpointInterface) *service {
 	s := new(service)
 	s.name = name
-	s.State = StateInit
-	//s.sd = reflect.NewServiceDescriptor(string(name))
-	//s.cc = net_cc.NewOrRegistered(name)
+	s.cfg = cfg
+	s.endpoints = endpoints
+	s.state = StateInit
+	//app.AddService(s)
 	return s
+}
+
+func NewEndpoint() *endpoint {
+	ep := &endpoint{}
+	return ep
 }

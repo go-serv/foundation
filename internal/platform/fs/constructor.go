@@ -1,8 +1,8 @@
 package fs
 
 import (
-	"github.com/go-serv/service/pkg/z"
-	"github.com/go-serv/service/pkg/z/platform"
+	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/platform"
 )
 
 func NewFilesystem(tenantId z.TenantId) *filesystem {

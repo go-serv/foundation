@@ -1,7 +1,7 @@
 package session
 
 import (
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/pkg/z"
 	"time"
 )
 

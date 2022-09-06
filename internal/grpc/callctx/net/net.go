@@ -2,7 +2,7 @@ package net
 
 import (
 	"context"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/pkg/z"
 )
 
 type netContext struct {

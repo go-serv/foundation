@@ -6,7 +6,7 @@ services:
     environment:
       - USER_ID=1000
       - GROUP_ID=1000
-      - PROTOBUF_GO_IMPORT_PREFIX=github.com/go-serv/service/internal/autogen/proto
+      - PROTOBUF_GO_IMPORT_PREFIX=github.com/go-serv/foundation/internal/autogen/proto
       - PROTO_TARGETS=go,commonjs
       - PROTO_COMPILE_DELAY=1000 # Debounce changes of the proto files for the specified amount of time before compiling, ms
     volumes:

@@ -2,7 +2,7 @@ package reflect
 
 import (
 	"fmt"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -79,7 +79,7 @@ func (r *reflect) Populate() error {
 		s.desc = sd
 		s.extValues = r.createExtensionValueMap(sd.Options())
 		r.services[name] = s
-		// Service methods
+		// svc methods
 		l1 := sd.Methods().Len()
 		for ii := 0; ii < l1; ii++ {
 			md := sd.Methods().Get(ii)
@@ -89,8 +89,8 @@ func (r *reflect) Populate() error {
 	return nil
 }
 
-func (r *reflect) AddService(name protoreflect.FullName) {
-	r.services[name] = nil
+func (r *reflect) AddService(svc z.ServiceInterface) {
+	r.services[protoreflect.FullName(svc.Name())] = nil
 }
 
 func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service z.ServiceReflectInterface, has bool) {

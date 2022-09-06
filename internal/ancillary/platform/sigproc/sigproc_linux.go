@@ -4,7 +4,7 @@ package sigproc
 
 import (
 	"fmt"
-	"github.com/go-serv/service/internal/ancillary/platform"
+	"github.com/go-serv/foundation/internal/ancillary/platform"
 	"os"
 	"time"
 )

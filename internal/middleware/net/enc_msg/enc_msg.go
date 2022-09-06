@@ -1,8 +1,8 @@
 package session
 
 import (
-	"github.com/go-serv/service/internal/autogen/proto/go_serv"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/autogen/proto/go_serv"
+	"github.com/go-serv/foundation/pkg/z"
 )
 
 func serverReqHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {

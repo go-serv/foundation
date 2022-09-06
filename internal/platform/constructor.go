@@ -1,8 +1,8 @@
 package platform
 
 import (
-	"github.com/go-serv/service/internal/platform/fs"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/platform/fs"
+	"github.com/go-serv/foundation/pkg/z"
 )
 
 func NewPlatform(id z.TenantId) *platform {

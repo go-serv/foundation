@@ -1,8 +1,8 @@
 package fs
 
 import (
-	"github.com/go-serv/service/pkg/z"
-	pf "github.com/go-serv/service/pkg/z/platform"
+	"github.com/go-serv/foundation/pkg/z"
+	pf "github.com/go-serv/foundation/pkg/z/platform"
 	"os"
 	"path/filepath"
 	"sync/atomic"

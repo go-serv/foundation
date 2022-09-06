@@ -1,30 +1,28 @@
 package z
 
 import (
-	"crypto/md5"
-	"encoding/binary"
-	"github.com/go-serv/service/pkg/z/platform"
+	"github.com/go-serv/foundation/pkg/z/platform"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func BaseErrorCodeFromServiceName(svcName string) uint64 {
-	hash := md5.Sum([]byte(svcName))
-	return binary.LittleEndian.Uint64(hash[0:8])
-}
-
 type ServiceInterface interface {
-	Name() protoreflect.FullName
+	App() AppInterface
+	BindApp(AppInterface)
+	Endpoints() []EndpointInterface
+	Name() string
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
-	CodecMiddlewareGroup() CodecMiddlewareGroupInterface
+	MiddlewareGroup() MiddlewareInterface
+	WithMiddlewareGroup(MiddlewareInterface)
 	Register(srv *grpc.Server)
 }
 
+type ServiceCfgInterface interface{}
+
 type NetworkServiceInterface interface {
 	ServiceInterface
-	EncriptionKey() []byte
-	WithEncriptionKey([]byte)
+	//EncriptionKey() []byte
+	//WithEncriptionKey([]byte)
 }
 
 type LocalServiceInterface interface {

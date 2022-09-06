@@ -1,9 +1,9 @@
 package net
 
 import (
-	ancillary_net "github.com/go-serv/service/internal/ancillary/net"
-	"github.com/go-serv/service/internal/ancillary/struc/dictionary"
-	"github.com/go-serv/service/pkg/z"
+	ancillary_net "github.com/go-serv/foundation/internal/ancillary/net"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/go-serv/foundation/pkg/z"
 	"net"
 )
 

@@ -2,15 +2,14 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/service/internal/ancillary"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/ancillary"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	"net"
 )
 
 type client struct {
-	svcName  protoreflect.FullName
+	svcName  string
 	codec    z.CodecInterface
 	mw       z.MiddlewareInterface
 	meta     z.MetaInterface
@@ -20,7 +19,7 @@ type client struct {
 	ancillary.MethodMustBeImplemented
 }
 
-func (c *client) ServiceName() protoreflect.FullName {
+func (c *client) ServiceName() string {
 	return c.svcName
 }
 

@@ -1,8 +1,8 @@
 package net
 
 import (
-	"github.com/go-serv/service/internal/grpc/codec"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/grpc/codec"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )

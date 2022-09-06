@@ -2,8 +2,8 @@ package request
 
 import (
 	"context"
-	meta_net "github.com/go-serv/service/internal/grpc/meta/net"
-	"github.com/go-serv/service/pkg/z"
+	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/protobuf/proto"

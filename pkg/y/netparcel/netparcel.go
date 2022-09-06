@@ -1,9 +1,9 @@
 package netparcel
 
 import (
-	proto "github.com/go-serv/service/internal/autogen/proto/net"
-	"github.com/go-serv/service/pkg/z"
-	"github.com/go-serv/service/pkg/z/platform"
+	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/platform"
 )
 
 type (

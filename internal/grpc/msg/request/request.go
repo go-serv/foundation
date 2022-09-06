@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/go-serv/service/internal/grpc/msg"
-	"github.com/go-serv/service/pkg/z"
+	"github.com/go-serv/foundation/internal/grpc/msg"
+	"github.com/go-serv/foundation/pkg/z"
 	"net"
 )
 

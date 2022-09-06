@@ -1,7 +1,7 @@
 package z
 
 import (
-	"github.com/go-serv/service/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"

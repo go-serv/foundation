@@ -13,10 +13,15 @@ const (
 )
 
 type RuntimeInterface interface {
+	RegisterService(ServiceInterface)
+	RegisterClient(ClientInterface)
+
+	Services() []ServiceInterface
+
 	Platform() PlatformInterface
-	RegisteredServices() []ServiceInterface
-	RegisterLocalClient(LocalClientInterface)
+
 	RegisterNetworkClient(NetworkClientInterface)
+
 	Reflection() ReflectInterface
 	NetworkServices() []NetworkServiceInterface
 	IsRequestMessage(msg proto.Message) (bool, error)

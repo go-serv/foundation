@@ -2,9 +2,9 @@ package net
 
 import (
 	"context"
-	net_call "github.com/go-serv/service/internal/grpc/callctx/net"
-	"github.com/go-serv/service/internal/grpc/msg/request"
-	"github.com/go-serv/service/pkg/z"
+	net_call "github.com/go-serv/foundation/internal/grpc/callctx/net"
+	"github.com/go-serv/foundation/internal/grpc/msg/request"
+	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

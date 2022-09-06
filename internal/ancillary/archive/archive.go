@@ -1,8 +1,8 @@
 package archive
 
 import (
-	"github.com/go-serv/service/pkg/z/ancillary"
-	"github.com/go-serv/service/pkg/z/platform"
+	"github.com/go-serv/foundation/pkg/z/ancillary"
+	"github.com/go-serv/foundation/pkg/z/platform"
 	"io"
 )
 
