@@ -7,19 +7,8 @@ import (
 	"github.com/go-serv/foundation/pkg/z"
 )
 
-type (
-	registryKey string
-	registry    map[registryKey]interface{}
-)
-
 type app struct {
-	platform z.PlatformInterface
-	mainJob  job.JobInterface
-	services []z.ServiceInterface
-}
-
-func (a *app) Platform() z.PlatformInterface {
-	return a.platform
+	mainJob job.JobInterface
 }
 
 func (a *app) Job() job.JobInterface {
@@ -31,14 +20,14 @@ func (a *app) AddService(svc z.ServiceInterface) {
 	rf.AddService(svc)
 	rf.Populate()
 	runtime.Runtime().RegisterService(svc)
-	a.services = append(a.services, svc)
 }
 
 func (a *app) Start() {
-	if len(a.services) == 0 {
+	services := runtime.Runtime().Services()
+	if len(services) == 0 {
 		panic("application has no services to run, use AddService method")
 	}
-	for _, svc := range a.services {
+	for _, svc := range services {
 		svc.BindApp(a)
 		for _, ep := range svc.Endpoints() {
 			ep.BindService(svc)

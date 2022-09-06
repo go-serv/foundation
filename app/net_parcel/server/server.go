@@ -7,6 +7,7 @@ import (
 	"github.com/go-serv/foundation/app/net_parcel/server/ftp"
 	"github.com/go-serv/foundation/internal/ancillary/archive"
 	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/y/netparcel"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary"
@@ -48,7 +49,7 @@ func (svc *netParcel) handleGzipTarball(ctx z.NetServerContextInterface, path pl
 	if ctx.Tenant() != 0 {
 		// TODO: retrieve a tenant platform API object from the runtime registry
 	} else {
-		plat = svc.App().Platform()
+		plat = runtime.Runtime().Platform()
 	}
 	if untar, err = archive.NewUntar(plat, path, ancillary.GzipCompressor, svc.ArchiveOptions); err != nil {
 		return
