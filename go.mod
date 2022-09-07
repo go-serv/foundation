@@ -4,13 +4,14 @@ go 1.18
 
 replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop/go-work
 
-replace google.golang.org/grpc => /home/pihpah/go/src/github.com/go-serv/grpc-go
+replace google.golang.org/grpc => ../grpc-go
 
 require (
 	github.com/AgentCoop/go-work v0.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/go-serv/grpc-go v1.48.0-dev.0.20220905213130-80214d579147 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
