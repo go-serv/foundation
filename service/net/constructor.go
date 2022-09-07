@@ -42,3 +42,9 @@ func NewTcp6Endpoint(hostname string, port int) *tcp6Endpoint {
 	e := &tcp6Endpoint{newTcpEndpoint(hostname, port), nil}
 	return e
 }
+
+func NewConfig(webProxy *WebProxyConfig) *cfg {
+	cfg := new(cfg)
+	cfg.WebProxyConfig = webProxy
+	return cfg
+}

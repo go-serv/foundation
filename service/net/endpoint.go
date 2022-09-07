@@ -16,11 +16,16 @@ type tcpEndpoint struct {
 	webProxyEnabled bool
 	tlsCfg          *tls.Config
 	wrappedGrpc     *grpcweb.WrappedGrpcServer
+	proxyCfg        *WebProxyConfig
 }
 
 func (ep *tcpEndpoint) Address() string {
 	addr := ep.hostname + ":" + strconv.Itoa(ep.port)
 	return addr
+}
+
+func (ep *tcpEndpoint) WithWebProxy(cfg *WebProxyConfig) {
+	ep.proxyCfg = cfg
 }
 
 func (ep *tcpEndpoint) buildHttpServer() (srv *http.Server, err error) {

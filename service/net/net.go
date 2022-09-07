@@ -2,17 +2,27 @@ package net
 
 import (
 	"github.com/go-serv/foundation/pkg/z"
+	"time"
 )
+
+type X509PemPair struct {
+	CertFile string
+	KeyFile  string
+}
+
+type WebProxyConfig struct {
+	UseWebsocket          bool
+	WsPingInterval        time.Duration
+	WsReadLimit           int64
+	PemCert               *X509PemPair
+	AllowedOrigins        []string
+	AllowedRequestHeaders []string
+}
 
 type netService struct {
 	z.ServiceInterface
 	tenantId z.TenantId
 	encKey   []byte
-}
-
-type X509PemPair struct {
-	certFile string
-	keyFile  string
 }
 
 //func (b *netService) EncriptionKey() []byte {

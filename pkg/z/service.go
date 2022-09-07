@@ -19,6 +19,10 @@ type ServiceInterface interface {
 
 type ServiceCfgInterface interface{}
 
+type NetServiceCfgInterface interface {
+	ServiceCfgInterface
+}
+
 type NetworkServiceInterface interface {
 	ServiceInterface
 	//EncriptionKey() []byte
