@@ -19,8 +19,9 @@ func (ep *tcpEndpoint) loadCertificates(rootCertPemFile string, serverCertPairs 
 		srvCert          tls.Certificate
 		rootCertPemBytes []byte
 	)
+	rootCertPool := x509.NewCertPool()
 	ep.tlsCfg = &tls.Config{
-		RootCAs:      &x509.CertPool{},
+		RootCAs:      rootCertPool,
 		Certificates: make([]tls.Certificate, 0),
 		ClientAuth:   authType,
 	}

@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  goserv-tests-server:
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app

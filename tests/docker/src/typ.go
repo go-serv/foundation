@@ -13,7 +13,7 @@ const (
 
 const (
 	UnsafePort            = 3030
-	TlsPort               = 3031
+	TlsAnyPort            = 3031
 	TlsTrustedPartiesPort = 3032
 	WebProxyPort          = 3033
 )

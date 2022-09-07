@@ -2,9 +2,9 @@ module go-server-tests-endpoints
 
 go 1.18
 
-replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop/go-work
-replace github.com/go-serv/foundation => /home/pihpah/go/src/github.com/go-serv/foundation
-// replace google.golang.org/grpc => /home/pihpah/go/src/github.com/go-serv/grpc-go
+//replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop/go-work
+//replace github.com/go-serv/foundation => /home/pihpah/go/src/github.com/go-serv/foundation
+//replace google.golang.org/grpc => /home/pihpah/go/src/github.com/go-serv/grpc-go
 
 require github.com/go-serv/foundation v0.0.0-20220906220342-cc0e8152d51e
 
