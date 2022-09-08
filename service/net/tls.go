@@ -3,6 +3,8 @@ package net
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -25,11 +27,14 @@ func (ep *tcpEndpoint) loadCertificates(rootCertPemFile string, serverCertPairs 
 		Certificates: make([]tls.Certificate, 0),
 		ClientAuth:   authType,
 	}
-	if rootCertPemBytes, err = ioutil.ReadFile(rootCertPemFile); err == nil {
-		if ok := ep.tlsCfg.RootCAs.AppendCertsFromPEM(rootCertPemBytes); !ok {
-			// todo: return an error
-			return
-		}
+	if rootCertPemBytes, err = ioutil.ReadFile(rootCertPemFile); err != nil {
+		fmt.Println("can't load root CA")
+		return
+	}
+	if ok := ep.tlsCfg.RootCAs.AppendCertsFromPEM(rootCertPemBytes); !ok {
+		// todo: return an error
+		fmt.Println("can't append")
+		return errors.New("CA cetificate ::AppendCertsFromPEM failed")
 	}
 	//
 	for _, p := range serverCertPairs {

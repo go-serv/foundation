@@ -32,6 +32,7 @@ func main() {
 	)
 	srvApp := app.NewApp()
 	certs := make([]*net.X509PemPair, 1)
+
 	// Read env variables, must be set in docker-compose file.
 	rootCaCertFile = os.Getenv(src.EnvCertRootCaPemFile)
 	if len(rootCaCertFile) == 0 {
@@ -44,27 +45,32 @@ func main() {
 	}
 	srvPemPair := &net.X509PemPair{srvCertPemFile, srvCertKeyFile}
 	certs[0] = srvPemPair
+
 	// Plain TCP connection with no TLS.
 	eps := make([]z.EndpointInterface, 0)
 	unsafeEp := net.NewTcp4Endpoint(src.ServerAddr, src.UnsafePort)
 	eps = append(eps, unsafeEp)
+
 	// Require an TLS authentication.
 	trustedEp := net.NewTcp4Endpoint(src.ServerAddr, src.TlsTrustedPartiesPort)
 	if err = trustedEp.WithTrustedPartiesTlsProfile(rootCaCertFile, certs); err != nil {
 		panic(err)
 	}
 	eps = append(eps, trustedEp)
+
 	// Do not authenticate the clients.
 	noTrustEp := net.NewTcp4Endpoint(src.ServerAddr, src.TlsAnyPort)
 	if err = noTrustEp.WithNoTrustedPartiesTlsProfile(rootCaCertFile, []*net.X509PemPair{srvPemPair}); err != nil {
 		panic(err)
 	}
 	eps = append(eps, noTrustEp)
+
 	// gRPC web proxy
 	proxyEp := net.NewTcp4Endpoint(src.ServerAddr, src.WebProxyPort)
 	proxyEp.WithWebProxy(createWebProxyCfg())
 	eps = append(eps, proxyEp)
-	// Creates NetParcel service and starts an application.
+
+	// Creates NetParcel service and start the application.
 	netParcel := server.NewNetParcel(eps, nil)
 	srvApp.AddService(netParcel)
 	srvApp.Start()

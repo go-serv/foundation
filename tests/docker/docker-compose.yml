@@ -8,5 +8,8 @@ services:
       - .env
     volumes:
       - type: bind
-        source: ./src
-        target: /app
+        source: ./src/server
+        target: /app/target
+      - type: bind
+        source: ./assets/certs
+        target: /share/certs
