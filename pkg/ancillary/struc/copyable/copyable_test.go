@@ -3,10 +3,12 @@ package copyable
 import "testing"
 
 type A struct {
-	Shallow
+	//Shallow
+	test2   int
 	One     string
 	Num     int
 	BoolVal bool
+	test    int
 }
 
 func defaultA() *A {

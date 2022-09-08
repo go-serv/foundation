@@ -3,7 +3,7 @@ package client
 import (
 	"errors"
 	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
-	client2 "github.com/go-serv/foundation/internal/grpc/client"
+	client2 "github.com/go-serv/foundation/internal/client"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/platform"

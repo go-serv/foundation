@@ -1,9 +1,12 @@
 package net
 
 import (
+	"context"
 	"crypto/tls"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
 	"strconv"
@@ -26,6 +29,22 @@ func (ep *tcpEndpoint) Address() string {
 
 func (ep *tcpEndpoint) WithWebProxy(cfg *WebProxyConfig) {
 	ep.proxyCfg = cfg
+}
+
+func (ep *tcpEndpoint) IsSecure() bool {
+	return ep.tlsCfg != nil
+}
+
+func (ep *tcpEndpoint) TransportCredentials() credentials.TransportCredentials {
+	if ep.tlsCfg == nil {
+		return insecure.NewCredentials()
+	} else {
+		return credentials.NewTLS(ep.tlsCfg)
+	}
+}
+
+func (ep *tcpEndpoint) ClientHandshake(ctx context.Context, s string, conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
+	return nil, nil, nil
 }
 
 func (ep *tcpEndpoint) buildHttpServer() (srv *http.Server, err error) {

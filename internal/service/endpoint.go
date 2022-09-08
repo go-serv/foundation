@@ -43,3 +43,7 @@ func (ep *endpoint) WithGrpcServerOptions(opts ...grpc.ServerOption) {
 func (ep *endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	return nil, nil, nil
 }
+
+func (ep *endpoint) With() z.ServiceInterface {
+	return ep.svc
+}

@@ -17,6 +17,8 @@ type ClientInterface interface {
 	DialOptions() []grpc.DialOption
 	Meta() MetaInterface
 	WithMeta(MetaInterface)
+	// WithOptions sets options for a call.
+	WithOptions(any)
 }
 
 type NetworkClientInterface interface {

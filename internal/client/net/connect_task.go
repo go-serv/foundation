@@ -4,15 +4,13 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (c *netClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.TaskInterface) {
-		if c.insecure {
-			creds := insecure.NewCredentials()
-			c.WithDialOption(grpc.WithTransportCredentials(creds))
-		}
+		netEndpoint := c.Endpoint().(z.NetEndpointInterface)
+		transCreds := netEndpoint.TransportCredentials()
+		c.WithDialOption(grpc.WithTransportCredentials(transCreds))
 	}
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()

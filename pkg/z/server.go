@@ -3,6 +3,7 @@ package z
 import (
 	job "github.com/AgentCoop/go-work"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type EndpointInterface interface {
@@ -14,6 +15,12 @@ type EndpointInterface interface {
 	WithGrpcServerOptions(opts ...grpc.ServerOption)
 	Service() ServiceInterface
 	BindService(ServiceInterface)
+}
+
+type NetEndpointInterface interface {
+	EndpointInterface
+	IsSecure() bool
+	TransportCredentials() credentials.TransportCredentials
 }
 
 type ServerInterface interface {

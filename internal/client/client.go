@@ -66,3 +66,7 @@ func (c *client) OnConnect(cc grpc.ClientConnInterface) {
 func (c *client) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	return nil, nil, nil
 }
+
+func (c *client) WithOptions(any) {
+	c.MethodMustBeImplemented.Panic()
+}

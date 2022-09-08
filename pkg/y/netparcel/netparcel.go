@@ -19,6 +19,8 @@ type NetParcelServiceInterface interface {
 }
 
 type NetParcelClientInterface interface {
+	z.NetworkClientInterface
+	Ping(payload uint64) (uint64, error)
 	SecureSession(*SessionRequest) (*SessionResponse, error)
 	FtpNewSession(*FtpNewSessionRequest) (*FtpNewSessionResponse, error)
 	FtpTransferDir(target platform.Pathname, recursive bool, temp bool) error

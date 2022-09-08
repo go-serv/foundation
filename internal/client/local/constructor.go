@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/go-serv/foundation/internal/grpc/client"
+	"github.com/go-serv/foundation/internal/client"
 	local_cc "github.com/go-serv/foundation/internal/grpc/codec/local"
 	mw_shmem "github.com/go-serv/foundation/internal/middleware/codec/shm_ipc"
 	"github.com/go-serv/foundation/internal/runtime"

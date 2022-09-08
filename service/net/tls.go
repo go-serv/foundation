@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -21,21 +20,27 @@ func (ep *tcpEndpoint) loadCertificates(rootCertPemFile string, serverCertPairs 
 		srvCert          tls.Certificate
 		rootCertPemBytes []byte
 	)
+
 	rootCertPool := x509.NewCertPool()
 	ep.tlsCfg = &tls.Config{
+		// Assume that for the client/server authentication we will use a common root certificate.
 		RootCAs:      rootCertPool,
+		ClientCAs:    rootCertPool,
 		Certificates: make([]tls.Certificate, 0),
 		ClientAuth:   authType,
 	}
-	if rootCertPemBytes, err = ioutil.ReadFile(rootCertPemFile); err != nil {
-		fmt.Println("can't load root CA")
-		return
+
+	if len(rootCertPemFile) > 0 {
+		if rootCertPemBytes, err = ioutil.ReadFile(rootCertPemFile); err != nil {
+			return
+		}
+		ok := ep.tlsCfg.RootCAs.AppendCertsFromPEM(rootCertPemBytes)
+		ok2 := ep.tlsCfg.ClientCAs.AppendCertsFromPEM(rootCertPemBytes)
+		if !ok || !ok2 {
+			return errors.New("loading CA root certificate failed")
+		}
 	}
-	if ok := ep.tlsCfg.RootCAs.AppendCertsFromPEM(rootCertPemBytes); !ok {
-		// todo: return an error
-		fmt.Println("can't append")
-		return errors.New("CA cetificate ::AppendCertsFromPEM failed")
-	}
+
 	//
 	for _, p := range serverCertPairs {
 		if srvCert, err = tls.LoadX509KeyPair(p.CertFile, p.KeyFile); err != nil {
