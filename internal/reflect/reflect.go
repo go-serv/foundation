@@ -89,8 +89,8 @@ func (r *reflect) Populate() error {
 	return nil
 }
 
-func (r *reflect) AddService(svc z.ServiceInterface) {
-	r.services[protoreflect.FullName(svc.Name())] = nil
+func (r *reflect) AddService(name string) {
+	r.services[protoreflect.FullName(name)] = nil
 }
 
 func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service z.ServiceReflectInterface, has bool) {

@@ -8,7 +8,6 @@ import (
 type netClient struct {
 	z.ClientInterface
 	svc         z.NetworkServiceInterface
-	insecure    bool
 	blockCipher crypto.AEAD_CipherInterface
 }
 

@@ -17,7 +17,7 @@ func (a *app) Job() job.JobInterface {
 
 func (a *app) AddService(svc z.ServiceInterface) {
 	rf := service.Reflection()
-	rf.AddService(svc)
+	rf.AddService(svc.Name())
 	rf.Populate()
 	runtime.Runtime().RegisterService(svc)
 }

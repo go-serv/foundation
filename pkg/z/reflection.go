@@ -10,7 +10,7 @@ type ReflectInterface interface {
 	ServiceReflectionFromMessage(msg proto.Message) (ServiceReflectInterface, error)
 	ServiceReflectionFromName(name protoreflect.FullName) (ServiceReflectInterface, bool)
 	MethodReflectionFromMessage(msg proto.Message) (MethodReflectionInterface, error)
-	AddService(ServiceInterface)
+	AddService(name string)
 	AddProtoExtension(*protoimpl.ExtensionInfo)
 	Populate() error
 }

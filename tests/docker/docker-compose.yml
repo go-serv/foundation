@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  goserv-tests-server:
+  goserv-test-server:
     build:
       context: .
     env_file:
@@ -17,4 +17,17 @@ services:
         target: /app/target
       - type: bind
         source: ./assets/certs
-        target: /share/certs
+        target: /ssl-certs
+#  goserv-test-endpoints:
+#    depends_on:
+#      - goserv-test-server
+#    image: docker_goserv-test-server
+#    env_file:
+#      - .env
+#    volumes:
+#      - type: bind
+#        source: ./src/client
+#        target: /app/target
+#      - type: bind
+#        source: ./assets/certs
+#        target: /usr/local/share/certs

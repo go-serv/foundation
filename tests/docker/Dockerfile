@@ -8,7 +8,7 @@ FROM golang:1.19.0-buster
 #      git \
 #      vim
 
-RUN mkdir -p /app/target && mkdir -p /vendor
+RUN mkdir -p /app/target && mkdir -p /vendor && mkdir -p /ssl-certs
 ADD ./src /app
 COPY ./assets/go.mod /app
 
@@ -20,6 +20,5 @@ RUN set -e && (\
     )
 RUN cd /app && go mod tidy
 
-RUN chmod -R 775 /share
 WORKDIR /app
 ENTRYPOINT ["go", "run", "/app/target/main.go"]
