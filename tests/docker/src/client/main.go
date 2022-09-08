@@ -7,6 +7,7 @@ import (
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
 	"log"
+	"os"
 )
 
 const primeNum = 7
@@ -27,12 +28,35 @@ var pingTask = func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	return nil, run, nil
 }
 
+func clientX509Pair() *net.X509PemPair {
+	certFile := os.Getenv(src.EnvCertClientCertFile)
+	certKeyFile := os.Getenv(src.EnvCertClientKeyFile)
+	if len(certFile) == 0 || len(certKeyFile) == 0 {
+		panic("Client certificate file, env variable not set")
+	}
+	return &net.X509PemPair{certFile, certKeyFile}
+}
+
 func main() {
+	var (
+		cj job.JobInterface
+	)
+	certs := make([]*net.X509PemPair, 1)
 	unsafeEp := net.NewTcp4Endpoint(src.ServerAddr, src.UnsafePort)
-	j := client.NewClientJob(unsafeEp)
-	j.AddTask(pingTask)
-	<-j.Run()
-	if _, err := j.GetInterruptedBy(); err != nil {
+	cj = client.NewClientJob(unsafeEp)
+	cj.AddTask(pingTask)
+	<-cj.Run()
+	if _, err := cj.GetInterruptedBy(); err != nil {
 		log.Fatalf("plain TCP call failed with %v", err)
+	}
+
+	certs[0] = clientX509Pair()
+	secureEp := net.NewTcp4Endpoint(src.ServerAddr, src.TlsAnyPort)
+	secureEp.WithNoTrustedPartiesTlsProfile("", certs)
+	cj = client.NewClientJob(secureEp)
+	cj.AddTask(pingTask)
+	<-cj.Run()
+	if _, err := cj.GetInterruptedBy(); err != nil {
+		log.Fatalf("TLS (no trust) call failed with %v", err)
 	}
 }

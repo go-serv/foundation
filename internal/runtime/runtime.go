@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"fmt"
 	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
@@ -149,7 +148,8 @@ func (r *runtime) Platform() z.PlatformInterface {
 func (r *runtime) RegisterClient(c z.NetworkClientInterface) {
 	k := c.ServiceName()
 	if _, ok := r.clients[k]; ok {
-		panic(fmt.Sprintf("a client for '%s' is already registered", c.ServiceName()))
+		// TODO: issue a warning?
+		// panic(fmt.Sprintf("a client for '%s' is already registered", c.ServiceName()))
 	}
 	r.clients[k] = c
 }
