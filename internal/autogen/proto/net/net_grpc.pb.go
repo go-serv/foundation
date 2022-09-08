@@ -29,9 +29,9 @@ func RegisterMessageWrapper(handler encoding.MessageWrapperHandler) {
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NetParcelClient interface {
-	//..
+	// A dummy call for testing.
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
-	// Creates a new session
+	// Creates a new secure session. Can be used when TLS layer is not available.
 	SecureSession(ctx context.Context, in *Session_Request, opts ...grpc.CallOption) (*Session_Response, error)
 	//
 	FtpNewSession(ctx context.Context, in *Ftp_NewSession_Request, opts ...grpc.CallOption) (*Ftp_NewSession_Response, error)
@@ -128,9 +128,9 @@ func (c *netParcelClient) FtpInquiry(ctx context.Context, in *Ftp_Inquiry_Reques
 // All implementations must embed UnimplementedNetParcelServer
 // for forward compatibility
 type NetParcelServer interface {
-	//..
+	// A dummy call for testing.
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
-	// Creates a new session
+	// Creates a new secure session. Can be used when TLS layer is not available.
 	SecureSession(context.Context, *Session_Request) (*Session_Response, error)
 	//
 	FtpNewSession(context.Context, *Ftp_NewSession_Request) (*Ftp_NewSession_Response, error)

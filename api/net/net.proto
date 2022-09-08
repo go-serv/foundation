@@ -1,25 +1,17 @@
 syntax = "proto3";
 
 import "go_serv/extension.proto";
+import "net/ping.proto";
 import "net/ftp.proto";
 import "net/session.proto";
 
 package go_serv.net;
 
-message Ping {
-  message Request {
-    uint64 payload = 1;
-  }
-  message Response {
-    uint64 payload = 1;
-  }
-}
-
 service NetParcel {
-  //..
+  // A dummy call for testing.
   rpc Ping(Ping.Request) returns (Ping.Response) { }
 
-  // Creates a new session
+  // Creates a new secure session. Can be used when TLS layer is not available.
   rpc SecureSession(Session.Request) returns (Session.Response) { }
 
   //
