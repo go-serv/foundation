@@ -1,7 +1,7 @@
 package src
 
 const (
-	ServerAddr = "localhost"
+	ServerAddr = "go-serv.io"
 )
 
 const (

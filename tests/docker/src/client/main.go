@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/app/net_parcel/client"
 	"github.com/go-serv/foundation/pkg/y/netparcel"
@@ -21,7 +23,7 @@ var pingTask = func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		res, err := cc.Ping(primeNum)
 		task.Assert(err)
 		if res != primeNum {
-			log.Fatalf("plain TCP call, expected %d got %v", primeNum, res)
+			j.Cancel(errors.New(fmt.Sprintf("expected %d got %v", primeNum, res)))
 		}
 		task.Done()
 	}
@@ -41,6 +43,12 @@ func main() {
 	var (
 		cj job.JobInterface
 	)
+
+	rootCaCertFile := os.Getenv(src.EnvCertRootCaPemFile)
+	if len(rootCaCertFile) == 0 {
+		panic("CERT_ROOT_CA_PEM_FILE env variable is not set")
+	}
+
 	certs := make([]*net.X509PemPair, 1)
 	unsafeEp := net.NewTcp4Endpoint(src.ServerAddr, src.UnsafePort)
 	cj = client.NewClientJob(unsafeEp)
@@ -52,7 +60,7 @@ func main() {
 
 	certs[0] = clientX509Pair()
 	secureEp := net.NewTcp4Endpoint(src.ServerAddr, src.TlsAnyPort)
-	secureEp.WithNoTrustedPartiesTlsProfile("", certs)
+	secureEp.WithNoTrustedPartiesTlsProfile(rootCaCertFile, certs)
 	cj = client.NewClientJob(secureEp)
 	cj.AddTask(pingTask)
 	<-cj.Run()

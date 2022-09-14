@@ -1,8 +1,0 @@
-basicConstraints = CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-extendedKeyUsage = critical, serverAuth, clientAuth
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = ant.io
-DNS.2 = *.ant.io

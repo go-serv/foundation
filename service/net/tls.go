@@ -37,7 +37,7 @@ func (ep *tcpEndpoint) loadCertificates(rootCertPemFile string, serverCertPairs 
 		ok := ep.tlsCfg.RootCAs.AppendCertsFromPEM(rootCertPemBytes)
 		ok2 := ep.tlsCfg.ClientCAs.AppendCertsFromPEM(rootCertPemBytes)
 		if !ok || !ok2 {
-			return errors.New("loading CA root certificate failed")
+			return errors.New("loading root CA certificate failed")
 		}
 	}
 
