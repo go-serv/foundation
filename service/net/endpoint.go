@@ -3,7 +3,6 @@ package net
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc/credentials"
@@ -45,7 +44,6 @@ func (ep *tcpEndpoint) TransportCredentials() credentials.TransportCredentials {
 }
 
 func (ep *tcpEndpoint) ClientHandshake(ctx context.Context, s string, conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
-	fmt.Printf("dffd")
 	return nil, nil, nil
 }
 

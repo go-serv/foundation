@@ -1,8 +1,9 @@
 version: "3.9"
 
 services:
-  go-serv_sample:
-    image: utils_protobuf-compiler
+  go-serv_foundation:
+    image: go-serv_utils
+    container_name: go-serv_foundation
     environment:
       - USER_ID=1000
       - GROUP_ID=1000
@@ -14,8 +15,11 @@ services:
         source: ./internal/autogen/proto
         target: /app/proto/go
       - type: bind
-        source: ./web/js
+        source: ./web/client/autogen
         target: /app/proto/commonjs
+      - type: bind
+        source: ./web/client
+        target: /app/cjs_client
       - type: bind
         source: ./api
         target: /share # default directory for proto files

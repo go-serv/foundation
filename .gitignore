@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+*node_modules*
 
 # Auto-generated files
 # internal/autogen
@@ -15,7 +16,7 @@ tests/2022
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-web/js
+web/client/autogen
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

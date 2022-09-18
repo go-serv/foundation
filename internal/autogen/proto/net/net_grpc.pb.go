@@ -33,7 +33,7 @@ type NetParcelClient interface {
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
 	// Creates a new secure session. Can be used when TLS layer is not available.
 	SecureSession(ctx context.Context, in *Session_Request, opts ...grpc.CallOption) (*Session_Response, error)
-	//
+	//..
 	FtpNewSession(ctx context.Context, in *Ftp_NewSession_Request, opts ...grpc.CallOption) (*Ftp_NewSession_Response, error)
 	//
 	FtpTransfer(ctx context.Context, in *Ftp_FileChunk_Request, opts ...grpc.CallOption) (*Ftp_FileChunk_Response, error)
@@ -132,7 +132,7 @@ type NetParcelServer interface {
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	// Creates a new secure session. Can be used when TLS layer is not available.
 	SecureSession(context.Context, *Session_Request) (*Session_Response, error)
-	//
+	//..
 	FtpNewSession(context.Context, *Ftp_NewSession_Request) (*Ftp_NewSession_Response, error)
 	//
 	FtpTransfer(context.Context, *Ftp_FileChunk_Request) (*Ftp_FileChunk_Response, error)

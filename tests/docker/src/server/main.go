@@ -20,7 +20,7 @@ var (
 func createWebProxyCfg() *net.WebProxyConfig {
 	proxyCfg := &net.WebProxyConfig{}
 	proxyCfg.PemCert = &net.X509PemPair{
-		os.Getenv(src.EnvCertServerPemFile),
+		os.Getenv(src.EnvCertServerCertFile),
 		os.Getenv(src.EnvCertServerKeyFile),
 	}
 	return proxyCfg
@@ -38,7 +38,7 @@ func main() {
 	if len(rootCaCertFile) == 0 {
 		panic("Root CA certificate file, env variable not set")
 	}
-	srvCertPemFile = os.Getenv(src.EnvCertServerPemFile)
+	srvCertPemFile = os.Getenv(src.EnvCertServerCertFile)
 	srvCertKeyFile = os.Getenv(src.EnvCertServerKeyFile)
 	if len(srvCertPemFile) == 0 || len(srvCertKeyFile) == 0 {
 		panic("Server certificate file, env variable not set")

@@ -6,7 +6,7 @@ const (
 
 const (
 	EnvCertRootCaPemFile  = "CERT_ROOT_CA_PEM_FILE"
-	EnvCertServerPemFile  = "CERT_SERVER_PEM_FILE"
+	EnvCertServerCertFile = "CERT_SERVER_CERT_FILE"
 	EnvCertServerKeyFile  = "CERT_SERVER_KEY_FILE"
 	EnvCertClientCertFile = "CERT_CLIENT_CERT_FILE"
 	EnvCertClientKeyFile  = "CERT_CLIENT_KEY_FILE"
