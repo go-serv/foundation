@@ -14,6 +14,6 @@ func NewDataFrame(msg proto.Message) *dataFrame {
 
 func NewCodec(name string) *codec {
 	c := &codec{}
-	c.name = name
+	c.name = "proto"
 	return c
 }

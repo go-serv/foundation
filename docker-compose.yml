@@ -10,6 +10,7 @@ services:
       - PROTOBUF_GO_IMPORT_PREFIX=github.com/go-serv/foundation/internal/autogen/proto
       - PROTO_TARGETS=go,commonjs
       - PROTO_COMPILE_DELAY=1000 # Debounce changes of the proto files for the specified amount of time before compiling, ms
+    network_mode: host
     volumes:
       - type: bind
         source: ./internal/autogen/proto

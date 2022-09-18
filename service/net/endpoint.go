@@ -3,6 +3,7 @@ package net
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc/credentials"
@@ -14,12 +15,11 @@ import (
 
 type tcpEndpoint struct {
 	z.EndpointInterface
-	hostname        string
-	port            int
-	webProxyEnabled bool
-	tlsCfg          *tls.Config
-	wrappedGrpc     *grpcweb.WrappedGrpcServer
-	proxyCfg        *WebProxyConfig
+	hostname    string
+	port        int
+	tlsCfg      *tls.Config
+	wrappedGrpc *grpcweb.WrappedGrpcServer
+	proxyCfg    *WebProxyConfig
 }
 
 func (ep *tcpEndpoint) Address() string {
@@ -49,6 +49,10 @@ func (ep *tcpEndpoint) ClientHandshake(ctx context.Context, s string, conn net.C
 
 func (ep *tcpEndpoint) buildHttpServer() (srv *http.Server, err error) {
 	options := make([]grpcweb.Option, 0)
+	options = append(options, grpcweb.WithOriginFunc(func(origin string) bool {
+		fmt.Printf("Req from " + origin)
+		return true
+	}))
 	ep.wrappedGrpc = grpcweb.WrapServer(ep.GrpcServer(), options...)
 	serveMux := http.NewServeMux()
 	serveMux.Handle("/", ep.wrappedGrpc)
@@ -84,7 +88,7 @@ func (ep *tcpEndpoint) listenAndServeNetwork(network string) (err error) {
 		}
 	}
 	//
-	if ep.webProxyEnabled {
+	if ep.proxyCfg != nil {
 		var httpSrv *http.Server
 		if httpSrv, err = ep.buildHttpServer(); err != nil {
 			return

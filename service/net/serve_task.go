@@ -15,7 +15,15 @@ func (ep *tcpEndpoint) initTask() {
 	ep.BindGrpcServer(grpcServer)
 	ep.Service().(z.NetworkServiceInterface).Register(ep.GrpcServer())
 	info := job.Logger(logger.Info)
-	info("serving network requests on %s", ep.Address())
+	var extra string
+	if ep.IsSecure() {
+		extra = "gRPC, with TLS"
+	} else if ep.proxyCfg != nil {
+		extra = "gRPC web proxy"
+	} else {
+		extra = "gRPC, no TLS"
+	}
+	info("serving network requests on %s ( %s )", ep.Address(), extra)
 }
 
 func (ep *tcp4Endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
