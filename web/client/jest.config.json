@@ -11,6 +11,6 @@
     "autogen"
   ],
   "moduleFileExtensions": [
-    "js"
+    "js", "ts"
   ]
 }

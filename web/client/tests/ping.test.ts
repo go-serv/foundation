@@ -6,6 +6,7 @@ import {describe, expect, test} from "@jest/globals";
 
 const PingPayload = 7
 
+// @ts-ignore
 function invoke(resolve, reject) {
     const pingReq = new Ping.Ping.Request();
     pingReq.setPayload(PingPayload)
@@ -25,7 +26,7 @@ function invoke(resolve, reject) {
 
 describe('NetParcel service calls', () => {
     test('ping', async () => {
-        return new Promise((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             invoke(resolve, reject)
         }).then((e: Ping.Ping.Response) => {
             expect(e.getPayload()).toBe(PingPayload)
