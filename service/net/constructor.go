@@ -43,8 +43,8 @@ func NewTcp6Endpoint(hostname string, port int) *tcp6Endpoint {
 	return e
 }
 
-func NewConfig(webProxy *WebProxyConfig) *cfg {
-	cfg := new(cfg)
-	cfg.WebProxyConfig = webProxy
-	return cfg
-}
+//func NewConfig(webProxy *WebProxyConfig) *cfg {
+//	cfg := new(cfg)
+//	cfg.WebProxyConfig = webProxy
+//	return cfg
+//}

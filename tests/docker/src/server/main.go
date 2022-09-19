@@ -4,6 +4,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/app"
 	"github.com/go-serv/foundation/app/net_parcel/server"
+	"github.com/go-serv/foundation/app/webproxy"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
@@ -17,20 +18,14 @@ var (
 	srvCertKeyFile string
 )
 
-func createWebProxyCfg() *net.WebProxyConfig {
-	proxyCfg := &net.WebProxyConfig{}
-	proxyCfg.PemCert = &net.X509PemPair{
-		os.Getenv(src.EnvCertServerCertFile),
-		os.Getenv(src.EnvCertServerKeyFile),
-	}
-	return proxyCfg
-}
-
 func main() {
 	var (
 		err error
 	)
-	srvApp := app.NewApp()
+
+	wpCfg := webproxy.DefaultConfig(app.NewDashboard())
+	wp := webproxy.NewWebProxy(wpCfg)
+	srvApp := app.NewApp(wp)
 	certs := make([]*net.X509PemPair, 1)
 
 	// Read env variables, must be set in docker-compose file.
@@ -67,7 +62,7 @@ func main() {
 
 	// gRPC web proxy
 	proxyEp := net.NewTcp4Endpoint(src.ServerAddr, src.WebProxyPort)
-	proxyEp.WithWebProxy(createWebProxyCfg())
+	proxyEp.WithWebProxy(wp)
 	eps = append(eps, proxyEp)
 
 	// Creates NetParcel service and start the application.

@@ -18,7 +18,7 @@ func (ep *tcpEndpoint) initTask() {
 	var extra string
 	if ep.IsSecure() {
 		extra = "gRPC, with TLS"
-	} else if ep.proxyCfg != nil {
+	} else if ep.webProxy != nil {
 		extra = "gRPC web proxy"
 	} else {
 		extra = "gRPC, no TLS"

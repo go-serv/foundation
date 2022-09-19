@@ -8,7 +8,9 @@ import (
 )
 
 type app struct {
-	mainJob job.JobInterface
+	mainJob   job.JobInterface
+	dashboard z.DashboardInterface
+	wp        z.WebProxyInterface
 }
 
 func (a *app) Job() job.JobInterface {
@@ -39,6 +41,10 @@ func (a *app) Start() {
 
 func (a *app) Stop(reason any) {
 	a.mainJob.Cancel(reason)
+}
+
+func (a *app) WebProxy() z.WebProxyInterface {
+	return a.wp
 }
 
 func (a *app) FetchConfig() {

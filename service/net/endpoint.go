@@ -3,7 +3,6 @@ package net
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc/credentials"
@@ -19,7 +18,7 @@ type tcpEndpoint struct {
 	port        int
 	tlsCfg      *tls.Config
 	wrappedGrpc *grpcweb.WrappedGrpcServer
-	proxyCfg    *WebProxyConfig
+	webProxy    z.WebProxyInterface
 }
 
 func (ep *tcpEndpoint) Address() string {
@@ -27,12 +26,16 @@ func (ep *tcpEndpoint) Address() string {
 	return addr
 }
 
-func (ep *tcpEndpoint) WithWebProxy(cfg *WebProxyConfig) {
-	ep.proxyCfg = cfg
+func (ep *tcpEndpoint) WithWebProxy(wp z.WebProxyInterface) {
+	ep.webProxy = wp
 }
 
 func (ep *tcpEndpoint) IsSecure() bool {
 	return ep.tlsCfg != nil
+}
+
+func (ep *tcpEndpoint) TlsConfig() *tls.Config {
+	return ep.tlsCfg
 }
 
 func (ep *tcpEndpoint) TransportCredentials() credentials.TransportCredentials {
@@ -45,33 +48,6 @@ func (ep *tcpEndpoint) TransportCredentials() credentials.TransportCredentials {
 
 func (ep *tcpEndpoint) ClientHandshake(ctx context.Context, s string, conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
 	return nil, nil, nil
-}
-
-func (ep *tcpEndpoint) buildHttpServer() (srv *http.Server, err error) {
-	options := make([]grpcweb.Option, 0)
-	options = append(options, grpcweb.WithOriginFunc(func(origin string) bool {
-		fmt.Printf("Req from " + origin)
-		return true
-	}))
-	ep.wrappedGrpc = grpcweb.WrapServer(ep.GrpcServer(), options...)
-	serveMux := http.NewServeMux()
-	serveMux.Handle("/", ep.wrappedGrpc)
-	srv = &http.Server{
-		Addr:              ep.Address(),
-		Handler:           serveMux,
-		TLSConfig:         ep.tlsCfg,
-		ReadTimeout:       0,
-		ReadHeaderTimeout: 0,
-		WriteTimeout:      0,
-		IdleTimeout:       0,
-		MaxHeaderBytes:    0,
-		TLSNextProto:      nil,
-		ConnState:         nil,
-		ErrorLog:          nil,
-		BaseContext:       nil,
-		ConnContext:       nil,
-	}
-	return
 }
 
 func (ep *tcpEndpoint) listenAndServeNetwork(network string) (err error) {
@@ -88,9 +64,9 @@ func (ep *tcpEndpoint) listenAndServeNetwork(network string) (err error) {
 		}
 	}
 	//
-	if ep.proxyCfg != nil {
+	if ep.webProxy != nil {
 		var httpSrv *http.Server
-		if httpSrv, err = ep.buildHttpServer(); err != nil {
+		if httpSrv, err = ep.webProxy.BuildHttpServer(ep.GrpcServer(), ep); err != nil {
 			return
 		}
 		err = httpSrv.Serve(lis)
