@@ -28,7 +28,11 @@ type WebProxyConfigInterface interface {
 }
 
 type DashboardInterface interface {
-	IsFeatureOn() bool
-	UrlPath() string
+	// PathPrefix returns current URL path prefix of the admin dashboard. Defaults to /dashboard/.
+	PathPrefix() string
+
+	// WithPathPrefix sets the URL path prefix for the admin dashboard.
+	WithPathPrefix(string)
+
 	ServeHTTP(res http.ResponseWriter, req *http.Request)
 }

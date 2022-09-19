@@ -15,12 +15,12 @@ type dashboard struct {
 	contentFs *embed.FS
 }
 
-func (d *dashboard) IsFeatureOn() bool {
-	return d.contentFs != nil
+func (d *dashboard) PathPrefix() string {
+	return d.urlPath
 }
 
-func (d *dashboard) UrlPath() string {
-	return d.urlPath
+func (d *dashboard) WithPathPrefix(url string) {
+	d.urlPath = strings.TrimRight(url, "/") + "/"
 }
 
 func (d *dashboard) ServeHTTP(res http.ResponseWriter, req *http.Request) {

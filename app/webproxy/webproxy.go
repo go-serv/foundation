@@ -82,7 +82,7 @@ func (wp *webproxy) BuildHttpServer(grpc *grpc.Server, ep z.NetEndpointInterface
 	// Admin dashboard.
 	dashboard := wp.cfg.Dashboard()
 	if dashboard != nil {
-		serveMux.Handle(dashboard.UrlPath(), dashboard)
+		serveMux.Handle(dashboard.PathPrefix(), dashboard)
 	}
 
 	return
