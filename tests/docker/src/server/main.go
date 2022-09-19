@@ -62,6 +62,9 @@ func main() {
 
 	// gRPC web proxy
 	proxyEp := net.NewTcp4Endpoint(src.ServerAddr, src.WebProxyPort)
+	if err = proxyEp.WithNoTrustedPartiesTlsProfile(rootCaCertFile, []*net.X509PemPair{srvPemPair}); err != nil {
+		panic(err)
+	}
 	proxyEp.WithWebProxy(wp)
 	eps = append(eps, proxyEp)
 
