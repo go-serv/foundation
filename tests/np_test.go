@@ -6,7 +6,7 @@ import (
 	np_client "github.com/go-serv/foundation/app/net_parcel/client"
 	np_svc "github.com/go-serv/foundation/app/net_parcel/server"
 	"github.com/go-serv/foundation/app/net_parcel/server/ftp"
-	"github.com/go-serv/foundation/internal/autogen/proto/net"
+	net "github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"github.com/go-serv/foundation/pkg/y/netparcel"
@@ -41,7 +41,7 @@ type testFixtures struct {
 func setup(t *testing.T) *testFixtures {
 	tf := new(testFixtures)
 	tf.t = t
-	tf.app = app.NewApp()
+	tf.app = app.NewApp(nil)
 	ep := net_svc.NewTcp4Endpoint(testHost, testPort)
 	netParcelSvc := np_svc.NewNetParcel([]z.EndpointInterface{ep}, nil)
 	tf.app.AddService(netParcelSvc)

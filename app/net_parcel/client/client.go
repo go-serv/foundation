@@ -1,7 +1,7 @@
 package client
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
@@ -17,7 +17,7 @@ type client struct {
 	FtpNewSessionOptions
 	FtpTransferOptions
 	PingOptions
-	stubs proto.NetParcelClient
+	grpcClient proto.NetParcelClient
 }
 
 func (c *client) WithOptions(opts interface{}) {
@@ -29,7 +29,7 @@ func (c *client) WithOptions(opts interface{}) {
 }
 
 func (c *client) OnConnect(cc grpc.ClientConnInterface) {
-	c.stubs = proto.NewNetParcelClient(cc)
+	c.grpcClient = proto.NewNetParcelClient(cc, "proto")
 	c.MaxChunkSize = z.GrpcMaxMessageSize
 	c.SecureSessionOptions.c = c
 	c.FtpNewSessionOptions.c = c

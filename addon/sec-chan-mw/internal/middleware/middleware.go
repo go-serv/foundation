@@ -1,4 +1,4 @@
-package session
+package middleware
 
 import (
 	"github.com/go-serv/foundation/internal/autogen/go_serv/net/ext"

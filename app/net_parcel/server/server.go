@@ -6,7 +6,7 @@ package server
 import (
 	"github.com/go-serv/foundation/app/net_parcel/server/ftp"
 	"github.com/go-serv/foundation/internal/ancillary/archive"
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/y/netparcel"
 	"github.com/go-serv/foundation/pkg/z"

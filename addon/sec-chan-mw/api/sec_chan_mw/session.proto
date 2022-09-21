@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-import "go_serv/extension.proto";
+import "go_serv/net/ext/ext.proto";
 
-package go_serv.net;
+package go_serv.sec_chan_mw;
 
 message Crypto_PubKeyExchange {
   message Psk { // Pre-shared key
@@ -36,7 +36,7 @@ message Session {
     uint32 nonce_length = 30;
   }
   message Response {
-    option (.go_serv.enc_off) = true;
+    option (.go_serv.net.ext.enc_off) = true;
     bytes nonce = 1;
     optional bytes pub_key = 2; // Server's public key
   }

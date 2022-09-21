@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package go_serv.net;
+package go_serv.net.foundation;
 
 message Ftp {
-  //
+  //..
   enum TransferState {
     PENDING = 0;
     TRANSFER_IN_PROGRESS = 1;

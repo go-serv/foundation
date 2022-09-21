@@ -2,25 +2,24 @@ version: "3.9"
 
 services:
   go-serv_foundation:
-    image: go-serv_utils
+    image: go-serv_proto-compiler
     container_name: go-serv_foundation
     environment:
       - USER_ID=1000
       - GROUP_ID=1000
-      - PROTOBUF_GO_IMPORT_PREFIX=github.com/go-serv/foundation/internal/autogen/proto
-      - PROTO_TARGETS=go,commonjs
+      - GS_GO_IMPORT_PREFIX=github.com/go-serv/foundation/internal/autogen/proto
       - PROTO_COMPILE_DELAY=1000 # Debounce changes of the proto files for the specified amount of time before compiling, ms
     network_mode: host
     volumes:
       - type: bind
-        source: ./internal/autogen/proto
-        target: /app/proto/go
+        source: ./proto-compiler/api/go_serv
+        target: /share/go_serv
       - type: bind
-        source: ./web/client/autogen
-        target: /app/proto/commonjs
+        source: ./sec-chan-mw/api/sec_chan_mw
+        target: /share/sec_chan_mw
       - type: bind
-        source: ./web/client
-        target: /app/cjs_client
+        source: ./sec-chan-mw/internal/autogen
+        target: /app/autogen/go
       - type: bind
-        source: ./api
-        target: /share # default directory for proto files
+        source: ./sec-chan-mw/web
+        target: /app/autogen/cjs

@@ -7,7 +7,7 @@
 *node_modules*
 
 # Auto-generated files
-# internal/autogen
+internal/autogen
 
 # Test binary, built with `go test -c`
 *.test

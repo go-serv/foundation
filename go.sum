@@ -87,6 +87,8 @@ github.com/go-playground/universal-translator v0.17.0/go.mod h1:UkSxE5sNxxRwHyU+
 github.com/go-playground/validator/v10 v10.2.0/go.mod h1:uOYAAleCW8F/7oMFd6aG0GOhaH6EGOAJShg8Id5JGkI=
 github.com/go-serv/grpc-go v1.48.0-dev.0.20220905213130-80214d579147 h1:e6WJUSEL3eBmMa3w3NyUhAZz7ZvsLeLiBrlJ+twsBlo=
 github.com/go-serv/grpc-go v1.48.0-dev.0.20220905213130-80214d579147/go.mod h1:sbSmwqPxHsUZS7pPCAt2Tc1I+g5jl2v5O1Oki9wnIy0=
+github.com/go-serv/sec-chan-mw v0.0.0-20220920092143-89e7cf006800 h1:Tcm0uDWSd9yl6UeyGu/W8x15pYwH3xBo0ry28YnWnJ0=
+github.com/go-serv/sec-chan-mw v0.0.0-20220920092143-89e7cf006800/go.mod h1:OJciQqjpmw/iPRe42cKlb1B4xE70vwu+m8ELNSPg+DU=
 github.com/go-sql-driver/mysql v1.4.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee/go.mod h1:L0fX3K22YWvt/FAX9NnzrNzcI4wNYi9Yku4O0LKYflo=

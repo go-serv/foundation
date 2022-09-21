@@ -3,7 +3,7 @@ package client
 import (
 	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	grpc_client "github.com/go-serv/foundation/internal/client"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
@@ -41,7 +41,7 @@ func (s SecureSessionOptions) SecureSession(in *proto.Session_Request) (res *pro
 		}
 		in.KeyExchAlgo = &proto.Session_Request_Dh{Dh: &proto.Crypto_PubKeyExchange_DiffieHellman{PubKey: pubKeyExch.PublicKey()}}
 	}
-	if res, err = s.c.stubs.SecureSession(ctx, in); err != nil {
+	if res, err = s.c.grpcClient.SecureSession(ctx, in); err != nil {
 		return
 	}
 	if pubKeyExch != nil {

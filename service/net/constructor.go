@@ -1,9 +1,9 @@
 package net
 
 import (
+	"github.com/go-serv/foundation/addon/sec-chan-mw"
 	net_cc "github.com/go-serv/foundation/internal/grpc/codec/net"
 	net_mw "github.com/go-serv/foundation/internal/grpc/middleware/net"
-	enc_mw "github.com/go-serv/foundation/internal/middleware/net/enc_msg"
 	session_mw "github.com/go-serv/foundation/internal/middleware/net/session"
 	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/z"
@@ -12,7 +12,7 @@ import (
 func defaultMiddlewareGroup() z.MiddlewareInterface {
 	g := net_mw.NewMiddleware()
 	session_mw.ServerInit(g)
-	enc_mw.ServerInit(g)
+	sec_chan_mw.MiddlewareServerInit(g)
 	return g
 }
 

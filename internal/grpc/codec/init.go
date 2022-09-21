@@ -1,7 +1,9 @@
 package codec
 
-import "github.com/go-serv/foundation/internal/autogen/proto/net"
+import (
+	"google.golang.org/grpc/encoding"
+)
 
 func init() {
-	net.RegisterMessageWrapper(MessageWrapperHandler())
+	encoding.RegisterMessageWrapper("proto", MessageWrapperHandler())
 }

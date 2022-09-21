@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-import "go_serv/extension.proto";
-import "net/ping.proto";
-import "net/ftp.proto";
-import "net/session.proto";
+import "go_serv/net/ext/ext.proto";
+import "foundation/ping.proto";
+import "foundation/ftp.proto";
+import "foundation/session.proto";
 
-package go_serv.net;
+package go_serv.net.foundation;
 
 service NetParcel {
   // A dummy call for testing.
@@ -16,16 +16,16 @@ service NetParcel {
 
   //..
   rpc FtpNewSession(Ftp.NewSession.Request) returns (Ftp.NewSession.Response) {
-    option (.go_serv.optional_session) = true;
+    option (.go_serv.net.ext.optional_session) = true;
   }
 
   //
   rpc FtpTransfer(Ftp.FileChunk.Request) returns (Ftp.FileChunk.Response) {
-    option (.go_serv.require_session) = true;
+    option (.go_serv.net.ext.require_session) = true;
   }
 
   //
   rpc FtpInquiry(Ftp.Inquiry.Request) returns (Ftp.Inquiry.Response) {
-    option (.go_serv.require_session) = true;
+    option (.go_serv.net.ext.require_session) = true;
   }
 }

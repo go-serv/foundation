@@ -2,7 +2,7 @@ package ftp
 
 import (
 	"context"
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	grpc_err "github.com/go-serv/foundation/internal/grpc/error"
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/internal/runtime"

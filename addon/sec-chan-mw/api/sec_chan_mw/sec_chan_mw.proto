@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "sec_chan_mw/session.proto";
+
+package go_serv.sec_chan_mw;
+
+//
+service SecureChannel {
+  // Creates a new secure session. Can be used when TLS layer is not available.
+  rpc SecureSession(Session.Request) returns (Session.Response) { }
+}

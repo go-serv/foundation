@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	grpc_err "github.com/go-serv/foundation/internal/grpc/error"
 	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"

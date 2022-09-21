@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package go_serv.net;
-
+package go_serv.net.foundation;
+//
 message Ping {
   message Request {
     uint64 payload = 1;

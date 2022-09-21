@@ -2,7 +2,7 @@ package client
 
 import (
 	"errors"
-	proto "github.com/go-serv/foundation/internal/autogen/proto/net"
+	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	client2 "github.com/go-serv/foundation/internal/client"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
 	"github.com/go-serv/foundation/pkg/z"
@@ -100,7 +100,7 @@ func (f FtpTransferOptions) FtpTransferFile(path platform.Pathname, temp bool, p
 		Size:       info.Size(),
 		PostAction: pav,
 	})
-	if res, err = f.c.stubs.FtpNewSession(f.PrepareContext(), req); err != nil {
+	if res, err = f.c.grpcClient.FtpNewSession(f.PrepareContext(), req); err != nil {
 		return
 	}
 	return f.transferFile(file, res.GetDescriptors()[0].Handle)
@@ -122,7 +122,7 @@ func (f FtpTransferOptions) transferFile(reader io.Reader, fh uint64) (err error
 			req.Body = buf[0:nRead]
 			req.FileHandle = fh
 			req.Range = &proto.Ftp_FileRange{Start: int64(off), End: int64(off + nRead)}
-			if res, err = f.c.stubs.FtpTransfer(f.PrepareContext(), req); err != nil {
+			if res, err = f.c.grpcClient.FtpTransfer(f.PrepareContext(), req); err != nil {
 				return
 			}
 			off += nRead
