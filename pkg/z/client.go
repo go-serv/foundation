@@ -7,8 +7,9 @@ import (
 )
 
 type ClientInterface interface {
-	CodecAwareInterface
-	MiddlewareAwareInterface
+	//CodecAwareInterface
+	//MiddlewareAwareInterface
+	Middleware() MiddlewareInterface
 	ServiceName() string
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
@@ -19,6 +20,7 @@ type ClientInterface interface {
 	WithMeta(MetaInterface)
 	// WithOptions sets options for a call.
 	WithOptions(any)
+	SessionId() SessionId
 }
 
 type NetworkClientInterface interface {

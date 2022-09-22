@@ -58,7 +58,7 @@ func (s *service) Codec() z.CodecInterface {
 func (s *service) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
 }
-func (s *service) MiddlewareGroup() z.MiddlewareInterface {
+func (s *service) Middleware() z.MiddlewareInterface {
 	return s.mwGroup
 }
 

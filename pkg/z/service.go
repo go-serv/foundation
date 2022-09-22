@@ -12,7 +12,7 @@ type ServiceInterface interface {
 	Name() string
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
-	MiddlewareGroup() MiddlewareInterface
+	Middleware() MiddlewareInterface
 	WithMiddlewareGroup(MiddlewareInterface)
 	Register(srv *grpc.Server)
 }

@@ -12,7 +12,7 @@ type clientInfo struct {
 
 type request struct {
 	msg.Reflection
-	df         z.DataFrameInterface
+	data       any
 	meta       z.MetaInterface
 	clientInfo *clientInfo
 }
@@ -29,6 +29,6 @@ func (r *request) Meta() z.MetaInterface {
 	return r.meta
 }
 
-func (r *request) DataFrame() z.DataFrameInterface {
-	return r.df
+func (r *request) Data() any {
+	return r.data
 }

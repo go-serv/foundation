@@ -1,4 +1,4 @@
-package net
+package middleware
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, ifreq interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
+func (chain *mwHandlersChain) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, in interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
 		var (
 			md  metadata.MD
 			ok  bool
@@ -21,33 +21,35 @@ func (mw *netMiddleware) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		if md, ok = metadata.FromIncomingContext(ctx); !ok {
 			return nil, status.Error(codes.Internal, "failed to retrieve request metadata")
 		}
+
 		//
 		clientInfo := request.NewClientInfo(ctx)
-		if req, err = request.NewServerRequest(ifreq.(z.DataFrameInterface), &md, clientInfo); err != nil {
+		if req, err = request.NewServerRequest(in, &md, clientInfo); err != nil {
 			return
 		}
-		//
+
+		// Pass server context through the request/response middleware chains.
 		srvCxt := net_call.NewServerContext(ctx, req, handler)
-		if err = mw.newRequestChain().passThrough(srvCxt); err != nil {
+		if err = chain.requestPassThrough(srvCxt); err != nil {
 			return
 		}
-		if err = mw.newResponseChain().passThrough(srvCxt); err != nil {
+		if err = chain.responsePassThrough(srvCxt); err != nil {
 			return
 		}
-		// Send response headers
+
+		// Send response headers.
 		if md, err = srvCxt.Response().Meta().Dehydrate(); err != nil {
 			return
 		}
 		if err = grpc.SendHeader(ctx, md); err != nil {
 			return
 		}
-		//
-		out = srvCxt.Response().DataFrame()
+		out = srvCxt.Response().Data()
 		return
 	}
 }
 
-func (mw *netMiddleware) StreamServerInterceptor() grpc.StreamServerInterceptor {
+func (chain *mwHandlersChain) StreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 		return
 	}

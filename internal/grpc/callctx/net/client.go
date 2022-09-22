@@ -41,8 +41,8 @@ func (ctx *clientCtx) Invoke() (err error) {
 	if err = ctx.invoker(
 		ctx,
 		methodName,
-		ctx.req.DataFrame(),
-		ctx.res.DataFrame(),
+		ctx.req.Data(),
+		ctx.res.Data(),
 		ctx.cc,
 		ctx.opts...); err != nil {
 		return

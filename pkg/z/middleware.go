@@ -5,10 +5,14 @@ import (
 )
 
 type MiddlewareInterface interface {
+	AddPreStreamHandler(fn MiddlewarePreStreamHandlerFn)
+	AddRequestHandler(fn MiddlewareRequestHandlerFn)
+	AddResponseHandler(fn MiddlewareResponseHandlerFn)
 	UnaryServerInterceptor() grpc.UnaryServerInterceptor
 	UnaryClientInterceptor() grpc.UnaryClientInterceptor
 	Client() ClientInterface
 	WithClient(ClientInterface)
+	MergeWithParent(MiddlewareInterface)
 }
 
 type MiddlewareAwareInterface interface {
@@ -17,15 +21,15 @@ type MiddlewareAwareInterface interface {
 }
 
 type (
-	NetPreStreamHandlerFn func(ServiceReflectInterface, MethodReflectionInterface, MessageReflectionInterface) error
-	NetRequestHandlerFn   func(NetChainElementFn, NetContextInterface, RequestInterface) error
-	NetResponseHandlerFn  func(NetChainElementFn, NetContextInterface, ResponseInterface) error
-	NetChainElementFn     func(RequestInterface, ResponseInterface) (NetChainElementFn, error)
+	MiddlewarePreStreamHandlerFn func(ServiceReflectInterface, MethodReflectionInterface, MessageReflectionInterface) error
+	MiddlewareRequestHandlerFn   func(MiddlewareChainElementFn, NetContextInterface, RequestInterface) error
+	MiddlewareResponseHandlerFn  func(MiddlewareChainElementFn, NetContextInterface, ResponseInterface) error
+	MiddlewareChainElementFn     func(RequestInterface, ResponseInterface) (MiddlewareChainElementFn, error)
 )
 
 type NetMiddlewareInterface interface {
 	MiddlewareInterface
-	AddPreStreamHandler(fn NetPreStreamHandlerFn)
-	AddRequestHandler(fn NetRequestHandlerFn)
-	AddResponseHandler(fn NetResponseHandlerFn)
+	AddPreStreamHandler(fn MiddlewarePreStreamHandlerFn)
+	AddRequestHandler(fn MiddlewareRequestHandlerFn)
+	AddResponseHandler(fn MiddlewareResponseHandlerFn)
 }

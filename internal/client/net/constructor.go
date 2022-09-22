@@ -1,13 +1,10 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/addon/sec-chan-mw"
 	"github.com/go-serv/foundation/internal/client"
 	net_cc "github.com/go-serv/foundation/internal/grpc/codec/net"
 	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
-	net_mw "github.com/go-serv/foundation/internal/grpc/middleware/net"
-	//enc_mw "github.com/go-serv/foundation/internal/middleware/net/enc_msg"
-	session_mw "github.com/go-serv/foundation/internal/middleware/net/session"
+
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/z"
@@ -16,27 +13,28 @@ import (
 )
 
 func NewClient(svcName string, e z.EndpointInterface) *netClient {
-	c := new(netClient)
-	c.ClientInterface = client.NewClient(svcName, e)
-	c.svc = net.NewNetworkService(svcName, nil, nil)
+	netCt := new(netClient)
+	netCt.ClientInterface = client.NewClient(svcName, e)
+	netCt.svc = net.NewNetworkService(svcName, nil, nil)
 	meta := meta_net.NewMeta(nil)
-	c.WithMeta(meta)
+	netCt.WithMeta(meta)
+	netCt.Middleware().WithClient(netCt)
 	// Set client codec
 	codec := net_cc.NewOrRegistered("proto")
-	c.WithCodec(codec)
-	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
+	//netCt.WithCodec(codec)
+	netCt.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(codec)))
 	//
-	c.newDefaultMiddleware()
-	runtime.Runtime().RegisterClient(c)
+	//netCt.newDefaultMiddleware()
+	runtime.Runtime().RegisterClient(netCt)
 	service.Reflection().AddService(svcName)
 	service.Reflection().Populate()
-	return c
+	return netCt
 }
 
 func (c *netClient) newDefaultMiddleware() {
-	mw := net_mw.NewMiddleware()
-	mw.WithClient(c)
-	c.WithMiddleware(mw)
-	session_mw.ClientInit(mw)
-	sec_chan_mw.MiddlewareClientInit(mw)
+	//mw := net_mw.NewMiddleware()
+	//mw.WithClient(c)
+	//c.WithMiddleware(mw)
+	//session_mw.ClientInit(mw)
+	//sec_chan.MiddlewareClientInit(mw)
 }

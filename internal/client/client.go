@@ -3,6 +3,7 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/ancillary"
+	net_meta "github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"net"
@@ -69,4 +70,9 @@ func (c *client) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finaliz
 
 func (c *client) WithOptions(any) {
 	c.MethodMustBeImplemented.Panic()
+}
+
+func (c *client) SessionId() z.SessionId {
+	dic := c.Meta().Dictionary().(*net_meta.HttpDictionary)
+	return dic.SessionId
 }

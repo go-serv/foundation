@@ -2,8 +2,8 @@ package main
 
 import (
 	job "github.com/AgentCoop/go-work"
+	sec_chan "github.com/go-serv/foundation/addon/sec-chan"
 	"github.com/go-serv/foundation/app"
-	"github.com/go-serv/foundation/app/net_parcel/server"
 	"github.com/go-serv/foundation/app/webproxy"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/service/net"
@@ -69,8 +69,10 @@ func main() {
 	eps = append(eps, proxyEp)
 
 	// Creates NetParcel service and start the application.
-	netParcel := server.NewNetParcel(eps, nil)
-	srvApp.AddService(netParcel)
+	//netParcel := server.NewNetParcel(eps, nil)
+
+	secChan := sec_chan.NewSecChanService(srvApp, []z.EndpointInterface{unsafeEp}, nil)
+	srvApp.AddService(secChan)
 	srvApp.Start()
 	if srvApp.Job().GetState() != job.Done {
 		_, reason := srvApp.Job().GetInterruptedBy()

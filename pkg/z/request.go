@@ -14,7 +14,7 @@ type MetaInterface interface {
 }
 
 type RequestResponseInterface interface {
-	DataFrame() DataFrameInterface
+	Data() any
 	Meta() MetaInterface
 	MethodReflection() MethodReflectionInterface
 	MessageReflection() MessageReflectionInterface
@@ -27,7 +27,7 @@ type RequestInterface interface {
 
 type ResponseInterface interface {
 	RequestResponseInterface
-	WithDataFrame(DataFrameInterface)
+	WithData(any)
 }
 
 type ContextInterface interface {

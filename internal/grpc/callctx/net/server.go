@@ -1,7 +1,6 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/internal/grpc/codec"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -16,11 +15,11 @@ type srvContext struct {
 
 func (ctx *srvContext) Invoke() (err error) {
 	var v any
-	if v, err = ctx.handler(ctx, ctx.req.DataFrame().Interface()); err != nil {
+	if v, err = ctx.handler(ctx, ctx.req.Data()); err != nil {
 		return
 	}
+	ctx.res.WithData(v)
 	msg := v.(proto.Message)
-	ctx.res.WithDataFrame(codec.NewDataFrame(msg))
 	err = ctx.res.Populate(msg)
 	return
 }

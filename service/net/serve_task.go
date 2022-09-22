@@ -8,12 +8,21 @@ import (
 )
 
 func (ep *tcpEndpoint) initTask() {
-	// Add a server option for the middleware unary interceptor.
-	mwUnaryInt := ep.Service().MiddlewareGroup().UnaryServerInterceptor()
+	svc := ep.Service()
+
+	// An option for the middleware unary interceptor.
+	mwUnaryInt := svc.Middleware().UnaryServerInterceptor()
 	ep.WithGrpcServerOptions(grpc.ChainUnaryInterceptor(mwUnaryInt))
+
+	// Codec option.
+	if svc.Codec() != nil {
+		ep.WithGrpcServerOptions(grpc.ForceServerCodec(svc.Codec()))
+	}
 	grpcServer := grpc.NewServer(ep.GrpcServerOptions()...)
+
 	ep.BindGrpcServer(grpcServer)
 	ep.Service().(z.NetworkServiceInterface).Register(ep.GrpcServer())
+
 	info := job.Logger(logger.Info)
 	var extra string
 	if ep.IsSecure() {

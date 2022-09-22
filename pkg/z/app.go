@@ -10,6 +10,7 @@ type EventHandlerFn func(...any) bool
 
 type AppInterface interface {
 	Job() job.JobInterface
+	Middleware() MiddlewareInterface
 	FetchConfig()
 	AddService(ServiceInterface)
 	//Services() AppInterface

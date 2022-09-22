@@ -8,13 +8,18 @@ import (
 )
 
 type app struct {
-	mainJob   job.JobInterface
-	dashboard z.DashboardInterface
-	wp        z.WebProxyInterface
+	mainJob    job.JobInterface
+	middleware z.MiddlewareInterface
+	dashboard  z.DashboardInterface
+	wp         z.WebProxyInterface
 }
 
 func (a *app) Job() job.JobInterface {
 	return a.mainJob
+}
+
+func (a *app) Middleware() z.MiddlewareInterface {
+	return a.middleware
 }
 
 func (a *app) AddService(svc z.ServiceInterface) {
@@ -29,8 +34,10 @@ func (a *app) Start() {
 	if len(services) == 0 {
 		panic("application has no services to run, use AddService method")
 	}
+
 	for _, svc := range services {
 		svc.BindApp(a)
+		svc.Middleware().MergeWithParent(a.Middleware())
 		for _, ep := range svc.Endpoints() {
 			ep.BindService(svc)
 			a.mainJob.AddTask(ep.ServeTask)

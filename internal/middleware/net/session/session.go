@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
+func serverSessionHandler(next z.MiddlewareChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	srvCtx := ctx.(z.NetServerContextInterface)
 	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
 	if req.MethodReflection().Bool(ext.E_RequireSession) {
@@ -26,7 +26,7 @@ func serverSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, r
 	return
 }
 
-func clientSessionHandler(next z.NetChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
+func clientSessionHandler(next z.MiddlewareChainElementFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	if req.MethodReflection().Bool(ext.E_OptionalSession) {
 		clntCtx := ctx.(z.NetClientContextInterface)
 		client := clntCtx.Client()
