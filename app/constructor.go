@@ -3,21 +3,23 @@ package app
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/grpc/middleware"
+	"github.com/go-serv/foundation/internal/middleware/session"
 	"github.com/go-serv/foundation/internal/web/dashboard"
-	"github.com/go-serv/foundation/pkg/z"
+	mwPkg "github.com/go-serv/foundation/pkg/z"
 	"math/rand"
 	"time"
 )
 
-func NewApp(wp z.WebProxyInterface) *app {
+func NewServerApp(wp mwPkg.WebProxyInterface) *server {
 	rand.Seed(time.Now().UnixNano())
-	baseApp := new(app)
-	baseApp.wp = wp
-	baseApp.mainJob = job.NewJob(nil)
-	baseApp.middleware = middleware.NewMiddleware()
-	return baseApp
+	srv := new(server)
+	srv.wp = wp
+	srv.mainJob = job.NewJob(nil)
+	srv.middleware = middleware.NewServerMiddleware()
+	srv.middleware.Append(mwPkg.SessionMwKey, session.ServerRequestSessionHandler, nil)
+	return srv
 }
 
-func NewDashboard() z.DashboardInterface {
+func NewDashboard() mwPkg.DashboardInterface {
 	return dashboard.NewDashboard()
 }

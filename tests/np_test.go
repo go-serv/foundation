@@ -41,7 +41,7 @@ type testFixtures struct {
 func setup(t *testing.T) *testFixtures {
 	tf := new(testFixtures)
 	tf.t = t
-	tf.app = app.NewApp(nil)
+	tf.app = app.NewServerApp(nil)
 	ep := net_svc.NewTcp4Endpoint(testHost, testPort)
 	netParcelSvc := np_svc.NewNetParcel([]z.EndpointInterface{ep}, nil)
 	tf.app.AddService(netParcelSvc)

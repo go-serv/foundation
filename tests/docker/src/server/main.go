@@ -2,7 +2,7 @@ package main
 
 import (
 	job "github.com/AgentCoop/go-work"
-	sec_chan "github.com/go-serv/foundation/addon/sec-chan"
+	"github.com/go-serv/foundation/addon/sec_chan"
 	"github.com/go-serv/foundation/app"
 	"github.com/go-serv/foundation/app/webproxy"
 	"github.com/go-serv/foundation/pkg/z"
@@ -25,7 +25,7 @@ func main() {
 
 	wpCfg := webproxy.DefaultConfig(app.NewDashboard())
 	wp := webproxy.NewWebProxy(wpCfg)
-	srvApp := app.NewApp(wp)
+	srvApp := app.NewServerApp(wp)
 	certs := make([]*net.X509PemPair, 1)
 
 	// Read env variables, must be set in docker-compose file.

@@ -9,7 +9,7 @@ import (
 type ClientInterface interface {
 	//CodecAwareInterface
 	//MiddlewareAwareInterface
-	Middleware() MiddlewareInterface
+	Middleware() ClientMiddlewareInterface
 	ServiceName() string
 	Endpoint() EndpointInterface
 	ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)

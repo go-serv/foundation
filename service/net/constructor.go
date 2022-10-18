@@ -1,25 +1,15 @@
 package net
 
 import (
-	net_mw "github.com/go-serv/foundation/internal/grpc/middleware"
-	session_mw "github.com/go-serv/foundation/internal/middleware/net/session"
 	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/z"
 )
-
-func defaultMiddlewareGroup() z.MiddlewareInterface {
-	g := net_mw.NewMiddleware()
-	session_mw.ServerInit(g)
-	//sec_chan_mw.MiddlewareServerInit(g)
-	return g
-}
 
 func NewNetworkService(name string, cfg z.ServiceCfgInterface, endpoints []z.EndpointInterface) *netService {
 	s := &netService{}
 	s.ServiceInterface = service.NewService(name, cfg, endpoints)
 	//cc := net_cc.NewOrRegistered(name)
 	//s.ServiceInterface.WithCodec(cc)
-	s.ServiceInterface.WithMiddlewareGroup(defaultMiddlewareGroup())
 	return s
 }
 

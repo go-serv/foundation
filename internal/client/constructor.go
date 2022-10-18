@@ -9,6 +9,6 @@ func NewClient(svcName string, e z.EndpointInterface) *client {
 	c := new(client)
 	c.svcName = svcName
 	c.endpoint = e
-	c.mw = middleware.NewMiddleware()
+	c.mw = middleware.NewClientMiddleware()
 	return c
 }

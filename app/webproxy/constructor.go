@@ -1,6 +1,8 @@
 package webproxy
 
-import "github.com/go-serv/foundation/pkg/z"
+import (
+	"github.com/go-serv/foundation/pkg/z"
+)
 
 func NewWebProxy(cfg *WebProxyConfig) *webproxy {
 	wp := new(webproxy)

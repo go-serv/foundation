@@ -23,6 +23,7 @@ type ReflectAccessor interface {
 
 type ServiceReflectInterface interface {
 	ReflectAccessor
+	FullName() string
 	Descriptor() protoreflect.ServiceDescriptor
 	Methods() []MethodReflectionInterface
 }

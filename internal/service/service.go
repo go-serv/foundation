@@ -19,7 +19,7 @@ const (
 type service struct {
 	name      string
 	codec     z.CodecInterface
-	app       z.AppInterface
+	app       z.AppServerInterface
 	cfg       z.ServiceCfgInterface
 	endpoints []z.EndpointInterface
 	state     State
@@ -43,11 +43,11 @@ func (s *service) Endpoints() []z.EndpointInterface {
 	return s.endpoints
 }
 
-func (s *service) App() z.AppInterface {
+func (s *service) App() z.AppServerInterface {
 	return s.app
 }
 
-func (s *service) BindApp(app z.AppInterface) {
+func (s *service) BindApp(app z.AppServerInterface) {
 	s.app = app
 }
 
@@ -57,13 +57,6 @@ func (s *service) Codec() z.CodecInterface {
 
 func (s *service) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
-}
-func (s *service) Middleware() z.MiddlewareInterface {
-	return s.mwGroup
-}
-
-func (s *service) WithMiddlewareGroup(mw z.MiddlewareInterface) {
-	s.mwGroup = mw
 }
 
 func (s *service) Register(srv *grpc.Server) {

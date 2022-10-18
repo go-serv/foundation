@@ -12,6 +12,10 @@ type service struct {
 	extValues extValueMap
 }
 
+func (s *service) FullName() string {
+	return string(s.Descriptor().FullName())
+}
+
 func (s *service) Descriptor() protoreflect.ServiceDescriptor {
 	return s.desc
 }

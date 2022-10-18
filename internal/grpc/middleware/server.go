@@ -4,19 +4,26 @@ import (
 	"context"
 	net_call "github.com/go-serv/foundation/internal/grpc/callctx/net"
 	"github.com/go-serv/foundation/internal/grpc/msg/request"
+	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
-func (chain *mwHandlersChain) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
+type serverMw struct {
+	middleware
+}
+
+func (m *serverMw) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, in interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
 		var (
-			md  metadata.MD
-			ok  bool
-			req z.RequestInterface
+			md   metadata.MD
+			ok   bool
+			req  z.RequestInterface
+			sref z.ServiceReflectInterface
 		)
 		if md, ok = metadata.FromIncomingContext(ctx); !ok {
 			return nil, status.Error(codes.Internal, "failed to retrieve request metadata")
@@ -28,12 +35,17 @@ func (chain *mwHandlersChain) UnaryServerInterceptor() grpc.UnaryServerIntercept
 			return
 		}
 
-		// Pass server context through the request/response middleware chains.
-		srvCxt := net_call.NewServerContext(ctx, req, handler)
-		if err = chain.requestPassThrough(srvCxt); err != nil {
+		msg := in.(proto.Message)
+		if sref, err = service.Reflection().ServiceReflectionFromMessage(msg); err != nil {
 			return
 		}
-		if err = chain.responsePassThrough(srvCxt); err != nil {
+
+		// Pass server context through the request/response handler chains.
+		srvCxt := net_call.NewServerContext(ctx, req, handler)
+		if err = m.requestPassThrough(srvCxt, sref.FullName()); err != nil {
+			return
+		}
+		if err = m.responsePassThrough(srvCxt, sref.FullName()); err != nil {
 			return
 		}
 
@@ -49,7 +61,7 @@ func (chain *mwHandlersChain) UnaryServerInterceptor() grpc.UnaryServerIntercept
 	}
 }
 
-func (chain *mwHandlersChain) StreamServerInterceptor() grpc.StreamServerInterceptor {
+func (m *serverMw) StreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 		return
 	}

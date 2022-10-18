@@ -6,14 +6,12 @@ import (
 )
 
 type ServiceInterface interface {
-	App() AppInterface
-	BindApp(AppInterface)
+	App() AppServerInterface
+	BindApp(AppServerInterface)
 	Endpoints() []EndpointInterface
 	Name() string
 	Codec() CodecInterface
 	WithCodec(cc CodecInterface)
-	Middleware() MiddlewareInterface
-	WithMiddlewareGroup(MiddlewareInterface)
 	Register(srv *grpc.Server)
 }
 

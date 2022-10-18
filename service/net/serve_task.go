@@ -11,7 +11,7 @@ func (ep *tcpEndpoint) initTask() {
 	svc := ep.Service()
 
 	// An option for the middleware unary interceptor.
-	mwUnaryInt := svc.Middleware().UnaryServerInterceptor()
+	mwUnaryInt := svc.App().Middleware().UnaryServerInterceptor()
 	ep.WithGrpcServerOptions(grpc.ChainUnaryInterceptor(mwUnaryInt))
 
 	// Codec option.

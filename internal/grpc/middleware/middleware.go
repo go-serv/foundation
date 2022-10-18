@@ -5,57 +5,57 @@
 package middleware
 
 import (
+	"fmt"
+	"github.com/go-serv/foundation/pkg/ancillary/slice"
 	"github.com/go-serv/foundation/pkg/z"
 )
 
-type mwHandlersChain struct {
-	client            z.ClientInterface
-	preStreamHandlers []z.MiddlewarePreStreamHandlerFn
-	reqHandlers       []z.MiddlewareRequestHandlerFn
-	resHandlers       []z.MiddlewareResponseHandlerFn
+type chainElement struct {
+	key             any
+	insertTargetKey any
+	insertOp        z.InsertOp
+	req             z.RequestHandlerFn
+	res             z.ResponseHandlerFn
+	disabled        bool
 }
 
-func (chain *mwHandlersChain) Client() z.ClientInterface {
-	return chain.client
+type middleware struct {
+	els        []*chainElement
+	serviceEls map[string][]*chainElement
 }
 
-func (chain *mwHandlersChain) WithClient(client z.ClientInterface) {
-	chain.client = client
+func (m *middleware) Append(newKey any, req z.RequestHandlerFn, res z.ResponseHandlerFn) {
+	newEl := &chainElement{key: newKey, req: req, res: res}
+	m.els = append(m.els, newEl)
 }
 
-func (chain *mwHandlersChain) AddPreStreamHandler(h z.MiddlewarePreStreamHandlerFn) {
-	chain.preStreamHandlers = append(chain.preStreamHandlers, h)
+func (m *middleware) AppendToServiceChain(service string, newKey any, req z.RequestHandlerFn, res z.ResponseHandlerFn) {
+	if _, has := m.serviceEls[service]; !has {
+		m.serviceEls[service] = make([]*chainElement, 0)
+	}
+	newEl := &chainElement{key: newKey, req: req, res: res}
+	m.serviceEls[service] = append(m.serviceEls[service], newEl)
 }
 
-func (chain *mwHandlersChain) AddRequestHandler(h z.MiddlewareRequestHandlerFn) {
-	chain.reqHandlers = append(chain.reqHandlers, h)
+func (m *middleware) Insert(targetKey any, op z.InsertOp, newKey any, req z.RequestHandlerFn, res z.ResponseHandlerFn) {
+	newEl := &chainElement{key: newKey, req: req, res: res, insertTargetKey: targetKey, insertOp: op}
+	m.els = append(m.els, newEl)
 }
 
-func (chain *mwHandlersChain) AddResponseHandler(h z.MiddlewareResponseHandlerFn) {
-	chain.resHandlers = append(chain.resHandlers, h)
-}
-
-func (dst *mwHandlersChain) MergeWithParent(pi z.MiddlewareInterface) {
-	parent := pi.(*mwHandlersChain)
-	dst.reqHandlers = append(parent.reqHandlers, dst.reqHandlers...)
-	dst.resHandlers = append(parent.resHandlers, dst.resHandlers...)
-}
-
-func (chain *mwHandlersChain) requestPassThrough(ctx z.NetContextInterface) (err error) {
+func (m *middleware) requestPassThrough(ctx z.NetContextInterface, service string) (err error) {
 	var (
-		curr z.MiddlewareChainElementFn
+		curr z.NextHandlerFn
 	)
-
-	tailCall := func(next z.MiddlewareChainElementFn, _ z.NetContextInterface, _ z.RequestInterface) error {
+	tailCall := func(next z.NextHandlerFn, _ z.NetContextInterface, _ z.RequestInterface) error {
 		return ctx.Invoke()
 	}
-	ch := append(chain.reqHandlers, tailCall)
-
-	// Iterate over the request handlers chain. First added handler will be called first.
-	for i := len(ch) - 1; i >= 0; i-- {
-		handler := ch[i]
+	handlers := m.requestHandlers(service)
+	handlers = append(handlers, tailCall)
+	// Iterate over the request handlers m. First added handler will be called first.
+	for i := len(handlers) - 1; i >= 0; i-- {
+		handler := handlers[i]
 		next := curr
-		curr = func(req z.RequestInterface, _ z.ResponseInterface) (el z.MiddlewareChainElementFn, err error) {
+		curr = func(req z.RequestInterface, _ z.ResponseInterface) (el z.NextHandlerFn, err error) {
 			if err = handler(next, ctx, req); err != nil {
 				return
 			}
@@ -66,22 +66,21 @@ func (chain *mwHandlersChain) requestPassThrough(ctx z.NetContextInterface) (err
 	return
 }
 
-func (chain *mwHandlersChain) responsePassThrough(ctx z.NetContextInterface) (err error) {
+func (m *middleware) responsePassThrough(ctx z.NetContextInterface, service string) (err error) {
 	var (
-		curr z.MiddlewareChainElementFn
+		curr z.NextHandlerFn
 	)
-
-	// A stub for the last call.
-	tailCall := func(_ z.MiddlewareChainElementFn, _ z.NetContextInterface, res z.ResponseInterface) error {
+	//
+	tailCall := func(_ z.NextHandlerFn, _ z.NetContextInterface, res z.ResponseInterface) error {
 		return nil
 	}
-	ch := append([]z.MiddlewareResponseHandlerFn{tailCall}, chain.resHandlers...)
-
-	// Iterate over the response handlers chain. First added handler will be called last.
-	for i := 0; i < len(ch); i++ {
-		handler := ch[i]
+	handlers := m.responseHandlers(service)
+	handlers = append(handlers, tailCall)
+	// Iterate over the response handlers m. First added handler will be called last.
+	for i := 0; i < len(handlers); i++ {
+		handler := handlers[i]
 		next := curr
-		curr = func(_ z.RequestInterface, res z.ResponseInterface) (z.MiddlewareChainElementFn, error) {
+		curr = func(_ z.RequestInterface, res z.ResponseInterface) (z.NextHandlerFn, error) {
 			if err = handler(next, ctx, res); err != nil {
 				return nil, err
 			}
@@ -89,5 +88,80 @@ func (chain *mwHandlersChain) responsePassThrough(ctx z.NetContextInterface) (er
 		}
 	}
 	_, err = curr(nil, ctx.Response())
+	return
+}
+
+func (m *middleware) findElementByKey(search any, els []*chainElement) int {
+	for i, el := range els {
+		if el.key == search {
+			return i
+		}
+	}
+	return -1
+}
+
+func chainElementNotFound(key any) {
+	panic(fmt.Sprintf("middleware: failed to find chain element with key '%v'", key))
+}
+
+func (m *middleware) orderChainElements(unordered []*chainElement) (ordered []*chainElement) {
+	ordered = make([]*chainElement, 0)
+	// First append elements that do not require reordering.
+	for _, el := range unordered {
+		if el.insertOp == 0 {
+			ordered = append(ordered, el)
+		}
+	}
+	// Append elements that require a specific order.
+	for _, el := range unordered {
+		switch el.insertOp {
+		case z.InsertBefore:
+			if i := m.findElementByKey(el.key, ordered); i != -1 {
+				chainElementNotFound(el.key)
+			} else {
+				ordered = slice.InsertBefore[*chainElement](ordered, el, i)
+			}
+		case z.InsertAfter:
+			if i := m.findElementByKey(el.key, ordered); i != -1 {
+				chainElementNotFound(el.key)
+			} else {
+				ordered = slice.InsertAfter[*chainElement](ordered, el, i)
+			}
+		}
+	}
+	return
+}
+
+func (m *middleware) serviceChain(service string) (unordered []*chainElement) {
+	for _, el := range m.els {
+		unordered = append(unordered, el)
+	}
+	if _, has := m.serviceEls[service]; has {
+		for _, sEl := range m.serviceEls[service] {
+			unordered = append(unordered, sEl)
+		}
+	}
+	return
+}
+
+func (m *middleware) requestHandlers(currentService string) (handlers []z.RequestHandlerFn) {
+	ordered := m.orderChainElements(m.serviceChain(currentService))
+	for _, el := range ordered {
+		if el.disabled {
+			continue
+		}
+		handlers = append(handlers, el.req)
+	}
+	return
+}
+
+func (m *middleware) responseHandlers(currentService string) (handlers []z.ResponseHandlerFn) {
+	ordered := m.orderChainElements(m.serviceChain(currentService))
+	for _, el := range ordered {
+		if el.disabled {
+			continue
+		}
+		handlers = append(handlers, el.res)
+	}
 	return
 }

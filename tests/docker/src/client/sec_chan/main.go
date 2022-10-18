@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	job "github.com/AgentCoop/go-work"
-	sec_chan "github.com/go-serv/foundation/addon/sec-chan"
+	sec_chan "github.com/go-serv/foundation/addon/sec_chan"
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
 	"log"

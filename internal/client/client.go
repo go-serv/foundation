@@ -12,7 +12,7 @@ import (
 type client struct {
 	svcName  string
 	codec    z.CodecInterface
-	mw       z.MiddlewareInterface
+	mw       z.ClientMiddlewareInterface
 	meta     z.MetaInterface
 	endpoint z.EndpointInterface
 	conn     net.Conn
@@ -32,11 +32,11 @@ func (s *client) WithCodec(cc z.CodecInterface) {
 	s.codec = cc
 }
 
-func (c *client) Middleware() z.MiddlewareInterface {
+func (c *client) Middleware() z.ClientMiddlewareInterface {
 	return c.mw
 }
 
-func (c *client) WithMiddleware(mw z.MiddlewareInterface) {
+func (c *client) WithMiddleware(mw z.ClientMiddlewareInterface) {
 	c.mw = mw
 }
 
