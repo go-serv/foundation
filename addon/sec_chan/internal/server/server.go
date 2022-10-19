@@ -4,7 +4,7 @@
 package server
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/sec_chan"
+	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary"
 	"google.golang.org/grpc"

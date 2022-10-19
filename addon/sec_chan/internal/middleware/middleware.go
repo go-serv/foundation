@@ -3,8 +3,7 @@ package middleware
 import (
 	"errors"
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
-	"github.com/go-serv/foundation/internal/autogen/go_serv/net/ext"
-	"github.com/go-serv/foundation/internal/autogen/sec_chan"
+	"github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 )
@@ -75,7 +74,7 @@ func ClientReqHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.Req
 		err = ErrDf
 		return
 	}
-	if cipher != nil && req.MessageReflection().Bool(ext.E_EncOff) != true {
+	if cipher != nil && req.MessageReflection().Bool(sec_chan.E_EncOff) != true {
 		df.WithBlockCipher(cipher)
 	}
 	_, err = next(req, nil)
@@ -93,7 +92,7 @@ func ClientResHandler(next z.NextHandlerFn, ctx z.NetContextInterface, res z.Res
 	}
 
 	cipher := ctx.(z.NetClientContextInterface).Client().BlockCipher()
-	if cipher != nil && res.MessageReflection().Bool(ext.E_EncOff) != true {
+	if cipher != nil && res.MessageReflection().Bool(sec_chan.E_EncOff) != true {
 		if df, ok = res.Data().(z.DataFrameInterface); !ok {
 			err = ErrDf
 			return

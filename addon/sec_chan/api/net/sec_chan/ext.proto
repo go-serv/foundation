@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package go_serv.net.sec_chan;
+package net.sec_chan;
 
 extend google.protobuf.MethodOptions {
   // Close current session after the given call.

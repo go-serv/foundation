@@ -76,3 +76,8 @@ func (c *client) SessionId() z.SessionId {
 	dic := c.Meta().Dictionary().(*net_meta.HttpDictionary)
 	return dic.SessionId
 }
+
+func (c *client) Reset() {
+	dic := c.Meta().Dictionary().(*net_meta.HttpDictionary)
+	dic.SessionId = 0
+}

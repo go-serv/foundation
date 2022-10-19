@@ -18,3 +18,7 @@ const (
 	TlsTrustedPartiesPort = 3032
 	WebProxyPort          = 3033
 )
+
+var (
+	PskKey = []byte{0xd2, 0xf5, 0xc8, 0x45, 0x35, 0xf5, 0xe3, 0x12}
+)

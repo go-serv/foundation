@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"crypto/rand"
+	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
-	proto "github.com/go-serv/foundation/internal/autogen/sec_chan"
+	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	grpc_err "github.com/go-serv/foundation/internal/grpc/error"
 	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
+	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc/codes"
@@ -68,8 +70,12 @@ func (s impl) Create(ctx context.Context, req *proto.Create_Request) (res *proto
 		// TODO must be implemented
 	case *proto.Create_Request_Rsa:
 		// TODO must be implemented
-	case *proto.Create_Request_Psk:
-		// TODO must be implemented
+	case *proto.Create_Request_Psk: // Pre-shared key
+		var resolved any
+		if resolved, err = runtime.Runtime().Resolve(x.PskResolverKey); err != nil {
+			return
+		}
+		encKey = resolved.([]byte)
 	default:
 		return nil, grpc_err.New(z.ErrSeverityLow, codes.FailedPrecondition, "public key exchange algo must be specified")
 	}

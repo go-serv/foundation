@@ -1,6 +1,7 @@
 package session
 
 import (
+	"github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/internal/autogen/go_serv/net/ext"
 	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
@@ -12,7 +13,7 @@ import (
 func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	srvCtx := ctx.(z.NetServerContextInterface)
 	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
-	if req.MethodReflection().Bool(ext.E_RequireSession) {
+	if req.MethodReflection().Bool(foundation.E_RequireSession) {
 		sess := session.FindById(sId)
 		if sess == nil || (sess.State() != session.Active && sess.State() != session.New) {
 			return status.Error(codes.NotFound, "gRPC session not found or expired")
@@ -27,7 +28,7 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 }
 
 func ClientRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
-	if req.MethodReflection().Bool(ext.E_OptionalSession) {
+	if req.MethodReflection().Bool(foundation.E_RequireSession) {
 		clntCtx := ctx.(z.NetClientContextInterface)
 		client := clntCtx.Client()
 		sId := client.Meta().Dictionary().(*net.HttpDictionary).SessionId

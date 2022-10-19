@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package foundation;
+
+//
+extend google.protobuf.MethodOptions {
+  // If set to true current call requires an open session. Session ID must be provided in the request metadata.
+  bool require_session = 60030;
+}

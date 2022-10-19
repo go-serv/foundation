@@ -21,6 +21,7 @@ type ClientInterface interface {
 	// WithOptions sets options for a call.
 	WithOptions(any)
 	SessionId() SessionId
+	Reset()
 }
 
 type NetworkClientInterface interface {

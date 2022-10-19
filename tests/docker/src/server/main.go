@@ -3,9 +3,12 @@ package main
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/addon/sec_chan"
+	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/app"
 	"github.com/go-serv/foundation/app/webproxy"
+	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/runtime"
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
 	"log"
@@ -22,6 +25,10 @@ func main() {
 	var (
 		err error
 	)
+
+	runtime.RegisterResolver(x.PskResolverKey, memoize.NewMemoizer(func(a ...any) (any, error) {
+		return src.PskKey, nil
+	}))
 
 	wpCfg := webproxy.DefaultConfig(app.NewDashboard())
 	wp := webproxy.NewWebProxy(wpCfg)
