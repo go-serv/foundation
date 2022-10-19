@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-serv/foundation/pkg/ancillary/slice"
 	"github.com/go-serv/foundation/pkg/z"
+	"reflect"
 )
 
 type chainElement struct {
@@ -75,7 +76,7 @@ func (m *middleware) responsePassThrough(ctx z.NetContextInterface, service stri
 		return nil
 	}
 	handlers := m.responseHandlers(service)
-	handlers = append(handlers, tailCall)
+	handlers = slice.Prepend[z.ResponseHandlerFn](tailCall, handlers)
 	// Iterate over the response handlers m. First added handler will be called last.
 	for i := 0; i < len(handlers); i++ {
 		handler := handlers[i]
@@ -91,9 +92,9 @@ func (m *middleware) responsePassThrough(ctx z.NetContextInterface, service stri
 	return
 }
 
-func (m *middleware) findElementByKey(search any, els []*chainElement) int {
+func (m *middleware) findElementByKey(needle any, els []*chainElement) int {
 	for i, el := range els {
-		if el.key == search {
+		if el.key == needle {
 			return i
 		}
 	}
@@ -101,7 +102,7 @@ func (m *middleware) findElementByKey(search any, els []*chainElement) int {
 }
 
 func chainElementNotFound(key any) {
-	panic(fmt.Sprintf("middleware: failed to find chain element with key '%v'", key))
+	panic(fmt.Sprintf("middleware: failed to find chain element with key '%v'", reflect.TypeOf(key).Name()))
 }
 
 func (m *middleware) orderChainElements(unordered []*chainElement) (ordered []*chainElement) {
@@ -116,16 +117,16 @@ func (m *middleware) orderChainElements(unordered []*chainElement) (ordered []*c
 	for _, el := range unordered {
 		switch el.insertOp {
 		case z.InsertBefore:
-			if i := m.findElementByKey(el.key, ordered); i != -1 {
-				chainElementNotFound(el.key)
-			} else {
+			if i := m.findElementByKey(el.insertTargetKey, ordered); i != -1 {
 				ordered = slice.InsertBefore[*chainElement](ordered, el, i)
+			} else {
+				chainElementNotFound(el.key)
 			}
 		case z.InsertAfter:
-			if i := m.findElementByKey(el.key, ordered); i != -1 {
-				chainElementNotFound(el.key)
-			} else {
+			if i := m.findElementByKey(el.insertTargetKey, ordered); i != -1 {
 				ordered = slice.InsertAfter[*chainElement](ordered, el, i)
+			} else {
+				chainElementNotFound(el.key)
 			}
 		}
 	}
@@ -147,7 +148,7 @@ func (m *middleware) serviceChain(service string) (unordered []*chainElement) {
 func (m *middleware) requestHandlers(currentService string) (handlers []z.RequestHandlerFn) {
 	ordered := m.orderChainElements(m.serviceChain(currentService))
 	for _, el := range ordered {
-		if el.disabled {
+		if el.disabled || el.req == nil {
 			continue
 		}
 		handlers = append(handlers, el.req)
@@ -158,7 +159,7 @@ func (m *middleware) requestHandlers(currentService string) (handlers []z.Reques
 func (m *middleware) responseHandlers(currentService string) (handlers []z.ResponseHandlerFn) {
 	ordered := m.orderChainElements(m.serviceChain(currentService))
 	for _, el := range ordered {
-		if el.disabled {
+		if el.disabled || el.res == nil {
 			continue
 		}
 		handlers = append(handlers, el.res)

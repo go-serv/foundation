@@ -1,17 +1,12 @@
 module go-server-tests-endpoints
 
-go 1.18
+go 1.19
 
-replace github.com/AgentCoop/go-work => /vendor/go-work
-
-replace github.com/go-serv/foundation => /vendor/foundation
-
-replace google.golang.org/grpc => /vendor/grpc-go
-
-require (
-	github.com/AgentCoop/go-work v0.0.2
-	github.com/go-serv/foundation v0.0.0-20220907210104-00b30196fc8c
-)
+//replace github.com/AgentCoop/go-work => /vendor/go-work
+//
+//replace github.com/go-serv/foundation => /vendor/foundation
+//
+//replace google.golang.org/grpc => /vendor/grpc-go
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect

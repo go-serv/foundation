@@ -19,3 +19,8 @@ func InsertAfter[elType any](in []elType, newEl elType, idx int) []elType {
 	copy(result[idx+2:], in[idx+1:])
 	return result
 }
+
+// Prepend adds a new element to the beginning of the slice.
+func Prepend[elType any](newEl elType, dst []elType) []elType {
+	return append([]elType{newEl}, dst...)
+}

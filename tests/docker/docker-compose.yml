@@ -13,6 +13,15 @@ services:
       - 3033:3033
     volumes:
       - type: bind
+        source: ../../
+        target: /vendor/foundation
+      - type: bind
+        source: ../../../
+        target: /vendor/go-work
+      - type: bind
+        source: ../../../
+        target: /vendor/grpc-go
+      - type: bind
         source: ./src/server
         target: /app/target
       - type: bind

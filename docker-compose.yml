@@ -15,11 +15,11 @@ services:
         source: ./proto-compiler/api/go_serv
         target: /share/go_serv
       - type: bind
-        source: ./sec-chan-mw/api/sec_chan_mw
+        source: ./sec_chan_mw/api/sec_chan_mw
         target: /share/sec_chan_mw
       - type: bind
-        source: ./sec-chan-mw/internal/autogen
+        source: ./sec_chan_mw/internal/autogen
         target: /app/autogen/go
       - type: bind
-        source: ./sec-chan-mw/web
+        source: ./sec_chan_mw/web
         target: /app/autogen/cjs

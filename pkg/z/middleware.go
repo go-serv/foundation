@@ -13,7 +13,7 @@ var (
 type InsertOp int
 
 const (
-	InsertBefore InsertOp = iota
+	InsertBefore InsertOp = iota + 1
 	InsertAfter
 )
 
