@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	job "github.com/AgentCoop/go-work"
-	sec_chan "github.com/go-serv/foundation/addon/sec_chan"
+	"github.com/go-serv/foundation/addon/sec_chan"
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
 	"log"
@@ -15,7 +15,7 @@ const nonceLen = 12
 var newSessTask = func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.TaskInterface) {
 		cc := j.GetValue().(sec_chan.ClientInterface)
-		_, nonce, err := cc.NewSession(3600, nonceLen)
+		_, nonce, err := cc.Create(3600, nonceLen)
 		task.Assert(err)
 		if len(nonce) != nonceLen {
 			j.Cancel(errors.New(fmt.Sprintf("expected %d got %v", nonceLen, len(nonce))))
@@ -23,6 +23,9 @@ var newSessTask = func(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 		if cc.SessionId() == 0 {
 			j.Cancel(errors.New("zero session ID"))
 		}
+		// Close the created session.
+		err = cc.Close()
+		task.Assert(err)
 		task.Done()
 	}
 	return nil, run, nil

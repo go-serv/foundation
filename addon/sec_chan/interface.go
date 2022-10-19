@@ -10,7 +10,8 @@ type ServiceConfigInterface interface{}
 
 type ClientInterface interface {
 	z.NetworkClientInterface
-	NewSession(lifetime int, nonceLen int) (pubKey []byte, nonce []byte, err error)
+	Create(lifetime int, nonceLen int) (pubKey []byte, nonce []byte, err error)
+	Close() error
 }
 
 type ClientConfigInterface interface{}

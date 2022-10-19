@@ -4,7 +4,7 @@
 package server
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/sec_chan_mw"
+	proto "github.com/go-serv/foundation/internal/autogen/sec_chan"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary"
 	"google.golang.org/grpc"
@@ -16,10 +16,12 @@ type serviceUnimpl struct {
 	proto.UnimplementedSecureChannelServer
 }
 
+type impl struct{}
+
 type secChanServer struct {
 	z.NetworkServiceInterface
 	ancillary.ArchiveOptions
-	sessionImpl
+	impl
 	serviceUnimpl
 }
 

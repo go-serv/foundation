@@ -8,10 +8,10 @@ import (
 
 const (
 	New          z.SessionState = iota + 1
-	Active                      // session context was set
-	Invalidated                 // something went wrong, a subject to GC
-	Completed                   // no more calls will be handled by the given session
-	ExpiredState                // marked as expired by the session manager goroutine
+	Active                      // session context was set.
+	Invalidated                 // something went wrong, a subject to GC.
+	Closed                      // if closed, no more calls will be handled by the given session.
+	ExpiredState                // marked as expired by the session manager goroutine.
 )
 
 var sessionMap = sync.Map{}
@@ -65,4 +65,8 @@ func (s *session) Context() interface{} {
 func (s *session) WithContext(ctx interface{}) {
 	s.ctx = ctx
 	s.state = Active
+}
+
+func (s *session) Close() {
+	s.state = Closed
 }

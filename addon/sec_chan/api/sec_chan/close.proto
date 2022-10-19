@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package go_serv.net.sec_chan;
+
+// Explicitly close current session.
+// The similar result can be achieved by using the .go_serv.net.sec_chan.close_after call option.
+message Close {
+  message Request { }
+  message Response { }
+}

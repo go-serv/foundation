@@ -16,4 +16,5 @@ type SessionInterface interface {
 	WithBlockCipher(crypto.AEAD_CipherInterface)
 	Context() interface{}
 	WithContext(interface{})
+	Close()
 }

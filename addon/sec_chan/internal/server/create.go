@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
-	proto "github.com/go-serv/foundation/internal/autogen/sec_chan_mw"
+	proto "github.com/go-serv/foundation/internal/autogen/sec_chan"
 	grpc_err "github.com/go-serv/foundation/internal/grpc/error"
 	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
@@ -16,9 +16,7 @@ import (
 
 const NonceMaxLength = 32
 
-type sessionImpl struct{}
-
-func (s sessionImpl) diffieHellmanKeyExchange(req *proto.Session_Request) (serverPubKey []byte, encKey []byte, err error) {
+func (s impl) diffieHellmanKeyExchange(req *proto.Create_Request) (serverPubKey []byte, encKey []byte, err error) {
 	var (
 		pubKeyExch   crypto.PubKeyExchangeInterface
 		clientPubKey []byte
@@ -27,7 +25,7 @@ func (s sessionImpl) diffieHellmanKeyExchange(req *proto.Session_Request) (serve
 		return
 	}
 
-	clientPubKey = req.GetKeyExchAlgo().(*proto.Session_Request_Dh).Dh.GetPubKey()
+	clientPubKey = req.GetKeyExchAlgo().(*proto.Create_Request_Dh).Dh.GetPubKey()
 	if encKey, err = pubKeyExch.ComputeKey(clientPubKey); err != nil {
 		return
 	}
@@ -36,13 +34,13 @@ func (s sessionImpl) diffieHellmanKeyExchange(req *proto.Session_Request) (serve
 	return
 }
 
-func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Request) (res *proto.Session_Response, err error) {
+func (s impl) Create(ctx context.Context, req *proto.Create_Request) (res *proto.Create_Response, err error) {
 	var (
 		nonce, encKey, serverPubKey []byte
 		cipher                      crypto.AEAD_CipherInterface
 	)
 	netCtx := ctx.(z.NetServerContextInterface)
-	res = &proto.Session_Response{}
+	res = &proto.Create_Response{}
 
 	// Create a nonce with the given length.
 	if req.GetNonceLength() > NonceMaxLength {
@@ -62,15 +60,15 @@ func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Reque
 
 	// Public key exchange.
 	switch req.GetKeyExchAlgo().(type) {
-	case *proto.Session_Request_Dh:
+	case *proto.Create_Request_Dh:
 		if serverPubKey, encKey, err = s.diffieHellmanKeyExchange(req); err != nil {
 			return nil, grpc_err.New(z.ErrSeverityHigh, codes.FailedPrecondition, err.Error())
 		}
-	case *proto.Session_Request_Ecdh:
+	case *proto.Create_Request_Ecdh:
 		// TODO must be implemented
-	case *proto.Session_Request_Rsa:
+	case *proto.Create_Request_Rsa:
 		// TODO must be implemented
-	case *proto.Session_Request_Psk:
+	case *proto.Create_Request_Psk:
 		// TODO must be implemented
 	default:
 		return nil, grpc_err.New(z.ErrSeverityLow, codes.FailedPrecondition, "public key exchange algo must be specified")
