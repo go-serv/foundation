@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"github.com/go-serv/foundation/internal/autogen/go_serv/net/ext"
+	"github.com/go-serv/foundation/internal/autogen/foundation"
 	net_req "github.com/go-serv/foundation/internal/grpc/msg/request"
 	net_res "github.com/go-serv/foundation/internal/grpc/msg/response"
 	"github.com/go-serv/foundation/internal/service"
@@ -65,8 +65,8 @@ func (m *clientMw) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 
 		// Copy response metadata to the client if necessary.
 		methodRef := req.MethodReflection()
-		if methodRef.Has(ext.E_CopyMetaOff) {
-			iv, _ := methodRef.Get(ext.E_CopyMetaOff)
+		if methodRef.Has(foundation.E_ClientCopyMetaOff) {
+			iv, _ := methodRef.Get(foundation.E_ClientCopyMetaOff)
 			v := iv.(bool)
 			if !v {
 				res.Meta().Copy(m.Client().Meta())

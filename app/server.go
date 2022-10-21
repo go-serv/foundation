@@ -4,6 +4,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/internal/service"
+	"github.com/go-serv/foundation/pkg/y/kv"
 	"github.com/go-serv/foundation/pkg/z"
 )
 
@@ -12,6 +13,7 @@ type server struct {
 	middleware z.ServerMiddlewareInterface
 	dashboard  z.DashboardInterface
 	wp         z.WebProxyInterface
+	kv         kv.KeyValueStorageInterface
 }
 
 func (srv *server) Job() job.JobInterface {

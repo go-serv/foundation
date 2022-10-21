@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "foundation/ext.proto";
+import "net/cerberus/ext.proto";
+
+package net.cerberus;
+
+service Cerberus {
+  option (.foundation.auth_type) = ApiKey;
+  option (.net.cerberus.requires_role) = "owner";
+  option (.net.cerberus.requires_role) = "admin";
+  //.
+}

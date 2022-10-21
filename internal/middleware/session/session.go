@@ -2,7 +2,6 @@ package session
 
 import (
 	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/autogen/go_serv/net/ext"
 	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/pkg/z"
@@ -19,9 +18,19 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 			return status.Error(codes.NotFound, "gRPC session not found or expired")
 		}
 		srvCtx.WithSession(sess)
-	} else if req.MethodReflection().Bool(ext.E_OptionalSession) {
+	}
+	_, err = next(req, nil)
+	return
+}
+
+func ServerResponseSessionHandler(next z.NextHandlerFn, _ z.NetContextInterface, req z.RequestInterface) (err error) {
+	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
+	// Close current session if necessary.
+	if req.MethodReflection().Bool(foundation.E_CloseSession) {
 		sess := session.FindById(sId)
-		srvCtx.WithSession(sess)
+		if sess != nil {
+			sess.Close()
+		}
 	}
 	_, err = next(req, nil)
 	return

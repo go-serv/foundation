@@ -4,8 +4,24 @@ import "google/protobuf/descriptor.proto";
 
 package foundation;
 
-//
+enum AuthType {
+  BearerToken = 0;
+  ApiKey = 1;
+}
+
+extend google.protobuf.ServiceOptions {
+  AuthType auth_type = 60000;
+}
+
+//..
 extend google.protobuf.MethodOptions {
+  // If set to true creates a new session. The option is being ignored if there is an active session. For instance, one
+  // that was created by a `SecureChannel.Create` call.
+  bool new_session = 60030;
   // If set to true current call requires an open session. Session ID must be provided in the request metadata.
-  bool require_session = 60030;
+  bool require_session = 60031;
+  // If set to true current session will be closed once the call is completed.
+  bool close_session = 60032;
+  //
+  bool client_copy_meta_off = 60033;
 }
