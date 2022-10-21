@@ -7,8 +7,9 @@ import (
 )
 
 type Reflection struct {
-	method z.MethodReflectionInterface
-	msg    z.MessageReflectionInterface
+	service z.ServiceReflectionInterface
+	method  z.MethodReflectionInterface
+	msg     z.MessageReflectionInterface
 }
 
 func (ref *Reflection) Populate(msg proto.Message) (err error) {
@@ -16,8 +17,17 @@ func (ref *Reflection) Populate(msg proto.Message) (err error) {
 	if ref.method, err = reflect.MethodReflectionFromMessage(msg); err != nil {
 		return
 	}
+
 	ref.msg = ref.method.FromMessage(msg)
+
+	if ref.service, err = reflect.ServiceReflectionFromMessage(msg); err != nil {
+		return
+	}
 	return
+}
+
+func (ref *Reflection) ServiceReflection() z.ServiceReflectionInterface {
+	return ref.service
 }
 
 func (ref *Reflection) MethodReflection() z.MethodReflectionInterface {

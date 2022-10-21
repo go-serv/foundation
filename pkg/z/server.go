@@ -9,14 +9,16 @@ import (
 )
 
 type EndpointInterface interface {
+	AppServer() AppServerInterface
+	BindAppServer(AppServerInterface)
+	Services() []ServiceInterface
+	AddService(ServiceInterface)
 	Address() string
 	ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize)
 	GrpcServer() *grpc.Server
 	BindGrpcServer(*grpc.Server)
 	GrpcServerOptions() []grpc.ServerOption
 	WithGrpcServerOptions(opts ...grpc.ServerOption)
-	Service() ServiceInterface
-	BindService(ServiceInterface)
 }
 
 type NetEndpointInterface interface {

@@ -23,7 +23,7 @@ func (m *serverMw) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			md   metadata.MD
 			ok   bool
 			req  z.RequestInterface
-			sref z.ServiceReflectInterface
+			sref z.ServiceReflectionInterface
 		)
 		if md, ok = metadata.FromIncomingContext(ctx); !ok {
 			return nil, status.Error(codes.Internal, "failed to retrieve request metadata")

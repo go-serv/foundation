@@ -11,6 +11,9 @@ import (
 
 func NewSecChanService(app z.AppServerInterface, eps []z.EndpointInterface, cfg server.ConfigInterface) ServiceInterface {
 	svc := server.NewSecureChanService(eps, cfg)
+	for _, ep := range eps {
+		ep.AddService(svc)
+	}
 	app.Middleware().Insert(z.SessionMwKey, z.InsertAfter, x.SecChanMwKey, sec_mw.ServerReqHandler, sec_mw.ServerResHandler)
 	return svc
 }

@@ -30,7 +30,7 @@ func (m *clientMw) UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		var (
 			req  z.RequestInterface
 			res  z.ResponseInterface
-			sref z.ServiceReflectInterface
+			sref z.ServiceReflectionInterface
 		)
 
 		client := m.Client()

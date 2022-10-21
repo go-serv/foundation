@@ -7,8 +7,8 @@ import (
 )
 
 type ReflectInterface interface {
-	ServiceReflectionFromMessage(msg proto.Message) (ServiceReflectInterface, error)
-	ServiceReflectionFromName(name protoreflect.FullName) (ServiceReflectInterface, bool)
+	ServiceReflectionFromMessage(msg proto.Message) (ServiceReflectionInterface, error)
+	ServiceReflectionFromName(name protoreflect.FullName) (ServiceReflectionInterface, bool)
 	MethodReflectionFromMessage(msg proto.Message) (MethodReflectionInterface, error)
 	AddService(name string)
 	AddProtoExtension(*protoimpl.ExtensionInfo)
@@ -21,7 +21,7 @@ type ReflectAccessor interface {
 	Bool(key *protoimpl.ExtensionInfo) bool
 }
 
-type ServiceReflectInterface interface {
+type ServiceReflectionInterface interface {
 	ReflectAccessor
 	FullName() string
 	Descriptor() protoreflect.ServiceDescriptor

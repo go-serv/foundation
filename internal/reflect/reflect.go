@@ -11,12 +11,13 @@ import (
 )
 
 type serviceMapType map[protoreflect.FullName]*service
+
 type reflect struct {
 	protoExts []*protoimpl.ExtensionInfo
 	services  serviceMapType
 }
 
-func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (z.ServiceReflectInterface, error) {
+func (r *reflect) ServiceReflectionFromMessage(msg proto.Message) (z.ServiceReflectionInterface, error) {
 	key := msg.ProtoReflect().Descriptor().FullName()
 	for _, s := range r.services {
 		for _, m := range s.Methods() {
@@ -93,7 +94,7 @@ func (r *reflect) AddService(name string) {
 	r.services[protoreflect.FullName(name)] = nil
 }
 
-func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service z.ServiceReflectInterface, has bool) {
+func (r *reflect) ServiceReflectionFromName(name protoreflect.FullName) (service z.ServiceReflectionInterface, has bool) {
 	service, has = r.services[name]
 	return
 }

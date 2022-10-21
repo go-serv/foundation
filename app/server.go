@@ -31,6 +31,26 @@ func (srv *server) AddService(svc z.ServiceInterface) {
 	runtime.Runtime().RegisterService(svc)
 }
 
+func (srv *server) selectEndpoints() []z.EndpointInterface {
+	var found bool
+	results := make([]z.EndpointInterface, 0)
+	for _, svc := range runtime.Runtime().Services() {
+		for _, ep := range svc.Endpoints() {
+			found = false
+			for _, k := range results {
+				if k == ep {
+					found = true
+					break
+				}
+			}
+			if !found {
+				results = append(results, ep)
+			}
+		}
+	}
+	return results
+}
+
 func (srv *server) Start() {
 	services := runtime.Runtime().Services()
 	if len(services) == 0 {
@@ -39,10 +59,12 @@ func (srv *server) Start() {
 
 	for _, svc := range services {
 		svc.BindApp(srv)
-		for _, ep := range svc.Endpoints() {
-			ep.BindService(svc)
-			srv.mainJob.AddTask(ep.ServeTask)
-		}
+	}
+
+	eps := srv.selectEndpoints()
+	for _, ep := range eps {
+		ep.BindAppServer(srv)
+		srv.mainJob.AddTask(ep.ServeTask)
 	}
 	<-srv.mainJob.Run()
 }

@@ -7,22 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (ep *tcpEndpoint) initTask() {
-	svc := ep.Service()
-
-	// An option for the middleware unary interceptor.
-	mwUnaryInt := svc.App().Middleware().UnaryServerInterceptor()
-	ep.WithGrpcServerOptions(grpc.ChainUnaryInterceptor(mwUnaryInt))
-
-	// Codec option.
-	if svc.Codec() != nil {
-		ep.WithGrpcServerOptions(grpc.ForceServerCodec(svc.Codec()))
-	}
-	grpcServer := grpc.NewServer(ep.GrpcServerOptions()...)
-
-	ep.BindGrpcServer(grpcServer)
-	ep.Service().(z.NetworkServiceInterface).Register(ep.GrpcServer())
-
+func (ep *tcpEndpoint) serviceStartInfo(name string) {
 	info := job.Logger(logger.Info)
 	var extra string
 	if ep.IsSecure() {
@@ -32,7 +17,27 @@ func (ep *tcpEndpoint) initTask() {
 	} else {
 		extra = "gRPC, no TLS"
 	}
-	info("serving network requests on %s ( %s )", ep.Address(), extra)
+	info("%s serving network requests on %s ( %s )", name, ep.Address(), extra)
+}
+
+func (ep *tcpEndpoint) initTask() {
+	//	svc := ep.Service()
+
+	// An option for the middleware unary interceptor.
+	mwUnaryInt := ep.AppServer().Middleware().UnaryServerInterceptor()
+	ep.WithGrpcServerOptions(grpc.ChainUnaryInterceptor(mwUnaryInt))
+
+	// Codec option.
+	//if svc.Codec() != nil {
+	//	ep.WithGrpcServerOptions(grpc.ForceServerCodec(svc.Codec()))
+	//}
+
+	grpcServer := grpc.NewServer(ep.GrpcServerOptions()...)
+	ep.BindGrpcServer(grpcServer)
+	for _, svc := range ep.Services() {
+		svc.(z.NetworkServiceInterface).Register(ep.GrpcServer())
+		ep.serviceStartInfo(svc.Name())
+	}
 }
 
 func (ep *tcp4Endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {

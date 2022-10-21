@@ -16,5 +16,6 @@ service SecureChannel {
   // Close a secure channel. Session ID must be provided in the request metadata.
   rpc Close(Close.Request) returns (Close.Response) {
     option (.foundation.require_session) = true;
+    option (.foundation.close_session) = true;
   }
 }

@@ -7,17 +7,26 @@ import (
 )
 
 type endpoint struct {
-	svc            z.ServiceInterface
+	appServer      z.AppServerInterface
+	services       []z.ServiceInterface
 	grpcServer     *grpc.Server
 	grpcServerOpts []grpc.ServerOption
 }
 
-func (ep *endpoint) Service() z.ServiceInterface {
-	return ep.svc
+func (ep *endpoint) AppServer() z.AppServerInterface {
+	return ep.appServer
 }
 
-func (ep *endpoint) BindService(svc z.ServiceInterface) {
-	ep.svc = svc
+func (ep *endpoint) BindAppServer(app z.AppServerInterface) {
+	ep.appServer = app
+}
+
+func (ep *endpoint) Services() []z.ServiceInterface {
+	return ep.services
+}
+
+func (ep *endpoint) AddService(svc z.ServiceInterface) {
+	ep.services = append(ep.services, svc)
 }
 
 func (ep *endpoint) Address() string {
@@ -42,8 +51,4 @@ func (ep *endpoint) WithGrpcServerOptions(opts ...grpc.ServerOption) {
 
 func (ep *endpoint) ServeTask(j job.JobInterface) (job.Init, job.Run, job.Finalize) {
 	return nil, nil, nil
-}
-
-func (ep *endpoint) With() z.ServiceInterface {
-	return ep.svc
 }

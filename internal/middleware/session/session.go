@@ -23,16 +23,15 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 	return
 }
 
-func ServerResponseSessionHandler(next z.NextHandlerFn, _ z.NetContextInterface, req z.RequestInterface) (err error) {
-	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
+func ServerResponseSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface, res z.ResponseInterface) (err error) {
 	// Close current session if necessary.
-	if req.MethodReflection().Bool(foundation.E_CloseSession) {
-		sess := session.FindById(sId)
-		if sess != nil {
+	if res.MethodReflection().Bool(foundation.E_CloseSession) {
+		srvCtx := ctx.(z.NetServerContextInterface)
+		if sess := srvCtx.Session(); sess != nil {
 			sess.Close()
 		}
 	}
-	_, err = next(req, nil)
+	_, err = next(nil, res)
 	return
 }
 

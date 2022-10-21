@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/grpc/middleware"
 	"github.com/go-serv/foundation/internal/middleware/session"
@@ -17,8 +16,7 @@ func NewServerApp(wp mwPkg.WebProxyInterface) *server {
 	srv.wp = wp
 	srv.mainJob = job.NewJob(nil)
 	srv.middleware = middleware.NewServerMiddleware()
-	fmt.Println("append session")
-	srv.middleware.Append(mwPkg.SessionMwKey, session.ServerRequestSessionHandler, nil)
+	srv.middleware.Append(mwPkg.SessionMwKey, session.ServerRequestSessionHandler, session.ServerResponseSessionHandler)
 	return srv
 }
 

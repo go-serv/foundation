@@ -8,8 +8,6 @@ import (
 func NewNetworkService(name string, cfg z.ServiceCfgInterface, endpoints []z.EndpointInterface) *netService {
 	s := &netService{}
 	s.ServiceInterface = service.NewService(name, cfg, endpoints)
-	//cc := net_cc.NewOrRegistered(name)
-	//s.ServiceInterface.WithCodec(cc)
 	return s
 }
 

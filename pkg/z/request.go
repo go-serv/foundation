@@ -16,6 +16,7 @@ type MetaInterface interface {
 type RequestResponseInterface interface {
 	Data() any
 	Meta() MetaInterface
+	ServiceReflection() ServiceReflectionInterface
 	MethodReflection() MethodReflectionInterface
 	MessageReflection() MessageReflectionInterface
 	Populate(proto.Message) error
