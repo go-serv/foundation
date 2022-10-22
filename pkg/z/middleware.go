@@ -4,10 +4,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-type sessionMiddlewareKey struct{}
+type (
+	sessionMiddlewareKey struct{}
+	netMiddlewareKey     struct{}
+)
 
 var (
 	SessionMwKey = sessionMiddlewareKey{}
+	NetworkMwKey = netMiddlewareKey{}
 )
 
 type InsertOp int

@@ -7,9 +7,14 @@ import (
 
 type netContext struct {
 	context.Context
+	service  z.NetworkServiceInterface
 	req      z.RequestInterface
 	res      z.ResponseInterface
 	tenantId z.TenantId
+}
+
+func (ctx *netContext) NetworkService() z.NetworkServiceInterface {
+	return ctx.service
 }
 
 func (ctx *netContext) Tenant() z.TenantId {

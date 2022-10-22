@@ -3,7 +3,6 @@ package middleware
 import (
 	"errors"
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
-	"github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
@@ -58,11 +57,6 @@ func ServerResHandler(next z.NextHandlerFn, ctx z.NetContextInterface, res z.Res
 		df.WithBlockCipher(sess.BlockCipher())
 		return
 	}
-
-	if res.MethodReflection().Bool(foundation.E_CloseSession) {
-		sess.Close()
-	}
-
 	return
 }
 

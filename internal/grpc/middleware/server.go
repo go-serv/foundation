@@ -41,7 +41,7 @@ func (m *serverMw) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		// Pass server context through the request/response handler chains.
-		srvCxt := net_call.NewServerContext(ctx, req, handler)
+		srvCxt := net_call.NewServerContext(ctx, info.Server.(z.NetworkServiceInterface), req, handler)
 		if err = m.requestPassThrough(srvCxt, sref.FullName()); err != nil {
 			return
 		}

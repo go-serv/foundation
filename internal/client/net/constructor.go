@@ -4,6 +4,7 @@ import (
 	"github.com/go-serv/foundation/internal/client"
 	net_cc "github.com/go-serv/foundation/internal/grpc/codec/net"
 	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
+	net_mw "github.com/go-serv/foundation/internal/middleware/net"
 
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/internal/service"
@@ -19,6 +20,7 @@ func NewClient(svcName string, e z.EndpointInterface) *netClient {
 	meta := meta_net.NewMeta(nil)
 	netCt.WithMeta(meta)
 	netCt.Middleware().WithClient(netCt)
+	netCt.Middleware().Append(z.NetworkMwKey, net_mw.ClientRequestNetHandler, net_mw.ClientResponseNetHandler)
 	// Set client codec
 	codec := net_cc.NewOrRegistered("proto")
 	//netCt.WithCodec(codec)

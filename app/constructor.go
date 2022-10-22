@@ -3,6 +3,7 @@ package app
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/grpc/middleware"
+	net_mw "github.com/go-serv/foundation/internal/middleware/net"
 	"github.com/go-serv/foundation/internal/middleware/session"
 	"github.com/go-serv/foundation/internal/web/dashboard"
 	mwPkg "github.com/go-serv/foundation/pkg/z"
@@ -17,6 +18,7 @@ func NewServerApp(wp mwPkg.WebProxyInterface) *server {
 	srv.mainJob = job.NewJob(nil)
 	srv.middleware = middleware.NewServerMiddleware()
 	srv.middleware.Append(mwPkg.SessionMwKey, session.ServerRequestSessionHandler, session.ServerResponseSessionHandler)
+	srv.middleware.Append(mwPkg.NetworkMwKey, net_mw.ServerRequestNetHandler, net_mw.ServerResponseNetHandler)
 	return srv
 }
 

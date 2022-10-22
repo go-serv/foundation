@@ -26,6 +26,7 @@ type ServiceReflectionInterface interface {
 	FullName() string
 	Descriptor() protoreflect.ServiceDescriptor
 	Methods() []MethodReflectionInterface
+	Shadow(svc *protoimpl.ExtensionInfo, method *protoimpl.ExtensionInfo, mref MethodReflectionInterface) (v interface{}, has bool)
 }
 
 type MethodReflectionInterface interface {

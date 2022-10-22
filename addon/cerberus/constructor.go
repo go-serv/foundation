@@ -9,7 +9,7 @@ import (
 
 func NewCerberusService(app z.AppServerInterface, eps []z.EndpointInterface, cfg server.ConfigInterface) ServiceInterface {
 	svc := server.NewCerberusService(eps, cfg)
-	app.Middleware().Insert(z.SessionMwKey, z.InsertAfter, x.CerberusMwKey, mw.ServerReqHandler, nil)
+	app.Middleware().Insert(z.NetworkMwKey, z.InsertAfter, x.CerberusMwKey, mw.ServerReqHandler, nil)
 	for _, ep := range eps {
 		ep.AddService(svc)
 	}

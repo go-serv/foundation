@@ -92,8 +92,8 @@ func (m *middleware) responsePassThrough(ctx z.NetContextInterface, service stri
 	return
 }
 
-func (m *middleware) findElementByKey(needle any, els []*chainElement) int {
-	for i, el := range els {
+func (m *middleware) findElementByKey(needle any, haystack []*chainElement) int {
+	for i, el := range haystack {
 		if el.key == needle {
 			return i
 		}

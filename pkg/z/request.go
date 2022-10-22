@@ -41,6 +41,7 @@ type ContextInterface interface {
 
 type NetContextInterface interface {
 	ContextInterface
+	NetworkService() NetworkServiceInterface
 	Tenant() TenantId
 	WithTenant(TenantId)
 }

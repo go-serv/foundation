@@ -14,12 +14,12 @@ func NewSecChanService(app z.AppServerInterface, eps []z.EndpointInterface, cfg 
 	for _, ep := range eps {
 		ep.AddService(svc)
 	}
-	app.Middleware().Insert(z.SessionMwKey, z.InsertAfter, x.SecChanMwKey, sec_mw.ServerReqHandler, sec_mw.ServerResHandler)
+	app.Middleware().Insert(z.NetworkMwKey, z.InsertAfter, x.SecChanMwKey, sec_mw.ServerReqHandler, sec_mw.ServerResHandler)
 	return svc
 }
 
 func NewSecChanClient(ep z.EndpointInterface, cfg ClientConfigInterface) (cc ClientInterface, jb job.JobInterface) {
 	cc, jb = client.NewClient(ep)
-	cc.Middleware().Insert(z.SessionMwKey, z.InsertAfter, x.SecChanMwKey, sec_mw.ClientReqHandler, sec_mw.ClientResHandler)
+	cc.Middleware().Insert(z.NetworkMwKey, z.InsertAfter, x.SecChanMwKey, sec_mw.ClientReqHandler, sec_mw.ClientResHandler)
 	return
 }
