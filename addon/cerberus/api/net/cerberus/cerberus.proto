@@ -2,13 +2,37 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 import "foundation/ext.proto";
-import "net/cerberus/ext.proto";
+import "net/cerberus/roles.proto";
+import "net/cerberus/rate_limit.proto";
 
 package net.cerberus;
 
 service Cerberus {
   option (.foundation.auth_type) = ApiKey;
-  option (.net.cerberus.requires_role) = "owner";
-  option (.net.cerberus.requires_role) = "admin";
-  //.
+  option (.foundation.enforce_secure_channel) = true;
+  option (.foundation.requires_role) = "owner";
+  // Assign roles to the specified service methods.
+  rpc AssignRoles(Roles.Assign.Request) returns (Roles.Assign.Response) {
+
+  }
+  //
+  rpc ListRoles(Roles.List.Request) returns (Roles.List.Response) {
+
+  }
+  //
+  rpc RemoveRoles(Roles.Remove.Request) returns (Roles.Remove.Response) {
+
+  }
+  // Adds new entries limiting the number of calls of the specified service methods.
+  rpc AddRateLimit(RateLimit.Add.Request) returns (RateLimit.Add.Response) {
+
+  }
+  // Lists all entries of the rate limits.
+  rpc ListRateLimit(RateLimit.List.Request) returns (RateLimit.List.Response) {
+
+  }
+  // Removes entries with the specified IDs.
+  rpc RemoveRateLimit(RateLimit.Remove.Request) returns (RateLimit.Remove.Response) {
+
+  }
 }

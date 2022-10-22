@@ -6,5 +6,5 @@ package net.cerberus;
 
 extend google.protobuf.ServiceOptions {
   // Close current session after the given call.
-  repeated string requires_role = 60200;
+  repeated string dummy = 60200;
 }

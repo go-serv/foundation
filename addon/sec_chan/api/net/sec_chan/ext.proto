@@ -4,11 +4,6 @@ import "google/protobuf/descriptor.proto";
 
 package net.sec_chan;
 
-extend google.protobuf.MethodOptions {
-  // Close current session after the given call.
-  bool close_after = 60130;
-}
-
 extend google.protobuf.MessageOptions {
   // If set to true disables message encryption.
   bool enc_off = 60160;

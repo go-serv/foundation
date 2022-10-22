@@ -11,5 +11,4 @@ func init() {
 	encoding.RegisterMessageWrapper(codec.Name, codec.MessageWrapperHandler())
 	encoding.RegisterCodec(codec.NewCodec())
 	service.Reflection().AddProtoExtension(sec_chan.E_EncOff)
-	service.Reflection().AddProtoExtension(sec_chan.E_CloseAfter)
 }

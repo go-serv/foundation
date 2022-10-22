@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package net.cerberus;
+
+enum TimeInterval {
+  PER_SECOND = 0;
+  PER_MINUTE = 1;
+  PER_HOUR = 2;
+  PER_DAY = 3;
+}
+
+message RateLimit {
+  message Record {
+    string methodFullName = 1;
+    uint32  limit = 2;
+    TimeInterval interval = 3;
+    optional bool perHost = 4;
+    optional sfixed64 rec_id = 5; // Overwrite existing if specified.
+  }
+  // Add new records.
+  message Add {
+    message Request {
+      repeated Record recs = 1;
+    }
+    message Response {
+      repeated sfixed64 rec_ids = 1;
+    }
+  }
+  // List all records.
+  // Result pagination is not supported due to the small number of possible records for the given service.
+  message List {
+    message Request { }
+    message Response {
+      repeated Record recs = 1;
+    }
+  }
+  // Remove records with the given IDs.
+  message Remove {
+    message Request {
+      repeated sfixed64 rec_ids = 1;
+    }
+    message Response {
+      uint32 removed_count = 1;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package foundation;
+
+message Service {
+  message Suspend {
+    message Request {
+    }
+    message Response {
+    }
+  }
+  message Resume {
+    message Request {
+    }
+    message Response {
+    }
+  }
+}

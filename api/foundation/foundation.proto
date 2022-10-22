@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "foundation/service.proto";
+import "foundation/ext.proto";
+
+package foundation;
+
+//
+service Foundation {
+  option (.foundation.auth_type) = ApiKey;
+  option (.foundation.enforce_secure_channel) = true;
+  option (.foundation.requires_role) = "owner";
+  //..
+  rpc Suspend(Service.Suspend.Request) returns (Service.Suspend.Response) {
+
+  }
+  //
+  rpc Resume(Service.Resume.Request) returns (Service.Resume.Response) {
+
+  }
+}

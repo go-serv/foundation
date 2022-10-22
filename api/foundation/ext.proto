@@ -10,7 +10,12 @@ enum AuthType {
 }
 
 extend google.protobuf.ServiceOptions {
+  //
   AuthType auth_type = 60000;
+  //
+  bool enforce_secure_channel = 60001;
+  //
+  repeated string requires_role = 60002;
 }
 
 //..
