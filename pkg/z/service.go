@@ -23,8 +23,8 @@ type NetServiceCfgInterface interface {
 
 type NetworkServiceInterface interface {
 	ServiceInterface
-	//EncriptionKey() []byte
-	//WithEncriptionKey([]byte)
+	IsTlsEnabled() bool
+	WithTlsEnabled(bool)
 }
 
 type LocalServiceInterface interface {

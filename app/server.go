@@ -52,12 +52,7 @@ func (srv *server) selectEndpoints() []z.EndpointInterface {
 }
 
 func (srv *server) Start() {
-	services := runtime.Runtime().Services()
-	if len(services) == 0 {
-		panic("application has no services to run, use AddService method")
-	}
-
-	for _, svc := range services {
+	for _, svc := range runtime.Runtime().Services() {
 		svc.BindApp(srv)
 	}
 

@@ -17,7 +17,7 @@ func (ep *tcpEndpoint) serviceStartInfo(name string) {
 	} else {
 		extra = "gRPC, no TLS"
 	}
-	info("%s serving network requests on %s ( %s )", name, ep.Address(), extra)
+	info("%s started to serve network requests on %s ( %s )", name, ep.Address(), extra)
 }
 
 func (ep *tcpEndpoint) initTask() {
@@ -36,6 +36,7 @@ func (ep *tcpEndpoint) initTask() {
 	ep.BindGrpcServer(grpcServer)
 	for _, svc := range ep.Services() {
 		svc.(z.NetworkServiceInterface).Register(ep.GrpcServer())
+		svc.(z.NetworkServiceInterface).WithTlsEnabled(ep.IsSecure())
 		ep.serviceStartInfo(svc.Name())
 	}
 }

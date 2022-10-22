@@ -11,15 +11,13 @@ type X509PemPair struct {
 
 type netService struct {
 	z.ServiceInterface
-	tenantId z.TenantId
-	encKey   []byte
+	tlsEnabled bool
 }
 
-//func (b *netService) EncriptionKey() []byte {
-//	//TODO implement me
-//	return []byte("secret")
-//}
-//
-//func (b *netService) WithEncriptionKey(key []byte) {
-//	b.encKey = key
-//}
+func (s *netService) WithTlsEnabled(flag bool) {
+	s.tlsEnabled = flag
+}
+
+func (s *netService) IsTlsEnabled() bool {
+	return s.tlsEnabled
+}

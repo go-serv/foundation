@@ -27,12 +27,14 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 					return errNotFound
 				}
 			} else {
-				sess = session.NewSession(lifetime)
+				return errNotFound
 			}
+		} else {
+			sess = session.NewSession(lifetime)
 		}
 	} else if req.MethodReflection().Bool(foundation.E_RequireSession) { // Check if current session is valid.
 		sess = session.FindById(sId)
-		if sess == nil || sess.IsValid() {
+		if sess == nil || !sess.IsValid() {
 			return errNotFound
 		}
 	}
@@ -44,8 +46,7 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 }
 
 func ServerResponseSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface, res z.ResponseInterface) (err error) {
-	// Close current session if necessary.
-	if res.MethodReflection().Bool(foundation.E_CloseSession) {
+	if res.MethodReflection().Bool(foundation.E_CloseSession) { // Close current session.
 		srvCtx := ctx.(z.NetServerContextInterface)
 		if sess := srvCtx.Session(); sess != nil {
 			sess.Close()

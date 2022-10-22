@@ -15,11 +15,12 @@ var (
 
 func ServerReqHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
 	var (
-		ok bool
-		df z.DataFrameInterface
+		sess z.SessionInterface
+		ok   bool
+		df   z.DataFrameInterface
 	)
 	srvCtx := ctx.(z.NetServerContextInterface)
-	sess := srvCtx.Session()
+	sess = srvCtx.Session()
 	if sess != nil && sess.BlockCipher() != nil && req.MessageReflection().Bool(sec_chan.E_EncOff) != true {
 		if df, ok = srvCtx.Request().Data().(z.DataFrameInterface); !ok {
 			err = ErrDf
