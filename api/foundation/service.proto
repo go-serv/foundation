@@ -3,6 +3,12 @@ syntax = "proto3";
 package foundation;
 
 message Service {
+  message List {
+    message Request {
+    }
+    message Response {
+    }
+  }
   message Suspend {
     message Request {
     }
@@ -10,6 +16,13 @@ message Service {
     }
   }
   message Resume {
+    message Request {
+    }
+    message Response {
+    }
+  }
+  // Active discovery configuration.
+  message ActiveDiscovery {
     message Request {
     }
     message Response {

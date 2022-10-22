@@ -11,12 +11,20 @@ service Foundation {
   option (.foundation.auth_type) = ApiKey;
   option (.foundation.enforce_secure_channel) = true;
   option (.foundation.requires_role) = "owner";
+  // Lists available services.
+  rpc List(Service.List.Request) returns (Service.List.Response) {
+
+  }
+  // Configures parameters of the service active discovery.
+  rpc ConfigureActiveDiscovery(Service.ActiveDiscovery.Request) returns (Service.ActiveDiscovery.Response) {
+
+  }
   //..
   rpc Suspend(Service.Suspend.Request) returns (Service.Suspend.Response) {
-
+    option (.foundation.broadcast) = true;
   }
   //
   rpc Resume(Service.Resume.Request) returns (Service.Resume.Response) {
-
+    option (.foundation.broadcast) = true;
   }
 }

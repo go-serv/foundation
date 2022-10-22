@@ -7,11 +7,10 @@ import (
 )
 
 const (
-	New          z.SessionState = iota + 1
-	Active                      // session context was set.
-	Invalidated                 // something went wrong, a subject to GC.
-	Closed                      // if closed, no more calls will be handled by the given session.
-	ExpiredState                // marked as expired by the session manager goroutine.
+	New         z.SessionState = iota + 1
+	Active                     // session context was set.
+	Invalidated                // something went wrong, a subject to GC.
+	Closed                     // if closed, no more calls will be handled by the given session.
 )
 
 var sessionMap = sync.Map{}
@@ -40,6 +39,14 @@ func (s *session) Id() z.SessionId {
 
 func (s *session) State() z.SessionState {
 	return s.state
+}
+
+func (s *session) IsValid() bool {
+	if s.state == New || s.state == Active {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (s *session) BlockCipher() crypto.AEAD_CipherInterface {

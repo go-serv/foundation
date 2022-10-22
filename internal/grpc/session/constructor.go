@@ -7,7 +7,7 @@ import (
 
 // NewSession creates a new session with the given lifetime in seconds and stores it in the session map by its ID
 // for future use.
-func NewSession(lifetime uint16) *session {
+func NewSession(lifetime uint32) *session {
 	s := new(session)
 	s.id = z.SessionId(z.UniqueId(0).Generate())
 	s.state = New

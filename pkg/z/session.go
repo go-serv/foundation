@@ -10,6 +10,7 @@ type (
 type SessionInterface interface {
 	Id() SessionId
 	State() SessionState
+	IsValid() bool
 	Nonce() []byte
 	WithNonce([]byte)
 	BlockCipher() crypto.AEAD_CipherInterface
