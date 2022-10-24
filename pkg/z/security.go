@@ -1,6 +1,11 @@
-package security
+package z
 
 import "net/http"
+
+type ApiKeyAwareInterface interface {
+	ApiKey() []byte
+	WithApiKey([]byte)
+}
 
 type AccessTokenInterface interface {
 }

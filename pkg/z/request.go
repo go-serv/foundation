@@ -1,6 +1,7 @@
 package z
 
 import (
+	"context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -15,6 +16,7 @@ type MetaInterface interface {
 
 type RequestResponseInterface interface {
 	Data() any
+	WithData(any)
 	Meta() MetaInterface
 	ServiceReflection() ServiceReflectionInterface
 	MethodReflection() MethodReflectionInterface
@@ -28,10 +30,11 @@ type RequestInterface interface {
 
 type ResponseInterface interface {
 	RequestResponseInterface
-	WithData(any)
 }
 
 type ContextInterface interface {
+	Interface() context.Context
+	WithInterface(context.Context)
 	Request() RequestInterface
 	WithRequest(RequestInterface)
 	Response() ResponseInterface
@@ -59,6 +62,7 @@ type NetClientContextInterface interface {
 	WithClientInvoker(grpc.UnaryInvoker, *grpc.ClientConn, []grpc.CallOption)
 	Client() NetworkClientInterface
 	WithClient(NetworkClientInterface)
+	AddCallOption(grpc.CallOption)
 }
 
 type LocalContextInterface interface {

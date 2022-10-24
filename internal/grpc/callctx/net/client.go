@@ -28,6 +28,10 @@ func (ctx *clientCtx) WithClient(client z.NetworkClientInterface) {
 	ctx.client = client
 }
 
+func (ctx *clientCtx) AddCallOption(opt grpc.CallOption) {
+	ctx.opts = append(ctx.opts, opt)
+}
+
 // Invoke prepares metadata and calls gRPC method.
 func (ctx *clientCtx) Invoke() (err error) {
 	var (

@@ -10,8 +10,8 @@ type ServiceInterface interface {
 	BindApp(AppServerInterface)
 	Endpoints() []EndpointInterface
 	Name() string
-	Codec() CodecInterface
-	WithCodec(cc CodecInterface)
+	//Codec() CodecInterface
+	//WithCodec(cc CodecInterface)
 	Register(srv *grpc.Server)
 }
 

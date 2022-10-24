@@ -29,23 +29,30 @@ type NetReader struct {
 	buf []byte
 }
 
-// ReadString reads a length-prefixed string
-func (r *NetReader) ReadString() (string, error) {
+// ReadLengthPrefixed reads a length-prefixed bytes sequence.
+func (r *NetReader) ReadLengthPrefixed() (seq []byte, err error) {
 	var sl uint32
-	var err error
 	sl, err = GenericNetReader[uint32](r)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if sl > uint32(len(r.buf)) {
-		return "", ErrOutOfRange
+		return nil, ErrOutOfRange
 	} else {
-		s := make([]byte, sl)
+		seq = make([]byte, sl)
 		r.offset += int(sl)
-		copy(s, r.buf[0:sl])
+		copy(seq, r.buf[0:sl])
 		r.buf = r.buf[sl:]
-		return string(s), nil
+		return seq, nil
 	}
+}
+
+func (w *NetWriter) WriteLengthPrefixed(seq []byte) error {
+	if err := GenericNetWriter[uint32](w, uint32(len(seq))); err != nil {
+		return err
+	}
+	_, err := w.Write(seq)
+	return err
 }
 
 func (r *NetReader) ReadBytes(n int) ([]byte, error) {
@@ -85,14 +92,6 @@ func (w *NetWriter) Write(data []byte) (int, error) {
 
 func (w *NetWriter) Close() error {
 	return nil
-}
-
-func (w *NetWriter) WriteString(s string) error {
-	if err := GenericNetWriter[uint32](w, uint32(len(s))); err != nil {
-		return err
-	}
-	_, err := w.Write([]byte(s))
-	return err
 }
 
 func GenericNetReader[T NetRW_Typ](r *NetReader) (T, error) {

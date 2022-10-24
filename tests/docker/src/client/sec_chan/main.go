@@ -19,7 +19,7 @@ var createSessionTask = func(j job.JobInterface) (job.Init, job.Run, job.Finaliz
 	run := func(task job.TaskInterface) {
 		cc := j.GetValue().(sec_chan.ClientInterface)
 		keyExchAlgs := []x.KeyExchangeAlgoType{
-			x.KeyExchangePSK,
+			//x.KeyExchangePSK,
 			x.KeyExchangeDH,
 		}
 		for _, algo := range keyExchAlgs {

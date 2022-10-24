@@ -13,9 +13,8 @@ func ServerRequestNetHandler(next z.NextHandlerFn, ctx z.NetContextInterface, re
 		sess z.SessionInterface
 	)
 	srvCtx := ctx.(z.NetServerContextInterface)
-	if v, has := req.ServiceReflection().Shadow(foundation.E_EnforceSecureChannel, foundation.E_MEnforceSecureChannel, req.MethodReflection()); has {
-		enforce := v.(bool)
-		if enforce && !srvCtx.NetworkService().IsTlsEnabled() {
+	if req.ServiceReflection().Bool(foundation.E_EnforceSecureChannel) {
+		if !srvCtx.NetworkService().IsTlsEnabled() {
 			sess = srvCtx.Session()
 			if sess == nil || sess.BlockCipher() == nil {
 				errMsg := fmt.Sprintf("gRPC '%s' call requires a secure channel", req.MethodReflection().Descriptor().FullName())
@@ -33,7 +32,16 @@ func ServerResponseNetHandler(next z.NextHandlerFn, ctx z.NetContextInterface, r
 	return
 }
 
-func ClientRequestNetHandler(next z.NextHandlerFn, _ z.NetContextInterface, req z.RequestInterface) (err error) {
+func ClientRequestNetHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {
+	if v, has := req.ServiceReflection().Get(foundation.E_AuthType); has {
+		authType := v.(foundation.AuthType)
+		if authType == foundation.AuthType_ApiKey {
+			apiKey := ctx.(z.NetworkClientInterface).ApiKey()
+			if len(apiKey) == 0 {
+				panic("empty api key")
+			}
+		}
+	}
 	_, err = next(req, nil)
 	return
 }

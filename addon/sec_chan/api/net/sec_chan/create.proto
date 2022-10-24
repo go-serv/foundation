@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "net/sec_chan/ext.proto";
-
 package net.sec_chan;
 
 message Crypto_PubKeyExchange {
@@ -36,7 +34,6 @@ message Create {
     uint32 nonce_length = 30;
   }
   message Response {
-    option (.net.sec_chan.enc_off) = true;
     bytes nonce = 1;
     optional bytes pub_key = 2; // Server's public key
   }

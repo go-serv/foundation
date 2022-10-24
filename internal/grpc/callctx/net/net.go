@@ -13,6 +13,14 @@ type netContext struct {
 	tenantId z.TenantId
 }
 
+func (ctx *netContext) Interface() context.Context {
+	return ctx.Context
+}
+
+func (ctx *netContext) WithInterface(value context.Context) {
+	ctx.Context = value
+}
+
 func (ctx *netContext) NetworkService() z.NetworkServiceInterface {
 	return ctx.service
 }

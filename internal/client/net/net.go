@@ -9,6 +9,7 @@ type netClient struct {
 	z.ClientInterface
 	svc         z.NetworkServiceInterface
 	blockCipher crypto.AEAD_CipherInterface
+	apiKey      []byte
 }
 
 func (c *netClient) NetService() z.NetworkServiceInterface {
@@ -21,4 +22,12 @@ func (c *netClient) BlockCipher() crypto.AEAD_CipherInterface {
 
 func (c *netClient) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
 	c.blockCipher = cipher
+}
+
+func (c *netClient) ApiKey() []byte {
+	return c.apiKey
+}
+
+func (c *netClient) WithApiKey(key []byte) {
+	c.apiKey = key
 }

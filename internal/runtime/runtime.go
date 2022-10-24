@@ -7,40 +7,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-//var (
-//	ErrMethodDescriptorNotFound = errors.New("")
-//	ErrDescriptorNotFound       = errors.New("")
-//	ErrResolverNotFound         = errors.New("runtime: resolver not found")
-//)
-
-//type (
-//	registryKey string
-//	registry    map[registryKey]interface{}
-//)
-//
-//type (
-//	resolversMapTyp map[any]z.MemoizerInterface
-//	eventsMapTyp    map[interface{}][]eventHandlerFn
-//	eventHandlerFn  func(...interface{}) bool
-//)
-
-//type registryConstraints interface {
-//	i.LocalServiceInterface | i.NetworkServiceInterface | i.LocalClientInterface | i.NetworkClientInterface
-//}
-
-//func genericRegistryAsSlice[T any](in ...registry) []T {
-//	out := make([]T, 0)
-//	for _, reg := range in {
-//		for _, item := range reg {
-//			out = append(out, item.(T))
-//		}
-//	}
-//	return out
-//}
-
 type (
 	resolversMapTyp map[any]z.MemoizerInterface
-	eventsMapTyp    map[interface{}][]z.EventHandlerFn
+	eventsMapTyp    map[any][]z.EventHandlerFn
 )
 
 type runtime struct {

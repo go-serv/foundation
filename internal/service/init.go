@@ -14,7 +14,6 @@ func init() {
 	ref.AddProtoExtension(foundation.E_EnforceSecureChannel)
 	ref.AddProtoExtension(foundation.E_RequiresRole)
 
-	ref.AddProtoExtension(foundation.E_MEnforceSecureChannel)
 	ref.AddProtoExtension(foundation.E_NewSession)
 	ref.AddProtoExtension(foundation.E_RequireSession)
 	ref.AddProtoExtension(foundation.E_CloseSession)

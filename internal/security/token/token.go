@@ -2,7 +2,6 @@ package token
 
 import (
 	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/security"
 )
 
 type tokenTyp int
@@ -26,5 +25,5 @@ type token struct {
 
 type rbacToken struct {
 	token
-	roles []security.RoleName `json:"roles"`
+	roles []z.RoleName `json:"roles"`
 }

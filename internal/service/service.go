@@ -17,8 +17,8 @@ const (
 )
 
 type service struct {
-	name      string
-	codec     z.CodecInterface
+	name string
+	//codec     z.CodecInterface
 	app       z.AppServerInterface
 	cfg       z.ServiceCfgInterface
 	endpoints []z.EndpointInterface
@@ -51,13 +51,13 @@ func (s *service) BindApp(app z.AppServerInterface) {
 	s.app = app
 }
 
-func (s *service) Codec() z.CodecInterface {
-	return s.codec
-}
-
-func (s *service) WithCodec(cc z.CodecInterface) {
-	s.codec = cc
-}
+//func (s *service) Codec() z.CodecInterface {
+//	return s.codec
+//}
+//
+//func (s *service) WithCodec(cc z.CodecInterface) {
+//	s.codec = cc
+//}
 
 func (s *service) Register(srv *grpc.Server) {
 	s.MethodMustBeImplemented.Panic()

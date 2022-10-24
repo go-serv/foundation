@@ -1,15 +1,15 @@
 package codec
 
 import (
-	"errors"
-	"github.com/go-serv/foundation/pkg/z"
-	"google.golang.org/protobuf/proto"
+	"github.com/go-serv/foundation/addon/sec_chan/x"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"reflect"
 )
 
 var (
-	MarshalOptions            = proto.MarshalOptions{}
-	UnmarshalOptions          = proto.UnmarshalOptions{}
-	ErrMustImplementInterface = errors.New("codec: message must implement DataFrameInterface")
+	errMustImplementInterface = status.Errorf(codes.Internal, "codec: message must implement %s",
+		reflect.TypeOf((*x.DataFrameInterface)(nil)).Elem().Name())
 )
 
 const Name = "gs-proto-enc"
@@ -19,10 +19,10 @@ type codec struct{}
 func (c codec) Marshal(v interface{}) ([]byte, error) {
 	var (
 		ok bool
-		df z.DataFrameInterface
+		df x.DataFrameInterface
 	)
-	if df, ok = v.(z.DataFrameInterface); !ok {
-		return nil, ErrMustImplementInterface
+	if df, ok = v.(x.DataFrameInterface); !ok {
+		return nil, errMustImplementInterface
 	}
 	return df.Compose()
 }
@@ -30,10 +30,10 @@ func (c codec) Marshal(v interface{}) ([]byte, error) {
 func (c codec) Unmarshal(wire []byte, v interface{}) (err error) {
 	var (
 		ok bool
-		df z.DataFrameInterface
+		df x.DataFrameInterface
 	)
-	if df, ok = v.(z.DataFrameInterface); !ok {
-		return ErrMustImplementInterface
+	if df, ok = v.(x.DataFrameInterface); !ok {
+		return errMustImplementInterface
 	}
 	if err = df.Parse(wire); err != nil {
 		return

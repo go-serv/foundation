@@ -3,7 +3,9 @@ package net
 import (
 	"context"
 	"github.com/go-serv/foundation/internal/grpc/msg/response"
+	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/event"
 	"google.golang.org/grpc"
 )
 
@@ -21,5 +23,6 @@ func NewServerContext(ctx context.Context, svc z.NetworkServiceInterface, req z.
 func NewClientContext(ctx context.Context) *clientCtx {
 	c := new(clientCtx)
 	c.Context = ctx
+	runtime.Runtime().TriggerEvent(event.NetClientNewContext, c)
 	return c
 }

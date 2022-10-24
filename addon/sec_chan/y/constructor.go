@@ -1,10 +1,10 @@
-package sec_chan
+package y
 
 import (
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
-	"github.com/go-serv/foundation/pkg/z"
+	"google.golang.org/grpc/encoding"
 )
 
-func NewCodec() z.CodecInterface {
+func NewCodec() encoding.Codec {
 	return codec.NewCodec()
 }

@@ -32,3 +32,7 @@ func (r *request) Meta() z.MetaInterface {
 func (r *request) Data() any {
 	return r.data
 }
+
+func (r *request) WithData(data any) {
+	r.data = data
+}

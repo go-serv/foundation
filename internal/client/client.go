@@ -6,12 +6,13 @@ import (
 	net_meta "github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/encoding"
 	"net"
 )
 
 type client struct {
 	svcName  string
-	codec    z.CodecInterface
+	codec    encoding.Codec
 	mw       z.ClientMiddlewareInterface
 	meta     z.MetaInterface
 	endpoint z.EndpointInterface
@@ -24,12 +25,12 @@ func (c *client) ServiceName() string {
 	return c.svcName
 }
 
-func (c *client) Codec() z.CodecInterface {
+func (c *client) Codec() encoding.Codec {
 	return c.codec
 }
 
-func (s *client) WithCodec(cc z.CodecInterface) {
-	s.codec = cc
+func (c *client) WithCodec(codec encoding.Codec) {
+	c.codec = codec
 }
 
 func (c *client) Middleware() z.ClientMiddlewareInterface {

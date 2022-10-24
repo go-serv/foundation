@@ -7,8 +7,6 @@ import (
 )
 
 type ClientInterface interface {
-	//CodecAwareInterface
-	//MiddlewareAwareInterface
 	Middleware() ClientMiddlewareInterface
 	ServiceName() string
 	Endpoint() EndpointInterface
@@ -26,6 +24,7 @@ type ClientInterface interface {
 
 type NetworkClientInterface interface {
 	ClientInterface
+	ApiKeyAwareInterface
 	NetService() NetworkServiceInterface
 	BlockCipher() crypto.AEAD_CipherInterface
 	WithBlockCipher(crypto.AEAD_CipherInterface)

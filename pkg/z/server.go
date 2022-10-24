@@ -3,7 +3,6 @@ package z
 import (
 	"crypto/tls"
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/pkg/z/security"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -29,7 +28,7 @@ type NetEndpointInterface interface {
 }
 
 type ServerInterface interface {
-	CodecAwareInterface
+	//CodecAwareInterface
 	AddGrpcServerOption(opt grpc.ServerOption)
 	GrpcServerOptions() []grpc.ServerOption
 	AddEndpoint(endpoint EndpointInterface)
@@ -54,7 +53,7 @@ type NetworkServerInterface interface {
 type ServerResolverInterface interface {
 }
 
-type AccessTokenVerifierFn func(security.AccessTokenInterface) bool
+type AccessTokenVerifierFn func(AccessTokenInterface) bool
 
 type NetworkServerResolverInterface interface {
 	ServerResolverInterface

@@ -13,4 +13,5 @@ func init() {
 	rt.services = make(map[string]z.ServiceInterface)
 	rt.clients = make(map[string]z.ClientInterface)
 	rt.resolvers = make(resolversMapTyp, 0)
+	rt.eventsMap = make(eventsMapTyp, 0)
 }
