@@ -49,7 +49,7 @@ func verifyApiKey(ctx z.NetServerContextInterface, req z.RequestInterface) bool 
 				return true
 			}
 		}
-		return false // the given api key does not have required role.
+		return false // the given API key does not have required role.
 	}
 	return true
 }

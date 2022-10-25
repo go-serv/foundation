@@ -29,7 +29,6 @@ func (b hdrFlagsType) Has(flag hdrFlagsType) bool            { return b&flag != 
 
 const (
 	EncryptedFlag hdrFlagsType = 1 << iota
-	ApiKeyFlag
 )
 
 type dataFrame struct {
@@ -40,7 +39,6 @@ type dataFrame struct {
 	hdrReserved16_B uint16
 	hdrReserved24_C uint32
 	payload         []byte
-	apiKey          []byte
 	netw            *net_io.NetWriter
 	netr            *net_io.NetReader
 }
@@ -52,8 +50,57 @@ func MessageWrapperHandler() encoding.MessageWrapperHandler {
 	}
 }
 
-func (df *dataFrame) Write(p []byte) (n int, err error) {
-	return 0, nil
+func (df *dataFrame) Interface() interface{} {
+	return df.Message
+}
+
+func (df *dataFrame) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
+	df.cipher = cipher
+	df.hdrFlags = df.hdrFlags.Set(EncryptedFlag)
+}
+
+func (df *dataFrame) Decrypt() (err error) {
+	var out, hdrBytes []byte
+	if hdrBytes, err = df.headerBytes(df.packHeader()); err != nil {
+		return
+	}
+	if out, err = df.cipher.Decrypt(df.payload, hdrBytes); err != nil {
+		return
+	}
+	err = df.unmarshal(out)
+	return
+}
+
+func (df *dataFrame) Compose() (out []byte, err error) {
+	var (
+		payload []byte
+	)
+	// Write the data frame magic word.
+	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
+		return
+	}
+	// Write data frame header.
+	header := df.packHeader()
+	if err = net_io.GenericNetWriter[uint64](df.netw, header); err != nil {
+		return
+	}
+
+	if payload, err = df.marshal(); err != nil {
+		return
+	}
+
+	if df.cipher != nil { // Encrypt payload.
+		var hdrBytes []byte
+		if hdrBytes, err = df.headerBytes(header); err != nil {
+			return
+		}
+		payload = df.cipher.Encrypt(payload, hdrBytes)
+	}
+	if _, err = df.netw.Write(payload); err != nil {
+		return
+	}
+	out = df.netw.Bytes()
+	return
 }
 
 func (df *dataFrame) Parse(wire []byte) (err error) {
@@ -64,22 +111,16 @@ func (df *dataFrame) Parse(wire []byte) (err error) {
 	df.netr = net_io.NewReader(wire)
 	// Check for the data frame magic word. If there is no such, then we have an ordinary proto message.
 	if mw, err = df.netr.ReadBytes(magicWordLen); err != nil {
-		return df.unmarshal(wire)
+		return errorHeaderParserFailed
 	}
 	if bytes.Compare(mw, dfMagicWord[:]) != 0 {
-		return df.unmarshal(wire)
+		return errorHeaderParserFailed
 	}
 	//
 	if header, err = net_io.GenericNetReader[uint64](df.netr); err != nil {
-		return err
+		return errorHeaderParserFailed
 	}
 	df.hdrFlags = hdrFlagsType(header & 0xffff)
-
-	if df.hdrFlags.Has(ApiKeyFlag) {
-		if df.apiKey, err = df.netr.ReadLengthPrefixed(); err != nil {
-			return
-		}
-	}
 
 	df.payload = df.netr.Flush()
 	if !df.hdrFlags.Has(EncryptedFlag) {
@@ -109,88 +150,6 @@ func (df *dataFrame) headerBytes(hdr uint64) (b []byte, err error) {
 		return
 	}
 	return w.Bytes(), nil
-}
-
-func (df *dataFrame) Compose() (out []byte, err error) {
-	//if df.hdrFlags == 0 {
-	//	fmt.Println("marshal no enc")
-	//	return df.Marshal()
-	//}
-	// Write the data frame magic word.
-	if _, err = df.netw.Write(dfMagicWord[:]); err != nil {
-		return
-	}
-	// Write data frame header.
-	header := df.packHeader()
-	if err = net_io.GenericNetWriter[uint64](df.netw, header); err != nil {
-		return
-	}
-
-	if df.hdrFlags.Has(ApiKeyFlag) {
-		if err = df.netw.WriteLengthPrefixed(df.apiKey); err != nil {
-			return
-		}
-	}
-
-	var msg []byte
-	if msg, err = df.marshal(); err != nil {
-		return
-	}
-	if _, err = df.netw.Write(msg); err != nil {
-		return
-	}
-
-	kl := len(df.ApiKey())
-	payload := make([]byte, kl+len(msg))
-	copy(payload, df.ApiKey())
-	copy(payload[kl:], msg)
-
-	if df.cipher != nil { // Encrypt payload.
-		var hdrBytes []byte
-		if hdrBytes, err = df.headerBytes(header); err != nil {
-			return
-		}
-		payload = df.cipher.Encrypt(payload, hdrBytes)
-	}
-	if _, err = df.netw.Write(payload); err != nil {
-		return
-	}
-	out = df.netw.Bytes()
-	return
-}
-
-func (df *dataFrame) Interface() interface{} {
-	return df.Message
-}
-
-func (df *dataFrame) WithBlockCipher(cipher crypto.AEAD_CipherInterface) {
-	df.cipher = cipher
-	df.hdrFlags = df.hdrFlags.Set(EncryptedFlag)
-}
-
-func (df *dataFrame) Decrypt() (err error) {
-	var out, hdrBytes []byte
-	if hdrBytes, err = df.headerBytes(df.packHeader()); err != nil {
-		return
-	}
-	if out, err = df.cipher.Decrypt(df.payload, hdrBytes); err != nil {
-		return
-	}
-	err = df.unmarshal(out)
-	return
-}
-
-func (df *dataFrame) Payload() []byte {
-	return df.payload
-}
-
-func (df *dataFrame) ApiKey() []byte {
-	return df.apiKey
-}
-
-func (df *dataFrame) WithApiKey(key []byte) {
-	df.apiKey = key
-	df.hdrFlags = df.hdrFlags.Set(ApiKeyFlag)
 }
 
 func (df *dataFrame) unmarshal(data []byte) error {

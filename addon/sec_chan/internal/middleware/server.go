@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"errors"
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/internal/autogen/foundation"
@@ -13,7 +12,6 @@ import (
 )
 
 var (
-	ErrDf            = errors.New("not a dataframe")
 	errEncryptionReq = status.Error(codes.FailedPrecondition, "gRPC call requires message to be encrypted")
 )
 
