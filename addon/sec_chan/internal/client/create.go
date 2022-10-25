@@ -5,7 +5,7 @@ import (
 	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
 	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	grpc_client "github.com/go-serv/foundation/internal/client"
+	grpc_client "github.com/go-serv/foundation/internal/grpc/client"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"

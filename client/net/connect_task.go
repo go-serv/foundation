@@ -13,9 +13,6 @@ func (c *netClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fina
 		ep := c.Endpoint().(z.NetEndpointInterface)
 		transCreds := ep.TransportCredentials()
 		c.WithDialOption(grpc.WithTransportCredentials(transCreds))
-		//if ep.TlsConfig() == nil { // Use codec providing message encryption.
-		//	c.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(y.NewCodec())))
-		//}
 		runtime.Runtime().TriggerEvent(event.NetClientBeforeDial, c, ep.TlsConfig() != nil)
 	}
 	run := func(task job.TaskInterface) {

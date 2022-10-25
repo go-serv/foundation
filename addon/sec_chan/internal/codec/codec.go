@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	errMustImplementInterface = status.Errorf(codes.Internal, "codec: message must implement %s",
+	errMustImplementInterface = status.Errorf(codes.Internal, "codec: message must implement '%s'",
 		reflect.TypeOf((*x.DataFrameInterface)(nil)).Elem().Name())
 )
 
+// Name codec name. It will be passed in the :content-type request header as content subtype.
 const Name = "gs-proto-enc"
 
 type codec struct{}

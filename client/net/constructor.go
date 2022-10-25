@@ -1,7 +1,7 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/internal/client"
+	"github.com/go-serv/foundation/internal/grpc/client"
 	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
 	mw_net "github.com/go-serv/foundation/internal/middleware/net"
 	"github.com/go-serv/foundation/internal/runtime"

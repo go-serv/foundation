@@ -3,7 +3,7 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
-	net_client "github.com/go-serv/foundation/internal/client/net"
+	net_client "github.com/go-serv/foundation/client/net"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 )

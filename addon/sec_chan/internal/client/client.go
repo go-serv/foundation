@@ -4,7 +4,7 @@ import (
 	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	grpc_client "github.com/go-serv/foundation/internal/client"
+	grpc_client "github.com/go-serv/foundation/internal/grpc/client"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/grpc"
 )
