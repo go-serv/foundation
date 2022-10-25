@@ -7,10 +7,18 @@ import (
 	"net"
 )
 
+type (
+	Base64String []byte
+)
+
 type HttpDictionary struct {
 	dictionary.Dictionary
+
 	//
 	SessionId z.SessionId `name:"gs-session-id"`
+
+	//
+	ApiKey Base64String `name:"gs-api-key"`
 
 	// The Content-Type representation header is used to indicate the original media type of the resource
 	// (prior to any content encoding applied for sending).

@@ -11,12 +11,14 @@ message Service {
   }
   message Suspend {
     message Request {
+      string name = 1;
     }
     message Response {
     }
   }
   message Resume {
     message Request {
+      string name = 1;
     }
     message Response {
     }

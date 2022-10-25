@@ -1,6 +1,7 @@
 package z
 
 import (
+	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -29,7 +30,7 @@ type RuntimeInterface interface {
 	RegisterEventHandler(func(eventTyp interface{}))
 	TriggerEvent(eventTyp interface{}, extra ...interface{})
 	// AddResolver adds a value resolver with the given key.
-	AddResolver(key any, resolver MemoizerInterface)
+	AddResolver(key any, resolver memoize.MemoizerInterface)
 	// Resolve executes the resolver handler only once and returns a value returned by it.
 	Resolve(key any, args ...any) (any, error)
 }

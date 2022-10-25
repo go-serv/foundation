@@ -1,14 +1,17 @@
 package runtime
 
 import (
+	"fmt"
 	"github.com/go-serv/foundation/internal/service"
+	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"reflect"
 )
 
 type (
-	resolversMapTyp map[any]z.MemoizerInterface
+	resolversMapTyp map[any]memoize.MemoizerInterface
 	eventsMapTyp    map[any][]z.EventHandlerFn
 )
 
@@ -55,7 +58,7 @@ func (r *runtime) TriggerEvent(event any, extraArgs ...any) {
 	}
 }
 
-func (r *runtime) RegisterResolver(key any, resolver z.MemoizerInterface) {
+func (r *runtime) RegisterResolver(key any, resolver memoize.MemoizerInterface) {
 	r.resolvers[key] = resolver
 }
 
@@ -63,7 +66,7 @@ func (r *runtime) Resolve(key any, args ...any) (v any, err error) {
 	if resolver, ok := r.resolvers[key]; ok {
 		v, err = resolver.Run(args...)
 	} else {
-		return nil, ErrResolverNotFound
+		panic(fmt.Sprintf("failed to find resolver with the given key '%s'", reflect.TypeOf(key).Name()))
 	}
 	return
 }

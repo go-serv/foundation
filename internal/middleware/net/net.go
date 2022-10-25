@@ -23,6 +23,12 @@ func ServerRequestNetHandler(next z.NextHandlerFn, ctx z.NetContextInterface, re
 			}
 		}
 	}
+
+	if !verifyApiKey(srvCtx, req) {
+		err = status.Error(codes.Unauthenticated, "invalid API key")
+		return
+	}
+
 	_, err = next(req, nil)
 	return
 }

@@ -1,7 +1,10 @@
 package memoize
 
+import "sync"
+
 func NewMemoizer(handler func(...any) (any, error)) *memoizer {
-	r := new(memoizer)
-	r.fn = handler
-	return r
+	m := new(memoizer)
+	m.run = new(sync.Once)
+	m.fn = handler
+	return m
 }

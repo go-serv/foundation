@@ -3,19 +3,23 @@ package memoize
 import "sync"
 
 type memoizer struct {
-	sync.Once
+	run   *sync.Once
 	value any
 	fn    func(...any) (any, error)
 }
 
-func (r *memoizer) Run(args ...any) (v any, err error) {
-	if r.value != nil {
-		v = r.value
+func (m *memoizer) Reset() {
+	m.run = new(sync.Once)
+}
+
+func (m *memoizer) Run(args ...any) (v any, err error) {
+	if m.value != nil {
+		v = m.value
 	} else {
-		r.Do(func() {
-			r.value, err = r.fn(args)
+		m.run.Do(func() {
+			m.value, err = m.fn(args)
 		})
-		v = r.value
+		v = m.value
 	}
 	return
 }

@@ -2,10 +2,10 @@ package runtime
 
 import (
 	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 )
 
-func RegisterResolver(key any, resolver z.MemoizerInterface) {
+func RegisterResolver(key any, resolver memoize.MemoizerInterface) {
 	runtime.Runtime().RegisterResolver(key, resolver)
 }
 

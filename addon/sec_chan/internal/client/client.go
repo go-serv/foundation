@@ -1,7 +1,6 @@
 package client
 
 import (
-	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	grpc_client "github.com/go-serv/foundation/internal/grpc/client"
@@ -25,7 +24,7 @@ type client struct {
 }
 
 func (c *client) OnConnect(cc grpc.ClientConnInterface) {
-	c.grpcClient = proto.NewSecureChannelClient(cc, codec.Name)
+	c.grpcClient = proto.NewSecureChannelClient(cc)
 	c.impl.c = c
 }
 
