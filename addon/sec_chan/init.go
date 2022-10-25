@@ -18,10 +18,9 @@ func init() {
 	encoding.RegisterCodec(codec.NewCodec())
 	service.Reflection().AddProtoExtension(sec_chan.E_EncOff)
 	runtime.Runtime().RegisterEventHandler(event.NetClientBeforeDial, func(args ...any) bool {
-		netClient := args[0].(z.NetworkClientInterface)
-		hasTls := args[1].(bool)
-		if !hasTls {
-			netClient.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(y.NewCodec())))
+		arg := args[0].(event.NetClientBeforeDialArgs)
+		if !arg.TlsEnabled {
+			arg.Client.WithDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(y.NewCodec())))
 		}
 		return false
 	})

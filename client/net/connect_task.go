@@ -13,7 +13,9 @@ func (c *netClient) ConnectTask(j job.JobInterface) (job.Init, job.Run, job.Fina
 		ep := c.Endpoint().(z.NetEndpointInterface)
 		transCreds := ep.TransportCredentials()
 		c.WithDialOption(grpc.WithTransportCredentials(transCreds))
-		runtime.Runtime().TriggerEvent(event.NetClientBeforeDial, c, ep.TlsConfig() != nil)
+		tlsEnabled := ep.TlsConfig() != nil
+		args := event.NetClientBeforeDialArgs{Client: c, TlsEnabled: tlsEnabled}
+		runtime.Runtime().TriggerEvent(event.NetClientBeforeDial, args)
 	}
 	run := func(task job.TaskInterface) {
 		v := j.GetValue()
