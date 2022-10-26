@@ -13,6 +13,7 @@ func ServerRequestNetHandler(next z.NextHandlerFn, ctx z.NetContextInterface, re
 		sess z.SessionInterface
 	)
 	srvCtx := ctx.(z.NetServerContextInterface)
+
 	if req.ServiceReflection().Bool(foundation.E_EnforceSecureChannel) {
 		if !srvCtx.NetworkService().IsTlsEnabled() {
 			sess = srvCtx.Session()

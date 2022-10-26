@@ -7,6 +7,7 @@ import (
 	"github.com/go-serv/foundation/addon/sec_chan"
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/pkg/ancillary/memoize"
+	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/runtime"
 	"github.com/go-serv/foundation/service/net"
 	src "go-server-tests-endpoints"
@@ -50,6 +51,10 @@ func main() {
 	runtime.RegisterResolver(x.PskResolverKey, memoize.NewMemoizer(func(a ...any) (any, error) {
 		fmt.Printf("enc key %v", src.PskKey)
 		return src.PskKey, nil
+	}))
+
+	runtime.RegisterResolver(z.ApiKeyResolver, memoize.NewMemoizer(func(a ...any) (any, error) {
+		return src.ApiKey, nil
 	}))
 
 	unsafeEp := net.NewTcp4Endpoint(src.ServerAddr, src.UnsafePort)

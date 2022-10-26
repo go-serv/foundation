@@ -10,20 +10,29 @@ import (
 	"github.com/go-serv/foundation/service/net"
 )
 
-func NewClient(svcName string, ep z.EndpointInterface) *netClient {
-	netCt := new(netClient)
-	netCt.ClientInterface = client.NewClient(svcName, ep)
-	netCt.svc = net.NewNetworkService(svcName, nil, nil)
+func NewClient(svcName string, ep z.EndpointInterface) (nc *netClient, err error) {
+	nc = new(netClient)
+	nc.ClientInterface = client.NewClient(svcName, ep)
+	nc.svc = net.NewNetworkService(svcName, nil, nil)
 
 	meta := meta_net.NewMeta(nil)
-	netCt.WithMeta(meta)
+	nc.WithMeta(meta)
 
-	netCt.Middleware().WithClient(netCt)
-	netCt.Middleware().Append(z.NetworkMwKey, mw_net.ClientRequestNetHandler, mw_net.ClientResponseNetHandler)
+	nc.Middleware().WithClient(nc)
+	nc.Middleware().Append(z.NetworkMwKey, mw_net.ClientRequestNetHandler, mw_net.ClientResponseNetHandler)
 
-	runtime.Runtime().RegisterClient(netCt)
+	// Set API key.
+	var rv any
+	if rv, err = runtime.Runtime().Resolve(z.ApiKeyResolver); err != nil {
+		return
+	}
+	if rv != nil {
+		nc.WithApiKey(rv.([]byte))
+	}
+
+	runtime.Runtime().RegisterClient(nc)
 	service.Reflection().AddService(svcName)
 	// todo: handler error
-	service.Reflection().Populate()
-	return netCt
+	err = service.Reflection().Populate()
+	return
 }

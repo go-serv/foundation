@@ -1,13 +1,11 @@
 package runtime
 
 import (
-	"fmt"
 	"github.com/go-serv/foundation/internal/service"
 	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"github.com/go-serv/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"reflect"
 )
 
 type (
@@ -66,7 +64,7 @@ func (r *runtime) Resolve(key any, args ...any) (v any, err error) {
 	if resolver, ok := r.resolvers[key]; ok {
 		v, err = resolver.Run(args...)
 	} else {
-		panic(fmt.Sprintf("failed to find resolver with the given key '%s'", reflect.TypeOf(key).Name()))
+		return nil, nil
 	}
 	return
 }

@@ -31,6 +31,10 @@ func main() {
 		return src.PskKey, nil
 	}))
 
+	runtime.RegisterResolver(z.ApiKeyResolver, memoize.NewMemoizer(func(a ...any) (any, error) {
+		return src.ApiKey, nil
+	}))
+
 	wpCfg := webproxy.DefaultConfig(app.NewDashboard())
 	wp := webproxy.NewWebProxy(wpCfg)
 	srvApp := app.NewServerApp(wp)

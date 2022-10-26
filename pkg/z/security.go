@@ -7,6 +7,10 @@ type ApiKeyAwareInterface interface {
 	WithApiKey([]byte)
 }
 
+var (
+	ApiKeyResolver = (*ApiKeyAwareInterface)(nil)
+)
+
 type ApiKeyAuthenticatorInterface interface {
 	// VerifyApiKey verifies provided API key and returns a list of roles associated with it.
 	VerifyApiKey(key []byte) (bool, RoleName)
