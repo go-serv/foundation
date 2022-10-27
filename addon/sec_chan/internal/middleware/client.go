@@ -5,22 +5,22 @@ import (
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/protobuf/proto"
 )
 
 func attachApiKey(client z.NetworkClientInterface, req z.RequestInterface, cipher crypto.AEAD_CipherInterface) {
-	meta := req.Meta().Dictionary().(*net.HttpDictionary)
+	meta := req.Meta().Dictionary().(dictionary.NetRequestInterface)
 	if v, has := req.ServiceReflection().Get(foundation.E_AuthType); has {
 		if v.(foundation.AuthType) == foundation.AuthType_ApiKey {
 			rawKey := client.ApiKey()
 			if cipher != nil {
 				encKey := cipher.Encrypt(rawKey, nil)
-				meta.ApiKey = encKey
+				meta.SetApiKey(encKey)
 			} else {
-				meta.ApiKey = rawKey
+				meta.SetApiKey(rawKey)
 			}
 		}
 	}

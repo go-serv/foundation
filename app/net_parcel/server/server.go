@@ -11,6 +11,7 @@ import (
 	"github.com/go-serv/foundation/pkg/y/netparcel"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"github.com/go-serv/foundation/pkg/z/platform"
 	"google.golang.org/grpc"
 )
@@ -41,7 +42,7 @@ func (s *netParcel) RegisterFtpPostActionHandler(fn netparcel.FtpPostActionHandl
 	s.FtpImpl.PostActions[fileExt] = fn
 }
 
-func (svc *netParcel) handleGzipTarball(ctx z.NetServerContextInterface, path platform.Pathname) (err error) {
+func (svc *netParcel) handleGzipTarball(ctx dictionary.NetServerContextInterface, path platform.Pathname) (err error) {
 	var (
 		plat  z.PlatformInterface
 		untar z.RunnableInterface

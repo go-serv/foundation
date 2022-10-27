@@ -1,7 +1,6 @@
-package net
+package dictionary
 
 import (
-	ancillary_net "github.com/go-serv/foundation/internal/ancillary/net"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
 	"github.com/go-serv/foundation/pkg/z"
 	"net"
@@ -11,12 +10,22 @@ type (
 	Base64String []byte
 )
 
-type HttpDictionary struct {
+type BaseDictionary struct {
 	dictionary.Dictionary
-
-	//
+	// SessionId an 64-bit unique ID of current session.
 	SessionId z.SessionId `name:"gs-session-id"`
+}
 
+func (d *BaseDictionary) GetSessionId() z.SessionId {
+	return d.SessionId
+}
+
+func (d *BaseDictionary) SetSessionId(id z.SessionId) {
+	d.SessionId = id
+}
+
+type NetRequestDictionary struct {
+	*BaseDictionary
 	//
 	ApiKey Base64String `name:"gs-api-key"`
 
@@ -30,13 +39,20 @@ type HttpDictionary struct {
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
 	ClientIp net.IPAddr `name:"x-forwarded-for"`
 
-	// The X-Forwarded-Host (XFH) header is a de-facto standard header for identifying the original host requested by the
-	// client in the Host HTTP request header.
-	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
-	ForwardedHost ancillary_net.Host `name:"x-forwarded-host"`
-
 	// The X-Forwarded-Proto (XFP) header is a de-facto standard header for identifying the protocol (HTTP or HTTPS)
 	// that a client used to connect to your proxy or load balancer.
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
 	ForwardedProto string `name:"x-forwarded-proto"`
+}
+
+type NetResponseDictionary struct {
+	*BaseDictionary
+}
+
+func (d *NetRequestDictionary) GetApiKey() []byte {
+	return d.ApiKey
+}
+
+func (d *NetRequestDictionary) SetApiKey(key []byte) {
+	d.ApiKey = key
 }

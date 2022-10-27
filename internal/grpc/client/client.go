@@ -3,8 +3,8 @@ package client
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/go-serv/foundation/internal/ancillary"
-	net_meta "github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"net"
@@ -74,11 +74,9 @@ func (c *client) WithOptions(any) {
 }
 
 func (c *client) SessionId() z.SessionId {
-	dic := c.Meta().Dictionary().(*net_meta.HttpDictionary)
-	return dic.SessionId
+	return c.Meta().Dictionary().(dictionary.BaseInterface).GetSessionId()
 }
 
 func (c *client) Reset() {
-	dic := c.Meta().Dictionary().(*net_meta.HttpDictionary)
-	dic.SessionId = 0
+	c.Meta().Dictionary().(dictionary.BaseInterface).SetSessionId(0)
 }

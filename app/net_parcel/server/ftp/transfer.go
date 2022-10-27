@@ -4,6 +4,7 @@ import (
 	"context"
 	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"github.com/go-serv/foundation/pkg/z/platform"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +15,7 @@ func (ftp FtpImpl) FtpTransfer(ctx context.Context, req *proto.Ftp_FileChunk_Req
 		start, end int64
 		sess       z.SessionInterface
 	)
-	netCtx := ctx.(z.NetServerContextInterface)
+	netCtx := ctx.(dictionary.NetServerContextInterface)
 	sess = netCtx.Session()
 	transferCtx := sess.Context().(*ftpContext)
 	//

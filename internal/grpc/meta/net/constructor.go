@@ -1,11 +1,20 @@
 package net
 
-import "google.golang.org/grpc/metadata"
+import (
+	"github.com/go-serv/foundation/pkg/z/dictionary"
+	"google.golang.org/grpc/metadata"
+)
 
-func NewMeta(data *metadata.MD) *meta {
-	m := new(meta)
+func NewRequestMeta(data *metadata.MD) *requestMeta {
+	m := new(requestMeta)
 	m.data = data
-	m.dic = new(HttpDictionary)
-	m.registerTypeHandlers(m.dic)
+	m.DictionaryInterface = dictionary.NewNetRequestDictionary()
+	return m
+}
+
+func NewResponseMeta(data *metadata.MD) *responseMeta {
+	m := new(responseMeta)
+	m.data = data
+	m.DictionaryInterface = dictionary.NewNetResponseDictionary()
 	return m
 }

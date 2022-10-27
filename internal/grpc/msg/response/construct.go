@@ -22,6 +22,6 @@ func NewResponse(data interface{}, md *metadata.MD) (res *response, err error) {
 		}
 		res.data = data
 	}
-	res.meta = net.NewMeta(md)
+	res.meta = net.NewResponseMeta(md)
 	return
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"github.com/go-serv/foundation/pkg/z/platform"
 	"google.golang.org/grpc/codes"
 	"os"
@@ -24,7 +25,7 @@ func (FtpImpl) FtpNewSession(ctx context.Context, req *proto.Ftp_NewSession_Requ
 		pv       any
 	)
 	plat := runtime.Runtime().Platform()
-	netCtx := ctx.(z.NetServerContextInterface)
+	netCtx := ctx.(dictionary.NetServerContextInterface)
 	sess = netCtx.Session()
 	if sess == nil { // Create an insecure session
 		lifetime := uint16(req.GetLifetime())

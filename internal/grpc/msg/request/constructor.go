@@ -34,7 +34,7 @@ func NewServerRequest(data interface{}, md *metadata.MD, info *clientInfo) (r *s
 	r = new(serverRequest)
 	r.data = data
 	r.clientInfo = info
-	r.meta = meta_net.NewMeta(md)
+	r.meta = meta_net.NewRequestMeta(md)
 	if msg, ok = data.(proto.Message); !ok {
 		return nil, grpc.ErrInvalidProtoMessage
 	}

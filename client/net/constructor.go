@@ -15,7 +15,7 @@ func NewClient(svcName string, ep z.EndpointInterface) (nc *netClient, err error
 	nc.ClientInterface = client.NewClient(svcName, ep)
 	nc.svc = net.NewNetworkService(svcName, nil, nil)
 
-	meta := meta_net.NewMeta(nil)
+	meta := meta_net.NewRequestMeta(nil)
 	nc.WithMeta(meta)
 
 	nc.Middleware().WithClient(nc)

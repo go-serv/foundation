@@ -2,16 +2,20 @@ package z
 
 import (
 	"context"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
 type MetaInterface interface {
-	Dictionary() interface{}
+	x.DictionaryInterface
+	x.DictionaryAwareInterface
+	Get(key string) (string, bool)
+	Set(key string, v string)
 	Hydrate() error
 	Dehydrate() (metadata.MD, error)
-	Copy(metaInterface MetaInterface)
+	Copy(MetaInterface)
 }
 
 type RequestResponseInterface interface {

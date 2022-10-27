@@ -3,6 +3,7 @@ package netparcel
 import (
 	proto "github.com/go-serv/foundation/internal/autogen/foundation"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"github.com/go-serv/foundation/pkg/z/platform"
 )
 
@@ -11,7 +12,7 @@ type (
 	SessionResponse        = proto.Session_Response
 	FtpNewSessionRequest   = proto.Ftp_NewSession_Request
 	FtpNewSessionResponse  = proto.Ftp_NewSession_Response
-	FtpPostActionHandlerFn func(ctx z.NetServerContextInterface, pathname platform.Pathname) error
+	FtpPostActionHandlerFn func(ctx dictionary.NetServerContextInterface, pathname platform.Pathname) error
 )
 
 type NetParcelServiceInterface interface {

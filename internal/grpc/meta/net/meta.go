@@ -1,107 +1,63 @@
 package net
 
 import (
-	"bytes"
-	"encoding/base64"
-	"encoding/binary"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"github.com/go-serv/foundation/pkg/z"
+	dic_defs "github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/metadata"
-	"reflect"
 )
 
 type meta struct {
+	x.DictionaryInterface
 	data *metadata.MD
-	dic  z.DictionaryInterface
 }
 
-func (m *meta) Copy(target z.MetaInterface) {
-	src := m.dic.(*HttpDictionary)
-	dst := target.Dictionary().(*HttpDictionary)
-	dst.SessionId = src.SessionId
+type requestMeta struct {
+	meta
 }
 
-func (m *meta) Dictionary() interface{} {
-	return m.dic
+type responseMeta struct {
+	meta
+}
+
+func (m *meta) Dictionary() x.DictionaryInterface {
+	return m.DictionaryInterface
+}
+
+func (m *meta) WithDictionary(d x.DictionaryInterface) {
+	m.DictionaryInterface = d
+}
+
+func (m *meta) Get(k string) (v string, has bool) {
+	values := m.data.Get(k)
+	if len(values) > 0 {
+		return values[0], true
+	} else {
+		return "", false
+	}
+}
+
+func (m *meta) Set(k string, v string) {
+	m.data.Set(k, v)
+}
+
+func (m *meta) Copy(dst z.MetaInterface) {
+	src := m.Dictionary().(dic_defs.BaseInterface)
+	dst.Dictionary().(dic_defs.BaseInterface).SetSessionId(src.GetSessionId())
 }
 
 func (m *meta) Hydrate() error {
-	return m.dic.Hydrate(m.dic)
+	return dictionary.Dictionary{}.Import(m)
 }
 
 func (m *meta) Dehydrate() (md metadata.MD, err error) {
 	if m.data == nil {
 		m.data = &metadata.MD{}
 	}
-	err = m.dic.Dehydrate(m.dic)
+	err = dictionary.Dictionary{}.Export(m)
 	if err != nil {
-		return
+		return nil, err
 	}
 	return *m.data, nil
-}
-
-func (m *meta) uint64toBase64(v uint64) string {
-	var data [8]byte
-	binary.LittleEndian.PutUint64(data[:], v)
-	return base64.StdEncoding.EncodeToString(data[:])
-}
-
-func (m *meta) base64ToUint64(v string) (out uint64, err error) {
-	var data []byte
-	data, err = base64.StdEncoding.DecodeString(v)
-	if err != nil {
-		return
-	}
-	err = binary.Read(bytes.NewReader(data), binary.LittleEndian, &out)
-	return
-}
-
-func (m *meta) registerTypeHandlers(dic z.DictionaryInterface) {
-	dic.RegisterTypeHandler((*Base64String)(nil), func(op z.DictionaryOp, name, alias string, v reflect.Value) {
-		switch op {
-		case z.HydrateOp:
-			values := m.data.Get(name)
-			if len(values) > 0 {
-				base64Str := values[0]
-				if decoded, err := base64.StdEncoding.DecodeString(base64Str); err != nil {
-					v.SetBytes(decoded)
-				}
-			}
-		case z.DehydrateOp:
-			seq := v.Bytes()
-			if len(seq) > 0 {
-				encoded := base64.StdEncoding.EncodeToString(seq)
-				m.data.Set(name, encoded)
-			}
-		}
-	})
-	dic.RegisterTypeHandler(reflect.TypeOf(""), func(op z.DictionaryOp, name, alias string, rv reflect.Value) {
-		switch op {
-		case z.HydrateOp:
-			v := m.data.Get(name)
-			if len(v) > 0 {
-				rv.SetString(v[0])
-			}
-		case z.DehydrateOp:
-			v := rv.String()
-			if len(v) > 0 {
-				m.data.Set(name, v)
-			}
-		}
-	})
-	dic.RegisterTypeHandler(reflect.TypeOf(z.SessionId(0)), func(op z.DictionaryOp, name, alias string, rv reflect.Value) {
-		switch op {
-		case z.HydrateOp:
-			v := m.data.Get(name)
-			if len(v) > 0 {
-				sId, _ := m.base64ToUint64(v[0])
-				rv.SetUint(sId)
-			}
-		case z.DehydrateOp:
-			v := rv.Uint()
-			if v > 0 {
-				id := m.uint64toBase64(v)
-				m.data.Set(name, id)
-			}
-		}
-	})
 }

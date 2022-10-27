@@ -2,75 +2,83 @@ package dictionary
 
 import (
 	"fmt"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"reflect"
 )
 
-type (
-	typeHandlersMap map[any]z.DictionaryTypeHandlerFn
+var (
+	typeHandlers typeHandlersMap
 )
 
-type Dictionary struct {
-	typeHandlers typeHandlersMap
+type (
+	typeHandlersMapItem struct {
+		imp x.ImportHandlerFn
+		exp x.ExportHandlerFn
+	}
+	typeHandlersMap map[any]typeHandlersMapItem
+)
+
+type Dictionary struct{}
+
+func RegisterTypeHandlers(typ any, imp x.ImportHandlerFn, exp x.ExportHandlerFn) {
+	typeHandlers[typ] = typeHandlersMapItem{imp, exp}
 }
 
-func (d *Dictionary) RegisterTypeHandler(typ any, handler z.DictionaryTypeHandlerFn) {
-	if d.typeHandlers == nil {
-		d.typeHandlers = make(typeHandlersMap)
-	}
-	d.typeHandlers[typ] = handler
-}
+func (d Dictionary) iterateOver(struc interface{}, fn func(name, alias string, t reflect.Type, v reflect.Value) error) (err error) {
+	var strucType reflect.Type
+	strucVal := reflect.ValueOf(struc)
+	indir := reflect.Indirect(strucVal)
 
-func (d *Dictionary) iterateOver(struc interface{}, fn func(name, alias string, t reflect.Type, v reflect.Value)) error {
-	var typ reflect.Type
-	iv := reflect.ValueOf(struc)
-	indir := reflect.Indirect(iv)
-	if iv.Kind() == reflect.Pointer {
-		typ = reflect.TypeOf(struc).Elem()
-	} else {
-		typ = iv.Type()
+	switch strucVal.Kind() {
+	case reflect.Pointer:
+		strucType = reflect.TypeOf(struc).Elem()
+	default:
+		strucType = strucVal.Type()
 	}
-	for i := 0; i < typ.NumField(); i++ {
-		fld := typ.Field(i)
-		if fld.Type == reflect.TypeOf((*Dictionary)(nil)).Elem() { // base type Dictionary, skip
+
+	for i := 0; i < strucType.NumField(); i++ {
+		strucField := strucType.Field(i)
+		if !strucField.IsExported() {
 			continue
 		}
-		if !fld.IsExported() {
-			return fmt.Errorf("dictionary: field '%s' must be exported", fld.Name)
+		if strucField.Type == reflect.TypeOf((*Dictionary)(nil)).Elem() { // base type Dictionary, skip
+			continue
 		}
-		fldVal := indir.Field(i).Addr().Interface()
-		if _, ok := fldVal.(z.DictionaryInterface); ok {
-			if err := d.iterateOver(fldVal, fn); err != nil {
+		fieldValue := indir.Field(i).Interface()
+		if indir.Field(i).Kind() == reflect.Pointer || indir.Field(i).Kind() == reflect.Interface {
+			if err = d.iterateOver(fieldValue, fn); err != nil {
 				return err
 			}
 			continue
 		}
-		name, ok := fld.Tag.Lookup("name")
+		name, ok := strucField.Tag.Lookup("name")
 		if !ok {
-			return fmt.Errorf("dictionary: an item name must be provided for the field '%s' with tag `name:`", fld.Name)
+			return fmt.Errorf("dictionary: an item name must be provided for the field '%s' with tag `name:`", strucField.Name)
 		}
-		alias, _ := fld.Tag.Lookup("alias")
-		fn(name, alias, fld.Type, indir.Field(i).Addr())
+		alias, _ := strucField.Tag.Lookup("alias")
+		err = fn(name, alias, strucField.Type, indir.Field(i).Addr())
 	}
 	return nil
 }
 
-func (d *Dictionary) Hydrate(target interface{}) error {
-	return d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) {
-		handler, ok := d.typeHandlers[t]
-		if !ok {
-			return
+func (d Dictionary) Import(target x.DictionaryInterface) (err error) {
+	err = d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) error {
+		item, ok := typeHandlers[t]
+		if !ok || item.imp == nil {
+			return nil
 		}
-		handler(z.HydrateOp, name, alias, v.Elem())
+		return item.imp(target, name, alias, v.Elem())
 	})
+	return
 }
 
-func (d *Dictionary) Dehydrate(target interface{}) error {
-	return d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) {
-		handler, ok := d.typeHandlers[t]
-		if !ok {
-			return
+func (d Dictionary) Export(target x.DictionaryInterface) (err error) {
+	err = d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) error {
+		item, ok := typeHandlers[t]
+		if !ok || item.exp == nil {
+			return nil
 		}
-		handler(z.DehydrateOp, name, alias, v.Elem())
+		return item.exp(target, name, alias, v.Elem())
 	})
+	return
 }

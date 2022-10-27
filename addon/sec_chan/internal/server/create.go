@@ -8,11 +8,11 @@ import (
 	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
 	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
 	grpc_err "github.com/go-serv/foundation/internal/grpc/error"
-	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/codes"
 )
 
@@ -83,8 +83,7 @@ func (s impl) Create(ctx context.Context, req *proto.Create_Request) (res *proto
 	// Create a new session.
 	lifetime := req.GetLifetime()
 	sess := session.NewSession(lifetime)
-	dic := netCtx.Response().Meta().Dictionary().(*net.HttpDictionary)
-	dic.SessionId = sess.Id()
+	netCtx.Response().Meta().Dictionary().(dictionary.BaseInterface).SetSessionId(sess.Id())
 	netCtx.WithSession(sess)
 	// Send back server's public key to the client if necessary.
 	if len(serverPubKey) > 0 {

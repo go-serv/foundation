@@ -2,9 +2,9 @@ package session
 
 import (
 	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,7 +16,7 @@ func ServerRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 		sess z.SessionInterface
 	)
 	srvCtx := ctx.(z.NetServerContextInterface)
-	sId := req.Meta().Dictionary().(*net.HttpDictionary).SessionId
+	sId := req.Meta().Dictionary().(dictionary.BaseInterface).GetSessionId()
 	if req.MethodReflection().Has(foundation.E_NewSession) { // Open a new session if necessary.
 		v, _ := req.MethodReflection().Get(foundation.E_NewSession)
 		lifetime := v.(uint32)
@@ -60,8 +60,8 @@ func ClientRequestSessionHandler(next z.NextHandlerFn, ctx z.NetContextInterface
 	if req.MethodReflection().Bool(foundation.E_RequireSession) {
 		clntCtx := ctx.(z.NetClientContextInterface)
 		client := clntCtx.Client()
-		sId := client.Meta().Dictionary().(*net.HttpDictionary).SessionId
-		req.Meta().Dictionary().(*net.HttpDictionary).SessionId = sId
+		sId := client.Meta().Dictionary().(dictionary.BaseInterface).GetSessionId()
+		req.Meta().Dictionary().(dictionary.BaseInterface).SetSessionId(sId)
 	}
 	_, err = next(req, nil)
 	return

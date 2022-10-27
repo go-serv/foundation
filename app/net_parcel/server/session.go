@@ -11,6 +11,7 @@ import (
 	"github.com/go-serv/foundation/internal/grpc/session"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/codes"
 )
 
@@ -40,7 +41,7 @@ func (s sessionImpl) SecureSession(ctx context.Context, req *proto.Session_Reque
 		nonce, encKey, serverPubKey []byte
 		cipher                      crypto.AEAD_CipherInterface
 	)
-	netCtx := ctx.(z.NetServerContextInterface)
+	netCtx := ctx.(dictionary.NetServerContextInterface)
 	res = &proto.Session_Response{}
 	// Create a nonce with the given length.
 	if req.GetNonceLength() > NonceMaxLength {

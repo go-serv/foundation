@@ -2,9 +2,9 @@ package net
 
 import (
 	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/grpc/meta/net"
 	"github.com/go-serv/foundation/internal/runtime"
 	"github.com/go-serv/foundation/pkg/z"
+	"github.com/go-serv/foundation/pkg/z/dictionary"
 )
 
 func verifyApiKey(ctx z.NetServerContextInterface, req z.RequestInterface) bool {
@@ -25,7 +25,7 @@ func verifyApiKey(ctx z.NetServerContextInterface, req z.RequestInterface) bool 
 		}
 	}
 
-	rawKey = req.Meta().Dictionary().(*net.HttpDictionary).ApiKey
+	rawKey = req.Meta().Dictionary().(dictionary.NetRequestInterface).GetApiKey()
 	if ctx.NetworkService().IsTlsEnabled() {
 		apiKey = rawKey
 	} else {
