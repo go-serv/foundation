@@ -2,7 +2,6 @@ package dictionary
 
 import (
 	"fmt"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"reflect"
 )
 
@@ -11,16 +10,21 @@ var (
 )
 
 type (
+	ImportHandlerFn func(target DictionaryInterface, name, alias string, value reflect.Value) error
+	ExportHandlerFn func(target DictionaryInterface, name, alias string, value reflect.Value) error
+)
+
+type (
 	typeHandlersMapItem struct {
-		imp x.ImportHandlerFn
-		exp x.ExportHandlerFn
+		imp ImportHandlerFn
+		exp ExportHandlerFn
 	}
 	typeHandlersMap map[any]typeHandlersMapItem
 )
 
 type Dictionary struct{}
 
-func RegisterTypeHandlers(typ any, imp x.ImportHandlerFn, exp x.ExportHandlerFn) {
+func RegisterTypeHandlers(typ any, imp ImportHandlerFn, exp ExportHandlerFn) {
 	typeHandlers[typ] = typeHandlersMapItem{imp, exp}
 }
 
@@ -61,7 +65,7 @@ func (d Dictionary) iterateOver(struc interface{}, fn func(name, alias string, t
 	return nil
 }
 
-func (d Dictionary) Import(target x.DictionaryInterface) (err error) {
+func (d Dictionary) Import(target DictionaryInterface) (err error) {
 	err = d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) error {
 		item, ok := typeHandlers[t]
 		if !ok || item.imp == nil {
@@ -72,7 +76,7 @@ func (d Dictionary) Import(target x.DictionaryInterface) (err error) {
 	return
 }
 
-func (d Dictionary) Export(target x.DictionaryInterface) (err error) {
+func (d Dictionary) Export(target DictionaryInterface) (err error) {
 	err = d.iterateOver(target, func(name, alias string, t reflect.Type, v reflect.Value) error {
 		item, ok := typeHandlers[t]
 		if !ok || item.exp == nil {

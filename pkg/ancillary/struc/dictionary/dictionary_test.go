@@ -2,7 +2,6 @@ package dictionary_test
 
 import (
 	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"reflect"
 	"strings"
 	"testing"
@@ -66,15 +65,15 @@ const (
 func TestImport(t *testing.T) {
 	now := time.Now()
 	person := &Person{Name: name, Age: age}
-	upperCaseImp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) error {
+	upperCaseImp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) error {
 		v.SetString(strings.ToUpper(v.String()))
 		return nil
 	}
-	parenthesesImp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) error {
+	parenthesesImp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) error {
 		v.SetString("(" + v.String() + ")")
 		return nil
 	}
-	extraImp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) error {
+	extraImp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) error {
 		src := ExtraInfo{Enrollment: now}
 		v.Set(reflect.ValueOf(src))
 		return nil

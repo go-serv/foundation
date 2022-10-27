@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	net_io "github.com/go-serv/foundation/pkg/ancillary/net/io"
 	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"github.com/go-serv/foundation/pkg/z"
 	dic_defs "github.com/go-serv/foundation/pkg/z/dictionary"
 	"reflect"
@@ -30,7 +29,7 @@ func uint64ToBase64(in uint64) (out string, err error) {
 }
 
 func init() {
-	base64StringImp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
+	base64StringImp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
 		meta := target.(z.MetaInterface)
 		if base64Str, has := meta.Get(name); has {
 			var decoded []byte
@@ -40,13 +39,13 @@ func init() {
 		}
 		return
 	}
-	base64StringExp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
+	base64StringExp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
 		return
 	}
 	dictionary.RegisterTypeHandlers(reflect.TypeOf((*dic_defs.Base64String)(nil)).Elem(), base64StringImp, base64StringExp)
 
 	// Session ID header.
-	sessImp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
+	sessImp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
 		meta := target.(z.MetaInterface)
 		if idStr, has := meta.Get(name); has {
 			var sId uint64
@@ -57,7 +56,7 @@ func init() {
 		}
 		return
 	}
-	sessExp := func(target x.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
+	sessExp := func(target dictionary.DictionaryInterface, name, alias string, v reflect.Value) (err error) {
 		if v.IsZero() {
 			return
 		}

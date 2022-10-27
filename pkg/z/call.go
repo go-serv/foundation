@@ -2,15 +2,15 @@ package z
 
 import (
 	"context"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
+	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
 type MetaInterface interface {
-	x.DictionaryInterface
-	x.DictionaryAwareInterface
+	dictionary.DictionaryInterface
+	dictionary.AwareInterface
 	Get(key string) (string, bool)
 	Set(key string, v string)
 	Hydrate() error

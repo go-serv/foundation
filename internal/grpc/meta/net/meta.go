@@ -2,14 +2,13 @@ package net
 
 import (
 	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary/x"
 	"github.com/go-serv/foundation/pkg/z"
 	dic_defs "github.com/go-serv/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/metadata"
 )
 
 type meta struct {
-	x.DictionaryInterface
+	dictionary.DictionaryInterface
 	data *metadata.MD
 }
 
@@ -21,11 +20,11 @@ type responseMeta struct {
 	meta
 }
 
-func (m *meta) Dictionary() x.DictionaryInterface {
+func (m *meta) Dictionary() dictionary.DictionaryInterface {
 	return m.DictionaryInterface
 }
 
-func (m *meta) WithDictionary(d x.DictionaryInterface) {
+func (m *meta) WithDictionary(d dictionary.DictionaryInterface) {
 	m.DictionaryInterface = d
 }
 

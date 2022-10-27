@@ -1,6 +1,6 @@
-package x
+package dictionary
 
-type DictionaryAwareInterface interface {
+type AwareInterface interface {
 	Dictionary() DictionaryInterface
 	WithDictionary(DictionaryInterface)
 }
