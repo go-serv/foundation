@@ -6,7 +6,6 @@ import (
 	"github.com/go-serv/foundation/addon/sec_chan"
 	"github.com/go-serv/foundation/addon/sec_chan/x"
 	"github.com/go-serv/foundation/app"
-	"github.com/go-serv/foundation/app/webproxy"
 	"github.com/go-serv/foundation/pkg/ancillary/memoize"
 	"github.com/go-serv/foundation/pkg/z"
 	"github.com/go-serv/foundation/runtime"
@@ -35,9 +34,7 @@ func main() {
 		return src.ApiKey, nil
 	}))
 
-	wpCfg := webproxy.DefaultConfig(app.NewDashboard())
-	wp := webproxy.NewWebProxy(wpCfg)
-	srvApp := app.NewServerApp(wp)
+	srvApp := app.NewServerApp(nil)
 	certs := make([]*net.X509PemPair, 1)
 
 	// Read env variables, must be set in docker-compose file.
@@ -77,7 +74,7 @@ func main() {
 	if err = proxyEp.WithNoTrustedPartiesTlsProfile(rootCaCertFile, []*net.X509PemPair{srvPemPair}); err != nil {
 		panic(err)
 	}
-	proxyEp.WithWebProxy(wp)
+	proxyEp.WithWebProxy(nil)
 	eps = append(eps, proxyEp)
 
 	secChan := sec_chan.NewSecChanService(srvApp, []z.EndpointInterface{unsafeEp}, nil)

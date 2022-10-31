@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/go-serv/foundation/pkg/z"
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
@@ -14,11 +13,10 @@ import (
 
 type tcpEndpoint struct {
 	z.EndpointInterface
-	hostname    string
-	port        int
-	tlsCfg      *tls.Config
-	wrappedGrpc *grpcweb.WrappedGrpcServer
-	webProxy    z.WebProxyInterface
+	hostname string
+	port     int
+	tlsCfg   *tls.Config
+	webProxy z.WebProxyInterface
 }
 
 func (ep *tcpEndpoint) Address() string {

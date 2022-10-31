@@ -1,6 +1,6 @@
 module github.com/go-serv/foundation
 
-go 1.19
+go 1.18
 
 replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop/go-work
 
@@ -9,7 +9,6 @@ replace google.golang.org/grpc => ../grpc-go
 require (
 	github.com/AgentCoop/go-work v0.0.2
 	github.com/fatih/color v1.13.0
-	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/monnand/dhkx v0.0.0-20180522003156-9e5b033f1ac4
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
 	google.golang.org/grpc v1.46.0
@@ -17,15 +16,10 @@ require (
 )
 
 require (
-	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
-	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/mattn/go-colorable v0.1.9 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/rs/cors v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
-	nhooyr.io/websocket v1.8.6 // indirect
 )
