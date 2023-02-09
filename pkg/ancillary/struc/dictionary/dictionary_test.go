@@ -34,7 +34,7 @@ type Person struct {
 
 // Student extends the Person dictionary by embedding its pointer.
 type Student struct {
-	*Person
+	dictionary.DictionaryInterface
 	Year      uint        `name:"year"`
 	Faculty   Parentheses `name:"faculty"`
 	ExtraInfo ExtraInfo   `name:"extra"`
@@ -82,7 +82,7 @@ func TestImport(t *testing.T) {
 		Year:    1,
 		Faculty: faculty,
 	}
-	student.Person = person
+	student.DictionaryInterface = person
 	dictionary.RegisterTypeHandlers(reflect.TypeOf((*UppercaseString)(nil)).Elem(), upperCaseImp, nil)
 	dictionary.RegisterTypeHandlers(reflect.TypeOf((*Parentheses)(nil)).Elem(), parenthesesImp, nil)
 	dictionary.RegisterTypeHandlers(reflect.TypeOf((*ExtraInfo)(nil)).Elem(), extraImp, nil)
@@ -92,8 +92,9 @@ func TestImport(t *testing.T) {
 	}
 	var expected string
 	expected = strings.ToUpper(name)
-	if student.GetName() != expected {
-		t.Fatalf("expected %s, got %s", expected, student.GetName())
+	p := student.DictionaryInterface.(PersonInterface)
+	if p.GetName() != expected {
+		t.Fatalf("expected %s, got %s", expected, p.GetName())
 	}
 	expected = "(" + faculty + ")"
 	if student.GetFaculty() != expected {

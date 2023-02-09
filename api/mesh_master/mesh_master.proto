@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "foundation/session.proto";
+import "foundation/network.proto";
+import "foundation/service.proto";
+import "foundation/ext.proto";
+
+package mesh_master;
+
+//
+service MeshMaster {
+  option (.mesh_master.auth_type) = ApiKey;
+  option (.mesh_master.enforce_enc) = true;
+  option (.mesh_master.requires_role) = "owner";
+  option (.mesh_master.requires_role) = "admin";
+
+  //
+  rpc CreateNetwork(Network.Create.Request) returns (Network.Create.Response) {
+    option (.mesh_master.m_requires_role) = "owner";
+  }
+  //
+  rpc JoinNetwork(Network.Join.Request) returns (Network.Join.Response) {
+    option (.mesh_master.m_requires_role) = "node";
+  }
+  //
+  rpc LeaveNetwork(Network.Leave.Request) returns (Network.Leave.Response) {
+    option (.mesh_master.m_requires_role) = "node";
+  }
+
+  // Creates a new secure session.
+  rpc NewSession(Session.New.Request) returns (Session.New.Response) {
+    option (.mesh_master.m_enforce_enc) = false; //.
+  }
+  // Close a secure channel. Session ID must be provided in the request metadata.
+  rpc CloseSession(Session.Close.Request) returns (Session.Close.Response) {
+    option (.mesh_master.require_session) = true;
+    option (.mesh_master.close_session) = true;
+  }
+
+  // Lists available services.
+  rpc List(Service.List.Request) returns (Service.List.Response) {
+
+  }
+  // Configures parameters of the service active discovery.
+  rpc ConfigureActiveDiscovery(Service.ActiveDiscovery.Request) returns (Service.ActiveDiscovery.Response) {
+
+  }
+  //..
+  rpc Suspend(stream Service.Suspend.Request) returns (stream Service.Suspend.Response) {
+    option (.foundation.broadcast) = true;
+  }
+  //
+  rpc Resume(Service.Resume.Request) returns (stream Service.Resume.Response) {
+    option (.foundation.broadcast) = true;
+  }
+}

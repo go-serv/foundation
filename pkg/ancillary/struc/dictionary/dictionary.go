@@ -48,9 +48,10 @@ func (d Dictionary) iterateOver(struc interface{}, fn func(name, alias string, t
 		if strucField.Type == reflect.TypeOf((*Dictionary)(nil)).Elem() { // base type Dictionary, skip
 			continue
 		}
-		fieldValue := indir.Field(i).Interface()
-		if indir.Field(i).Kind() == reflect.Pointer || indir.Field(i).Kind() == reflect.Interface {
-			if err = d.iterateOver(fieldValue, fn); err != nil {
+		fv := indir.Field(i).Interface()
+		fk := indir.Field(i).Kind()
+		if fk == reflect.Pointer || fk == reflect.Interface {
+			if err = d.iterateOver(fv, fn); err != nil {
 				return err
 			}
 			continue

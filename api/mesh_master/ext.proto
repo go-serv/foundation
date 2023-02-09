@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package foundation;
+package mesh_master;
 
 enum AuthType {
   BearerToken = 0;
@@ -13,7 +13,7 @@ extend google.protobuf.ServiceOptions {
   //
   AuthType auth_type = 60000;
   //
-  bool enforce_secure_channel = 60001;
+  bool enforce_enc = 60001;
   //
   repeated string requires_role = 60002;
 }
@@ -21,7 +21,11 @@ extend google.protobuf.ServiceOptions {
 //..
 extend google.protobuf.MethodOptions {
   //
-  bool broadcast = 60000;
+  bool m_enforce_enc = 60000;
+  //
+  repeated string m_requires_role = 60001;
+  //
+  bool broadcast = 60007;
   // If set and not zero creates a new session with the specified lifetime in seconds.
   // The option is being ignored if there is an active session. For instance, one that was created
   // by a `SecureChannel.Create` call.
