@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
 	"google.golang.org/grpc"
 )
 

@@ -2,11 +2,11 @@ package sec_chan
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/addon/sec_chan/internal/client"
-	sec_mw "github.com/go-serv/foundation/addon/sec_chan/internal/middleware"
-	"github.com/go-serv/foundation/addon/sec_chan/internal/server"
-	"github.com/go-serv/foundation/addon/sec_chan/x"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/addon/sec_chan/internal/client"
+	sec_mw "github.com/mesh-master/foundation/addon/sec_chan/internal/middleware"
+	"github.com/mesh-master/foundation/addon/sec_chan/internal/server"
+	"github.com/mesh-master/foundation/addon/sec_chan/x"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func NewSecChanService(app z.AppServerInterface, eps []z.EndpointInterface, cfg server.ConfigInterface) ServiceInterface {

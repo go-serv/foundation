@@ -1,4 +1,4 @@
-module github.com/go-serv/foundation
+module github.com/mesh-master/foundation
 
 go 1.18
 

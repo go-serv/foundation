@@ -1,7 +1,7 @@
 package codec
 
 import (
-	net_io "github.com/go-serv/foundation/pkg/ancillary/net/io"
+	net_io "github.com/mesh-master/foundation/pkg/ancillary/net/io"
 	"google.golang.org/protobuf/proto"
 )
 

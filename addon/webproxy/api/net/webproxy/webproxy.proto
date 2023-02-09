@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "foundation/ext.proto";
+
+package net.webproxy;
+
+service WebProxy {
+  //.
+  rpc Create() returns () {
+  }
+}

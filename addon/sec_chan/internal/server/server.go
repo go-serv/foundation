@@ -4,9 +4,9 @@
 package server
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/ancillary"
+	proto "github.com/mesh-master/foundation/internal/autogen/net/sec_chan"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/ancillary"
 	"google.golang.org/grpc"
 )
 

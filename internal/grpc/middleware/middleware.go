@@ -6,8 +6,8 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/go-serv/foundation/pkg/ancillary/slice"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/ancillary/slice"
+	"github.com/mesh-master/foundation/pkg/z"
 	"reflect"
 )
 

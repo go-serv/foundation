@@ -3,7 +3,7 @@ package net
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/go-serv/foundation/internal/ancillary"
+	"github.com/mesh-master/foundation/internal/ancillary"
 	"io"
 	"reflect"
 )

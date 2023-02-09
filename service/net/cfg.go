@@ -1,6 +1,6 @@
 package net
 
-import "github.com/go-serv/foundation/pkg/z"
+import "github.com/mesh-master/foundation/pkg/z"
 
 type cfg struct {
 	z.NetServiceCfgInterface

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/service/net"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/service/net"
 )
 
 func NewSecureChanService(eps []z.EndpointInterface, cfg ConfigInterface) z.NetworkServiceInterface {

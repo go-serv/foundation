@@ -1,8 +1,8 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func NewNetworkService(name string, cfg z.ServiceCfgInterface, endpoints []z.EndpointInterface) *netService {

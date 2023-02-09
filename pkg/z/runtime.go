@@ -1,7 +1,7 @@
 package z
 
 import (
-	"github.com/go-serv/foundation/pkg/ancillary/memoize"
+	"github.com/mesh-master/foundation/pkg/ancillary/memoize"
 	"google.golang.org/protobuf/proto"
 )
 

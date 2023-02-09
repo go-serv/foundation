@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/go-serv/foundation/pkg/y/netparcel"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/dictionary"
-	"github.com/go-serv/foundation/pkg/z/platform"
-	"github.com/go-serv/foundation/service/net"
+	"github.com/mesh-master/foundation/pkg/y/netparcel"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/service/net"
 )
 
 func NewNetParcel(eps []z.EndpointInterface, cfg ConfigInterface) *netParcel {

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package mesh_master;
+
+enum AsymmetricKeyType {
+  Rsa = 0; // Rivest–Shamir–Adleman
+  Ecc = 1; // Elliptical Curve Cryptography
+}
+
+message PublicKeyInfo {
+  AsymmetricKeyType type = 1;
+  bytes key = 2;
+  string keyId = 3;
+}
+
+//..
+message Pki {
+  message Generate {
+    message Request {
+    }
+    message Response { }
+  }
+  message Revoke {
+    message Request {
+    }
+    message Response { }
+  }
+}

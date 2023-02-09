@@ -2,10 +2,10 @@ package app
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/y/kv"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/y/kv"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 type server struct {
@@ -14,6 +14,15 @@ type server struct {
 	dashboard  z.DashboardInterface
 	wp         z.WebProxyInterface
 	kv         kv.KeyValueStorageInterface
+}
+
+type localServer struct {
+	server
+}
+
+type netServer struct {
+	server
+	webProxyMw z.WebProxyMiddlewareInterface
 }
 
 func (srv *server) Job() job.JobInterface {

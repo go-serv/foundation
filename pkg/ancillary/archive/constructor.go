@@ -2,11 +2,11 @@ package archive
 
 import (
 	"compress/gzip"
-	"github.com/go-serv/foundation/internal/ancillary/archive"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/ancillary"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/internal/ancillary/archive"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/copyable"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/ancillary"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 )
 
 type Options struct {

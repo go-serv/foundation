@@ -1,8 +1,8 @@
 package archive
 
 import (
-	"github.com/go-serv/foundation/pkg/z/ancillary"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/pkg/z/ancillary"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 	"io"
 )
 

@@ -1,7 +1,7 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/metadata"
 )
 

@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/go-serv/foundation/internal/grpc/callctx/net"
+	"github.com/mesh-master/foundation/internal/grpc/callctx/net"
 	"time"
 )
 

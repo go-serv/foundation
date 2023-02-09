@@ -1,10 +1,10 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
 )
 
 func verifyApiKey(ctx z.NetServerContextInterface, req z.RequestInterface) bool {

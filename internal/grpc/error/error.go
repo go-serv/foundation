@@ -1,7 +1,7 @@
 package error
 
 import (
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc/status"
 )
 

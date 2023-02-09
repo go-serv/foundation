@@ -2,8 +2,8 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
-	net_client "github.com/go-serv/foundation/client/net"
-	"github.com/go-serv/foundation/pkg/z"
+	net_client "github.com/mesh-master/foundation/client/net"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func NewClient(e z.EndpointInterface) *client {

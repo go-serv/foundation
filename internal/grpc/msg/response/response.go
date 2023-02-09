@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/go-serv/foundation/internal/grpc/msg"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/grpc/msg"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 type response struct {

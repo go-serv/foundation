@@ -2,8 +2,8 @@ package net
 
 import (
 	"fmt"
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

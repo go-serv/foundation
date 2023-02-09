@@ -2,8 +2,8 @@ package net
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/internal/logger"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/logger"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc"
 )
 

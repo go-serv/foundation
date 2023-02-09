@@ -2,9 +2,9 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/internal/ancillary"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/internal/ancillary"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"net"

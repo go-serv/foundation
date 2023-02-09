@@ -1,8 +1,8 @@
 package server
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/net/cerberus"
-	"github.com/go-serv/foundation/pkg/z"
+	proto "github.com/mesh-master/foundation/internal/autogen/net/cerberus"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc"
 )
 

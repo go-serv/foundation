@@ -1,8 +1,8 @@
 package client
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	net_cc "github.com/go-serv/foundation/internal/grpc/client"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	net_cc "github.com/mesh-master/foundation/internal/grpc/client"
 )
 
 type PingOptions struct {

@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package mesh_master;
+
+enum NetworkTopology {
+  Star = 0;
+  Ring = 1;
+  Mesh = 2;
+  FullyConnected = 3;
+  Line = 4;
+  Tree = 5;
+}
+
+message NetworkAddress {
+  oneof adr {
+    string tcp = 1;
+  }
+}
+
+message NodeInfo {
+  fixed64 id = 1;
+}
+
+message NetworkTreeTopologyInfo {
+
+}
+
+message NetworkInfo {
+  NetworkTopology topology = 1;
+  string name = 2;
+  string description = 3;
+  // Specifies a maximum number of nodes allowed in the network.
+  optional int32 capacity = 4;
+}
+
+message ThirdPartyRelay {
+  string hostname = 1;
+  uint32 port = 2;
+}
+
+message PhysicalNetwork {
+  NetworkInfo info = 1;
+}
+
+message VirtualNetwork {
+  NetworkInfo info = 1;
+  repeated ThirdPartyRelay tpr_list = 2;
+}
+
+//..
+message Network {
+  message Create {
+    message Request {
+      oneof net {
+        PhysicalNetwork phy_net = 1;
+        VirtualNetwork vir_net = 2;
+      }
+    }
+    message Response { }
+  }
+  message Join {
+    message Request { }
+    message Response { }
+  }
+  message Leave {
+    message Request { }
+    message Response { }
+  }
+}

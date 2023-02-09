@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "net/sec_chan/create.proto";
+import "net/sec_chan/close.proto";
+import "net/sec_chan/ext.proto";
+import "foundation/ext.proto";
+
+package net.sec_chan;
+
+//  When TLS protocol is not available, SecureChannel service can be used to provide a secure communication between services.
+service SecureChannel {
+  // Creates a new secure session.
+  rpc Create(Create.Request) returns (Create.Response) {
+    option (.net.sec_chan.enc_off) = true; //.
+  }
+  // Close a secure channel. Session ID must be provided in the request metadata.
+  rpc Close(Close.Request) returns (Close.Response) {
+    option (.foundation.require_session) = true;
+    option (.foundation.close_session) = true;
+  }
+}

@@ -10,7 +10,7 @@ replace google.golang.org/grpc => ../../../../grpc-go
 
 require (
 	github.com/AgentCoop/go-work v0.0.2
-	github.com/go-serv/foundation v0.0.0-20220907210104-00b30196fc8c
+	github.com/go-serv/mesh-master v0.0.0-20220907210104-00b30196fc8c
 )
 
 require (

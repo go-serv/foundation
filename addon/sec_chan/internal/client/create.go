@@ -1,14 +1,14 @@
 package client
 
 import (
-	"github.com/go-serv/foundation/addon/sec_chan/x"
-	"github.com/go-serv/foundation/internal/ancillary/crypto/aes"
-	"github.com/go-serv/foundation/internal/ancillary/crypto/dh_key"
-	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	grpc_client "github.com/go-serv/foundation/internal/grpc/client"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
-	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+	"github.com/mesh-master/foundation/addon/sec_chan/x"
+	"github.com/mesh-master/foundation/internal/ancillary/crypto/aes"
+	"github.com/mesh-master/foundation/internal/ancillary/crypto/dh_key"
+	proto "github.com/mesh-master/foundation/internal/autogen/net/sec_chan"
+	grpc_client "github.com/mesh-master/foundation/internal/grpc/client"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/copyable"
+	"github.com/mesh-master/foundation/pkg/z/ancillary/crypto"
 )
 
 type SecureSessionOptions struct {

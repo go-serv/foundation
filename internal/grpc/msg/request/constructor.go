@@ -2,9 +2,9 @@ package request
 
 import (
 	"context"
-	"github.com/go-serv/foundation/internal/grpc"
-	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/grpc"
+	meta_net "github.com/mesh-master/foundation/internal/grpc/meta/net"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/protobuf/proto"

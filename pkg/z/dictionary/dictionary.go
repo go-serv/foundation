@@ -1,8 +1,8 @@
 package dictionary
 
 import (
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/mesh-master/foundation/pkg/z"
 	"net"
 )
 

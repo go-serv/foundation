@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/go-serv/foundation/internal/grpc"
-	"github.com/go-serv/foundation/internal/grpc/meta/net"
+	"github.com/mesh-master/foundation/internal/grpc"
+	"github.com/mesh-master/foundation/internal/grpc/meta/net"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )

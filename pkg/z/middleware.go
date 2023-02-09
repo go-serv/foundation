@@ -36,12 +36,18 @@ type MiddlewareInterface interface {
 	// Data flow: req -> application-level chain -> service chain (request handler) -> gRPC call
 	// 	-> service chain (response handler) -> application-level chain
 	AppendToServiceChain(service string, newKey any, req RequestHandlerFn, res ResponseHandlerFn)
+	//
+	Run() error
 }
 
 type ServerMiddlewareInterface interface {
 	MiddlewareInterface
 	//
 	UnaryServerInterceptor() grpc.UnaryServerInterceptor
+}
+
+type WebProxyMiddlewareInterface interface {
+	MiddlewareInterface
 }
 
 type ClientMiddlewareInterface interface {

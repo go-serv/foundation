@@ -10,6 +10,7 @@ type memoizer struct {
 
 func (m *memoizer) Reset() {
 	m.run = new(sync.Once)
+	m.value = nil
 }
 
 func (m *memoizer) Run(args ...any) (v any, err error) {

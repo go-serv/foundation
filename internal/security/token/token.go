@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 type tokenTyp int

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package net.sec_chan;
+
+extend google.protobuf.MethodOptions {
+  // If set to true disables message encryption for the given call.
+  bool enc_off = 60100;
+}
+

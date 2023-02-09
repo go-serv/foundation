@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
+	proto "github.com/mesh-master/foundation/internal/autogen/net/sec_chan"
 )
 
 func (s impl) Close(ctx context.Context, req *proto.Close_Request) (res *proto.Close_Response, err error) {

@@ -2,11 +2,11 @@ package client
 
 import (
 	"errors"
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	client2 "github.com/go-serv/foundation/internal/grpc/client"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	client2 "github.com/mesh-master/foundation/internal/grpc/client"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/copyable"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 	"io"
 	"io/fs"
 	"os"

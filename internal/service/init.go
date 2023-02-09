@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/reflect"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/internal/reflect"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 var ref z.ReflectInterface

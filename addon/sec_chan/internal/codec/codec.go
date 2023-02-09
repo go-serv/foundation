@@ -1,7 +1,7 @@
 package codec
 
 import (
-	"github.com/go-serv/foundation/addon/sec_chan/x"
+	"github.com/mesh-master/foundation/addon/sec_chan/x"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"reflect"

@@ -4,15 +4,15 @@
 package server
 
 import (
-	"github.com/go-serv/foundation/app/net_parcel/server/ftp"
-	"github.com/go-serv/foundation/internal/ancillary/archive"
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/y/netparcel"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/ancillary"
-	"github.com/go-serv/foundation/pkg/z/dictionary"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/app/net_parcel/server/ftp"
+	"github.com/mesh-master/foundation/internal/ancillary/archive"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/pkg/y/netparcel"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/ancillary"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 	"google.golang.org/grpc"
 )
 

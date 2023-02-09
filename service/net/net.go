@@ -1,7 +1,7 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 type X509PemPair struct {

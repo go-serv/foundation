@@ -1,10 +1,10 @@
 package ftp
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/pkg/y/netparcel"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/pkg/y/netparcel"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 	"os"
 )
 

@@ -1,6 +1,6 @@
 package z
 
-import "github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+import "github.com/mesh-master/foundation/pkg/z/ancillary/crypto"
 
 type (
 	OnGCFn       func()

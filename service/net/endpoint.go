@@ -3,7 +3,7 @@ package net
 import (
 	"context"
 	"crypto/tls"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"

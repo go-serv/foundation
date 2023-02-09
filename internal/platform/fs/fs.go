@@ -1,8 +1,8 @@
 package fs
 
 import (
-	"github.com/go-serv/foundation/pkg/z"
-	pf "github.com/go-serv/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/pkg/z"
+	pf "github.com/mesh-master/foundation/pkg/z/platform"
 	"os"
 	"path/filepath"
 	"sync/atomic"

@@ -1,10 +1,10 @@
 syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
-import "foundation/session.proto";
-import "foundation/network.proto";
-import "foundation/service.proto";
-import "foundation/ext.proto";
+import "mesh_master/session.proto";
+import "mesh_master/network.proto";
+import "mesh_master/service.proto";
+import "mesh_master/ext.proto";
 
 package mesh_master;
 
@@ -39,19 +39,19 @@ service MeshMaster {
   }
 
   // Lists available services.
-  rpc List(Service.List.Request) returns (Service.List.Response) {
-
-  }
+//  rpc List(Service.List.Request) returns (Service.List.Response) {
+//
+//  }
   // Configures parameters of the service active discovery.
-  rpc ConfigureActiveDiscovery(Service.ActiveDiscovery.Request) returns (Service.ActiveDiscovery.Response) {
-
-  }
+//  rpc ConfigureActiveDiscovery(Service.ActiveDiscovery.Request) returns (Service.ActiveDiscovery.Response) {
+//
+//  }
   //..
-  rpc Suspend(stream Service.Suspend.Request) returns (stream Service.Suspend.Response) {
-    option (.foundation.broadcast) = true;
-  }
+//  rpc Suspend(stream Service.Suspend.Request) returns (stream Service.Suspend.Response) {
+//    option (.foundation.broadcast) = true;
+//  }
   //
-  rpc Resume(Service.Resume.Request) returns (stream Service.Resume.Response) {
-    option (.foundation.broadcast) = true;
-  }
+//  rpc Resume(Service.Resume.Request) returns (stream Service.Resume.Response) {
+//    option (.foundation.broadcast) = true;
+//  }
 }

@@ -1,6 +1,6 @@
 package cerberus
 
-import "github.com/go-serv/foundation/pkg/z"
+import "github.com/mesh-master/foundation/pkg/z"
 
 type ServiceInterface interface {
 	z.NetworkServiceInterface

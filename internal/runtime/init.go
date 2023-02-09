@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"github.com/go-serv/foundation/internal/platform"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/platform"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 var rt *runtime

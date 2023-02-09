@@ -2,8 +2,8 @@ package codec
 
 import (
 	"bytes"
-	net_io "github.com/go-serv/foundation/pkg/ancillary/net/io"
-	"github.com/go-serv/foundation/pkg/z/ancillary/crypto"
+	net_io "github.com/mesh-master/foundation/pkg/ancillary/net/io"
+	"github.com/mesh-master/foundation/pkg/z/ancillary/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/status"

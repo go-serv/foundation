@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/go-serv/foundation/internal/grpc/middleware"
-	"github.com/go-serv/foundation/internal/middleware/session"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/grpc/middleware"
+	"github.com/mesh-master/foundation/internal/middleware/session"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func NewClient(svcName string, e z.EndpointInterface) *client {

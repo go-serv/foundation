@@ -1,9 +1,9 @@
 package runtime
 
 import (
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/ancillary/memoize"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/ancillary/memoize"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

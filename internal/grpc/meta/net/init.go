@@ -2,10 +2,10 @@ package net
 
 import (
 	"encoding/base64"
-	net_io "github.com/go-serv/foundation/pkg/ancillary/net/io"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/z"
-	dic_defs "github.com/go-serv/foundation/pkg/z/dictionary"
+	net_io "github.com/mesh-master/foundation/pkg/ancillary/net/io"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/mesh-master/foundation/pkg/z"
+	dic_defs "github.com/mesh-master/foundation/pkg/z/dictionary"
 	"reflect"
 )
 

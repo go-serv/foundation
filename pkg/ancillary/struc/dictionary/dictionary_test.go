@@ -1,7 +1,7 @@
 package dictionary_test
 
 import (
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/dictionary"
 	"reflect"
 	"strings"
 	"testing"

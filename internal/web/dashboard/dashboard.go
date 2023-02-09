@@ -2,7 +2,7 @@ package dashboard
 
 import (
 	"embed"
-	http_helper "github.com/go-serv/foundation/internal/ancillary/http"
+	http_helper "github.com/mesh-master/foundation/internal/ancillary/http"
 	"mime"
 	"net/http"
 	"os"

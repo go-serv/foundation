@@ -1,6 +1,6 @@
 package service
 
-import "github.com/go-serv/foundation/pkg/z"
+import "github.com/mesh-master/foundation/pkg/z"
 
 func NewService(name string, cfg z.ServiceCfgInterface, endpoints []z.EndpointInterface) *service {
 	s := new(service)

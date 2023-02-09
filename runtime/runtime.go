@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/ancillary/memoize"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/pkg/ancillary/memoize"
 )
 
 func RegisterResolver(key any, resolver memoize.MemoizerInterface) {

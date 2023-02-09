@@ -2,7 +2,7 @@ package shm_ipc
 
 import (
 	"fmt"
-	shmem2 "github.com/go-serv/foundation/internal/ancillary/platform/shmem"
+	shmem2 "github.com/mesh-master/foundation/internal/ancillary/platform/shmem"
 	"runtime"
 	"sync"
 	"sync/atomic"

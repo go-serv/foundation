@@ -2,18 +2,18 @@ package app
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/go-serv/foundation/internal/grpc/middleware"
-	net_mw "github.com/go-serv/foundation/internal/middleware/net"
-	"github.com/go-serv/foundation/internal/middleware/session"
-	"github.com/go-serv/foundation/internal/web/dashboard"
-	mwPkg "github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/grpc/middleware"
+	net_mw "github.com/mesh-master/foundation/internal/middleware/net"
+	"github.com/mesh-master/foundation/internal/middleware/session"
+	"github.com/mesh-master/foundation/internal/web/dashboard"
+	mwPkg "github.com/mesh-master/foundation/pkg/z"
 	"math/rand"
 	"time"
 )
 
-func NewServerApp(wp mwPkg.WebProxyInterface) *server {
+func NewServerApp(wp mwPkg.WebProxyInterface) *netServer {
 	rand.Seed(time.Now().UnixNano())
-	srv := new(server)
+	srv := new(netServer)
 	srv.wp = wp
 	srv.mainJob = job.NewJob(nil)
 	srv.middleware = middleware.NewServerMiddleware()

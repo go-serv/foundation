@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func ServerReqHandler(next z.NextHandlerFn, ctx z.NetContextInterface, req z.RequestInterface) (err error) {

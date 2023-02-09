@@ -1,7 +1,7 @@
 package slice_test
 
 import (
-	"github.com/go-serv/foundation/pkg/ancillary/slice"
+	"github.com/mesh-master/foundation/pkg/ancillary/slice"
 	"testing"
 )
 

@@ -1,10 +1,10 @@
 package cerberus
 
 import (
-	mw "github.com/go-serv/foundation/addon/cerberus/internal/middleware"
-	"github.com/go-serv/foundation/addon/cerberus/internal/server"
-	"github.com/go-serv/foundation/addon/cerberus/x"
-	"github.com/go-serv/foundation/pkg/z"
+	mw "github.com/mesh-master/foundation/addon/cerberus/internal/middleware"
+	"github.com/mesh-master/foundation/addon/cerberus/internal/server"
+	"github.com/mesh-master/foundation/addon/cerberus/x"
+	"github.com/mesh-master/foundation/pkg/z"
 )
 
 func NewCerberusService(app z.AppServerInterface, eps []z.EndpointInterface, cfg server.ConfigInterface) ServiceInterface {

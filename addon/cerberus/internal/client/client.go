@@ -1,11 +1,11 @@
 package client
 
 import (
-	"github.com/go-serv/foundation/addon/sec_chan/internal/codec"
-	"github.com/go-serv/foundation/addon/sec_chan/x"
-	proto "github.com/go-serv/foundation/internal/autogen/net/sec_chan"
-	grpc_client "github.com/go-serv/foundation/internal/grpc/client"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/addon/sec_chan/internal/codec"
+	"github.com/mesh-master/foundation/addon/sec_chan/x"
+	proto "github.com/mesh-master/foundation/internal/autogen/net/sec_chan"
+	grpc_client "github.com/mesh-master/foundation/internal/grpc/client"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc"
 )
 

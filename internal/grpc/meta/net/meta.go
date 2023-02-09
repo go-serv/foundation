@@ -1,9 +1,9 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
-	"github.com/go-serv/foundation/pkg/z"
-	dic_defs "github.com/go-serv/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/mesh-master/foundation/pkg/z"
+	dic_defs "github.com/mesh-master/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/metadata"
 )
 

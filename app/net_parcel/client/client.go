@@ -1,9 +1,9 @@
 package client
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
-	"github.com/go-serv/foundation/pkg/z"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/copyable"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc"
 )
 

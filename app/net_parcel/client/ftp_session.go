@@ -1,9 +1,9 @@
 package client
 
 import (
-	proto "github.com/go-serv/foundation/internal/autogen/foundation"
-	client2 "github.com/go-serv/foundation/internal/grpc/client"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/copyable"
+	proto "github.com/mesh-master/foundation/internal/autogen/foundation"
+	client2 "github.com/mesh-master/foundation/internal/grpc/client"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/copyable"
 )
 
 type FtpNewSessionOptions struct {

@@ -1,13 +1,13 @@
 package net
 
 import (
-	"github.com/go-serv/foundation/internal/grpc/client"
-	meta_net "github.com/go-serv/foundation/internal/grpc/meta/net"
-	mw_net "github.com/go-serv/foundation/internal/middleware/net"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/service/net"
+	"github.com/mesh-master/foundation/internal/grpc/client"
+	meta_net "github.com/mesh-master/foundation/internal/grpc/meta/net"
+	mw_net "github.com/mesh-master/foundation/internal/middleware/net"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/service/net"
 )
 
 func NewClient(svcName string, ep z.EndpointInterface) (nc *netClient, err error) {

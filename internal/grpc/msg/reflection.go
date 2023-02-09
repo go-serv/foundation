@@ -1,8 +1,8 @@
 package msg
 
 import (
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/protobuf/proto"
 )
 

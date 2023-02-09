@@ -2,7 +2,7 @@ package ftp
 
 import (
 	"fmt"
-	"github.com/go-serv/foundation/pkg/z/platform"
+	"github.com/mesh-master/foundation/pkg/z/platform"
 	"time"
 )
 

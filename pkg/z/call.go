@@ -2,7 +2,7 @@ package z
 
 import (
 	"context"
-	"github.com/go-serv/foundation/pkg/ancillary/struc/dictionary"
+	"github.com/mesh-master/foundation/pkg/ancillary/struc/dictionary"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"

@@ -2,10 +2,10 @@ package net
 
 import (
 	"context"
-	"github.com/go-serv/foundation/internal/grpc/msg/response"
-	"github.com/go-serv/foundation/internal/runtime"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/event"
+	"github.com/mesh-master/foundation/internal/grpc/msg/response"
+	"github.com/mesh-master/foundation/internal/runtime"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/event"
 	"google.golang.org/grpc"
 )
 

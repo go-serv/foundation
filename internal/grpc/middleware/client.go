@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"context"
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	net_req "github.com/go-serv/foundation/internal/grpc/msg/request"
-	net_res "github.com/go-serv/foundation/internal/grpc/msg/response"
-	"github.com/go-serv/foundation/internal/service"
-	"github.com/go-serv/foundation/pkg/z"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	net_req "github.com/mesh-master/foundation/internal/grpc/msg/request"
+	net_res "github.com/mesh-master/foundation/internal/grpc/msg/response"
+	"github.com/mesh-master/foundation/internal/service"
+	"github.com/mesh-master/foundation/pkg/z"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"

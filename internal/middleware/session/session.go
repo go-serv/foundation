@@ -1,10 +1,10 @@
 package session
 
 import (
-	"github.com/go-serv/foundation/internal/autogen/foundation"
-	"github.com/go-serv/foundation/internal/grpc/session"
-	"github.com/go-serv/foundation/pkg/z"
-	"github.com/go-serv/foundation/pkg/z/dictionary"
+	"github.com/mesh-master/foundation/internal/autogen/foundation"
+	"github.com/mesh-master/foundation/internal/grpc/session"
+	"github.com/mesh-master/foundation/pkg/z"
+	"github.com/mesh-master/foundation/pkg/z/dictionary"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
